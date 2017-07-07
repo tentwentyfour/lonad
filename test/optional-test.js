@@ -26,11 +26,12 @@ describe('The Optional type', () => {
     const instances = [Some(3), None()];
 
     const calls = [
-      ['map',                                           increment],
+      ['get'],
+      ['map',                                            increment],
       ['flatMap',     pipe(increment, Some, Optional.getOrElse(8))],
       ['filter',                                         increment],
-      ['getOrElse',                                             4],
-      ['match',            { Ok: constant(1), None: constant(2) }]
+      ['getOrElse',                                              4],
+      ['match',             { Ok: constant(1), None: constant(2) }]
     ];
 
     calls.forEach(([methodName, parameter]) => {
@@ -39,18 +40,22 @@ describe('The Optional type', () => {
         expect(Optional[methodName]).to.not.equal(undefined);
 
         const executeForm = form => {
-          let output = form(instance);
-
           try {
+            let output = form(instance);
+
             return `OK: ${JSON.stringify(output)}`;
           } catch (error) {
             return `ERROR: ${error}`;
           }
         };
 
-        const methodForm = optional => optional[methodName](parameter, optional);
+        const methodForm = optional => optional[methodName](parameter);
 
-        const staticForm = Optional[methodName](parameter);
+        const staticForm = (
+          Optional[methodName].length === 1
+          ? Optional[methodName]
+          : Optional[methodName](parameter)
+        );
 
         expect(typeof staticForm).to.equal('function');
         expect(executeForm(methodForm)).to.equal(executeForm(staticForm));

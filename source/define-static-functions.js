@@ -26,6 +26,7 @@ const curryMonadMethod = (anyConstructor, methodName) => {
   return recurry;
 };
 
+// Omit Pending from the constructors, please.
 module.exports = (Monad, constructors) => {
   const anyConstructor = Object.values(constructors)[0];
 

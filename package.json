@@ -4,7 +4,7 @@
   "description": "Optional and Result monads implentations",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node ./node_modules/.bin/mocha"
   },
   "keywords": [
     "option",
@@ -18,5 +18,19 @@
     "pending"
   ],
   "author": "Florian Simon",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "^4.0.2",
+    "eslint": "^4.1.1",
+    "eslint-config-airbnb": "^15.0.2",
+    "eslint-plugin-import": "^2.7.0",
+    "lodash.constant": "^3.0.0",
+    "lodash.flow": "^3.5.0",
+    "mocha": "^3.4.2"
+  },
+  "dependencies": {
+    "lodash.ary": "^4.1.1",
+    "lodash.curry": "^4.1.1",
+    "lodash.identity": "^3.0.0"
+  }
 }

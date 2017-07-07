@@ -1,5 +1,5 @@
-const identity             = require('lodash.identity');
-const unaryReturnThis      = require('./unary-return-this');
+const identity              = require('lodash.identity');
+const unaryReturnThis       = require('./unary-return-this');
 const defineStaticFunctions = require('./define-static-functions');
 
 class Optional {}
@@ -15,7 +15,7 @@ let None = function None() {
 None.prototype = Object.create(Optional.prototype);
 
 Object.assign(None.prototype, {
-  map:    unaryReturnThis,
+  map:     unaryReturnThis,
   filter:  unaryReturnThis,
   flatMap: unaryReturnThis,
 

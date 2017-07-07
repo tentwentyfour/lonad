@@ -10,18 +10,6 @@ const { Some, None } = Optional;
 const increment = n => n + 1;
 
 describe('The Optional type', () => {
-  it('should be able to pick up Some instances contained in deserialized JSON strings', () => {
-    const some = Some(3);
-
-    const deserializedSome = Optional.fromJson(JSON.parse(JSON.stringify(some)));
-
-    Object
-    .entries(some)
-    .forEach(([key, property]) => {
-      expect(deserializedSome[key]).to.equal(property);
-    });
-  });
-
   it('should hold curried static functions with flipped arguments that call instances methods appropriately', () => {
     const instances = [Some(3), None()];
 
@@ -59,6 +47,38 @@ describe('The Optional type', () => {
 
         expect(typeof staticForm).to.equal('function');
         expect(executeForm(methodForm)).to.equal(executeForm(staticForm));
+      });
+    });
+  });
+
+  describe('fromJson(optional)', () => {
+    it('should be able to pick up Some instances contained in deserialized JSON strings', () => {
+      const some = Some(3);
+
+      const deserializedSome = Optional.fromJson(JSON.parse(JSON.stringify(some)));
+
+      expect(deserializedSome instanceof Optional).to.equal(true);
+      expect(deserializedSome instanceof Some).to.equal(true);
+
+      Object
+      .entries(some)
+      .forEach(([key, property]) => {
+        expect(deserializedSome[key]).to.equal(property);
+      });
+    });
+
+    it('should be able to pick up None instances contained in deserialized JSON strings', () => {
+      const none = None();
+
+      const deserializedNone = Optional.fromJson(JSON.parse(JSON.stringify(none)));
+
+      expect(deserializedNone instanceof Optional).to.equal(true);
+      expect(deserializedNone instanceof None).to.equal(true);
+
+      Object
+      .entries(none)
+      .forEach(([key, property]) => {
+        expect(deserializedNone[key]).to.equal(property);
       });
     });
   });

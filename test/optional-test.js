@@ -51,6 +51,29 @@ describe('The Optional type', () => {
     });
   });
 
+  it('should be able to convert an array of Some into a Some with an array of their values', () => {
+    const values = [1, 2, 3];
+
+    const somes = values.map(Some);
+
+    expect(
+      Optional
+      .all(somes)
+      .getOrElse([])
+      .join('')
+    ).to.equal(values.join(''));
+  });
+
+  it('should be able to convert an empty array into a Some with an empty array as value', () => {
+    const notExpected = 3;
+
+    expect(
+      Optional
+      .all([])
+      .getOrElse(notExpected)
+    ).to.not.equal(notExpected);
+  });
+
   describe('fromJson(optional)', () => {
     it('should be able to pick up Some instances contained in deserialized JSON strings', () => {
       const some = Some(3);

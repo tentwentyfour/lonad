@@ -1,3 +1,4 @@
+const some                  = require('lodash.some');
 const identity              = require('lodash.identity');
 const unaryReturnThis       = require('./unary-return-this');
 const defineStaticFunctions = require('./define-static-functions');
@@ -94,8 +95,16 @@ const fromJson = object => {
   return Some(object.value);
 };
 
+const all = optionals => {
+  if (some(optionals, 'valueAbsent')) {
+    return None();
+  }
+
+  return Some(optionals.map(Optional.get));
+};
+
 defineStaticFunctions(Optional, { Some, None });
 
-Object.assign(Optional, { Some, None, fromNullable, fromJson });
+Object.assign(Optional, { Some, None, fromNullable, fromJson, all });
 
 module.exports = Optional;

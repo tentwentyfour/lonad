@@ -3,12 +3,6 @@ const curryMonadMethod = (anyConstructor, methodName) => {
 
   const staticVersionArity = method.length + 1;
 
-  if (staticVersionArity < 2) {
-    return instance => {
-      return instance[methodName]();
-    };
-  }
-
   const recurry = (...parameters) => {
     if (parameters.length < staticVersionArity) {
       return (...additionalParameters) => {

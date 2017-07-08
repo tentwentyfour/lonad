@@ -119,6 +119,7 @@ describe('The Optional type', () => {
         const some = Some(value).filter(n => n === value);
 
         expect(some.valuePresent).to.equal(true);
+        expect(some.get()).to.equal(value);
       });
 
       it('should return a None if the predicate is false when passed the Some value', () => {
@@ -158,7 +159,7 @@ describe('The Optional type', () => {
         expect(returnValue).to.equal(expected);
       });
 
-      it('should just return an the Some value when callback.Some does not exist', () => {
+      it('should just return the Some value when callback.Some does not exist', () => {
         const expected = 3;
         const other    = 4;
 
@@ -171,11 +172,11 @@ describe('The Optional type', () => {
 
   describe('The None subtype', () => {
     it('should have the proper flags', () => {
-      const some = None();
+      const none = None();
 
-      expect(some.isOptionalInstance).to.equal(true);
-      expect(some.valuePresent).to.equal(false);
-      expect(some.valueAbsent).to.equal(true);
+      expect(none.isOptionalInstance).to.equal(true);
+      expect(none.valuePresent).to.equal(false);
+      expect(none.valueAbsent).to.equal(true);
     });
 
     describe('map(λ)', () => {

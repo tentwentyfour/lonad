@@ -2,11 +2,13 @@ const defineStaticFunctions = require('./define-static-functions');
 const unaryReturnThis       = require('./unary-return-this');
 const identity              = require('lodash.identity');
 const property              = require('lodash.property');
+const constant              = require('lodash.constant');
 const pipe                  = require('lodash.flow');
 const Exception             = require('./exception');
-const { Some, None }        = require('./optional');
+const Optional              = require('./optional');
 
-const isPromise = object => Boolean(object && object.then);
+const { Some, None } = Optional;
+const isPromise      = object => Boolean(object && object.then);
 
 class Result {}
 
@@ -17,7 +19,7 @@ let Ok;
 
 const findNextNonPending = promise => {
   return promise.then(result => {
-    if (result.isAsynchronous) {
+    if (result && result.isAsynchronous) {
       return findNextNonPending(result.promise);
     }
 
@@ -54,9 +56,12 @@ Ok = function newOk(value) {
 Ok.prototype = Object.create(Result.prototype);
 
 Object.assign(Ok.prototype, {
-  abortIfError: unaryReturnThis,
-  mapError:     unaryReturnThis,
-  recover:      unaryReturnThis,
+  mapError: unaryReturnThis,
+  recover:  unaryReturnThis,
+
+  abortIfError() {
+    return this;
+  },
 
   merge() {
     return this.value;
@@ -129,7 +134,7 @@ Object.assign(Error.prototype, {
     return (callbacks.Error || identity)(this.error);
   },
 
-  abortIfError(λ) {
+  abortIfError() {
     return Aborted(this.error);
   },
 
@@ -166,7 +171,10 @@ Object.assign(Aborted.prototype, {
   filter:       unaryReturnThis,
   mapError:     unaryReturnThis,
   recover:      unaryReturnThis,
-  abortIfError: unaryReturnThis,
+
+  abortIfError() {
+    return this;
+  },
 
   merge() {
     return this.error;
@@ -217,6 +225,7 @@ const callWrappedResultMethod = methodName => {
 };
 
 Object.assign(Pending.prototype, {
+  asynchronous: unaryReturnThis,
   map:          callWrappedResultMethod('map'),
   filter:       callWrappedResultMethod('filter'),
   recover:      callWrappedResultMethod('recover'),
@@ -224,22 +233,25 @@ Object.assign(Pending.prototype, {
   mapError:     callWrappedResultMethod('mapError'),
   abortIfError: callWrappedResultMethod('abortIfError'),
   match:        pipe(callWrappedResultMethod('match'), property('promise')),
+  merge:        pipe(callWrappedResultMethod('merge'), property('promise')),
   toPromise:    pipe(callWrappedResultMethod('toPromise'), property('promise')),
-
-  merge() {
-    return this.toPromise();
-  },
-
-  asynchronous() {
-    return this;
-  },
-
-  toOptional() {
-    throw new Exception('Cannot convert a Pending to an Optional');
-  }
+  toOptional:   pipe(callWrappedResultMethod('toOptional'), property('promise'))
 });
 
-const doTry = λ => transformResult(λ, Ok, Ok);
+const doTry = λ => transformResult(λ, value => {
+  if (value && value.isResultInstance) {
+    return value;
+  }
+
+  if (!value || !value.isOptionalInstance) {
+    value = Optional.fromNullable(value);
+  }
+
+  return value.match({
+    Some: Ok,
+    None: constant(Error())
+  });
+});
 
 const expect = optionalOrResult => {
   if (optionalOrResult.isResultInstance) {

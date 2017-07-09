@@ -695,7 +695,7 @@ describe('The Result type', () => {
     });
 
     describe('match(callbacks)', () => {
-      it('should execute callbacks.Aborted over callbacks.Error if it exists', () => {
+      it('should execute callbacks.Aborted if it exists', () => {
         const expected = 3;
 
         expect(
@@ -706,13 +706,7 @@ describe('The Result type', () => {
         ).to.equal(expected);
       });
 
-      it('should execute callbacks.Error if it exists and callbacks.Aborted does not', () => {
-        const expected = 3;
-
-        expect(Aborted().match({ Error: constant(expected) })).to.equal(expected);
-      });
-
-      it('should just return the wrapped error when callbacks.Error and callbacks.Aborted do not exist', () => {
+      it('should just return the wrapped error when callbacks.Aborted does not exist', () => {
         const value = 3;
 
         expect(Aborted(value).match({})).to.equal(value);

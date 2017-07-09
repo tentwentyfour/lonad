@@ -187,7 +187,7 @@ Object.assign(Aborted.prototype, {
   },
 
   match(callbacks) {
-    return (callbacks.Aborted || callbacks.Error || identity)(this.error);
+    return (callbacks.Aborted || identity)(this.error);
   },
 
   asynchronous() {

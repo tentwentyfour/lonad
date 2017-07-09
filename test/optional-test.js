@@ -91,6 +91,14 @@ describe('The Optional type', () => {
       expect(some.valueAbsent).to.equal(false);
     });
 
+    describe('recover(λ)', () => {
+      it('should return an equivalent Ok', () => {
+        const some = Some();
+
+        expect(some.recover(increment)).to.equal(some);
+      });
+    });
+
     describe('map(λ)', () => {
       it('should return a new Some instance holding the value of λ for the value of the Some instance', () => {
         const value = 3;
@@ -182,6 +190,17 @@ describe('The Optional type', () => {
       expect(none.isOptionalInstance).to.equal(true);
       expect(none.valuePresent).to.equal(false);
       expect(none.valueAbsent).to.equal(true);
+    });
+
+    describe('recover(λ)', () => {
+      it('should return a Some wrapping the value returned by λ', () => {
+        const expected = 3;
+
+        const some = None().recover(constant(expected));
+
+        expect(some.valuePresent).to.equal(true);
+        expect(some.get()).to.equal(expected);
+      });
     });
 
     describe('map(λ)', () => {

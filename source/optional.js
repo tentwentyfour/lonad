@@ -20,6 +20,10 @@ Object.assign(None.prototype, {
   filter:  unaryReturnThis,
   flatMap: unaryReturnThis,
 
+  recover(λ) {
+    return Some(λ());
+  },
+
   getOrElse(elseValue) {
     return elseValue;
   },
@@ -46,6 +50,8 @@ const Some = function Some(value) {
 Some.prototype = Object.create(Optional.prototype);
 
 Object.assign(Some.prototype, {
+  recover: unaryReturnThis,
+
   get() {
     return this.value;
   },

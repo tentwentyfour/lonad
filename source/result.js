@@ -73,7 +73,7 @@ Object.assign(Ok.prototype, {
   },
 
   flatMap(λ) {
-    return transformResult(() => λ(this.value));
+    return transformResult(() => λ(this.value), Result.expect);
   },
 
   filter(predicate) {

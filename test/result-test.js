@@ -124,13 +124,14 @@ describe('The Result type', () => {
     });
 
     describe('flatMap(λ)', () => {
-      it('should pass the Ok value to an asynchronous λ and return its Result wrapped in a Pending', done => {
-        const instances = [Ok(1), Error(2), Aborted(3), Pending(Promise.resolve(Ok(4)))];
+      it('should pass the Ok value to an asynchronous λ and return its Result', done => {
+        const instances = [Some(5), None(), Ok(1), Error(2), Aborted(3), Pending(Promise.resolve(Ok(4)))];
 
         Promise
         .all(instances.map(instance => {
           return Ok()
-          .flatMap(async () => instance)
+          .flatMap(() => instance)
+          .asynchronous()
           .merge()
           .then(outputInstance => {
             expect(instance.merge()).to.equal(outputInstance);

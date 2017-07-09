@@ -32,7 +32,7 @@ const transformResult = (λ, wrapFunction = identity) => {
     const value = λ(this);
 
     if (isPromise(value)) {
-      return Pending(value.then(wrapFunction, Error));
+      return Pending(value.then(wrapFunction, Aborted));
     }
 
     return wrapFunction(value);

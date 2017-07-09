@@ -37,7 +37,7 @@ const transformResult = (λ, wrapFunction = identity) => {
 
     return wrapFunction(value);
   } catch (error) {
-    return Error(error);
+    return Aborted(error);
   }
 };
 

@@ -39,7 +39,7 @@ describe('The Result type', () => {
         expect(transformed.merge()).to.equal(increment(value));
       });
 
-      it('should catch exceptions thrown in the map callback and return an Error', () => {
+      it('should catch exceptions thrown in the map callback and return an Aborted', () => {
         const expected = 4;
 
         const result = Ok().map(() => {
@@ -47,6 +47,7 @@ describe('The Result type', () => {
         });
 
         expect(result.isError).to.equal(true);
+        expect(result.isAborted).to.equal(true);
         expect(result.merge()).to.equal(expected);
       });
 
@@ -309,6 +310,7 @@ describe('The Result type', () => {
 
         expect(result.isOk).to.equal(false);
         expect(result.isError).to.equal(true);
+        expect(result.isAborted).to.equal(true);
         expect(result.merge()).to.equal(expected);
       });
 
@@ -369,6 +371,7 @@ describe('The Result type', () => {
         });
 
         expect(result.isError).to.equal(true);
+        expect(result.isAborted).to.equal(true);
         expect(result.merge()).to.equal(expected);
       });
 

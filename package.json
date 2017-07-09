@@ -1,6 +1,6 @@
 {
   "name": "lonad",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Optional and Result monads implentations",
   "main": "index.js",
   "scripts": {

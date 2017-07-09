@@ -68,7 +68,7 @@ describe('The Result type', () => {
         .then(done);
       });
 
-      it('should return a Pending wrapping an Error if λ throws asynchronously', done => {
+      it('should return a Pending wrapping an Aborted if λ throws asynchronously', done => {
         const expected = 4;
 
         const result = Ok().map(constant(Promise.reject(expected)));
@@ -88,6 +88,18 @@ describe('The Result type', () => {
     });
 
     describe('mapError(λ)', () => {
+      it('should return an equivalent Ok', () => {
+        const value = 3;
+
+        const ok = Ok(value);
+
+        const transformed = ok.mapError(increment);
+
+        expect(transformed.merge()).to.equal(value);
+      });
+    });
+
+    describe('abortOnErrorWith(λ)', () => {
       it('should return an equivalent Ok', () => {
         const value = 3;
 
@@ -166,7 +178,7 @@ describe('The Result type', () => {
         .then(done);
       });
 
-      it('should return a Pending wrapping an Error if λ throws asynchronously', done => {
+      it('should return a Pending wrapping an Aborted if λ throws asynchronously', done => {
         const expected = 4;
 
         const result = Ok().map(constant(Promise.reject(expected)));
@@ -193,11 +205,11 @@ describe('The Result type', () => {
       });
     });
 
-    describe('abortIfError()', () => {
+    describe('abortOnError()', () => {
       it('should return an equivalent Ok', () => {
         const expected = 3;
 
-        const result = Ok(expected).abortIfError();
+        const result = Ok(expected).abortOnError();
 
         expect(result.isOk).to.equal(true);
         expect(result.merge()).to.equal(expected);
@@ -301,7 +313,7 @@ describe('The Result type', () => {
         expect(transformed.merge()).to.equal(increment(value));
       });
 
-      it('should catch exceptions thrown in the mapError callback and return an Error', () => {
+      it('should catch exceptions thrown in the mapError callback and return an Aborted', () => {
         const expected = 4;
 
         const result = Error().mapError(() => {
@@ -314,7 +326,7 @@ describe('The Result type', () => {
         expect(result.merge()).to.equal(expected);
       });
 
-      it('should return a Pending wrapping an Error if λ is asynchronous', done => {
+      it('should return a Pending wrapping an Aborted if λ is asynchronous', done => {
         const expected = 4;
 
         const result = Error(expected).mapError(asyncIncrement);
@@ -331,7 +343,7 @@ describe('The Result type', () => {
         .then(() => done());
       });
 
-      it('should return a Pending wrapping an Error if λ throws asynchronously', done => {
+      it('should return a Pending wrapping an Aborted if λ throws asynchronously', done => {
         const expected = 4;
 
         const result = Ok().map(constant(Promise.reject(expected)));
@@ -339,6 +351,71 @@ describe('The Result type', () => {
         expect(result.isAsynchronous).to.equal(true);
 
         result
+        .toPromise()
+        .then(increment)
+        .catch(identity)
+        .then(value => {
+          expect(value).to.equal(expected);
+        })
+        .catch(identity)
+        .then(() => done());
+      });
+    });
+
+    describe('abortOnErrorWith(λ)', () => {
+      it('should return an Aborted instance holding the value of λ for the value of the Error instance', () => {
+        const value = 3;
+
+        const error = Error(value);
+
+        const transformed = error.abortOnErrorWith(increment);
+
+        expect(transformed.isOk).to.equal(false);
+        expect(transformed.isAborted).to.equal(true);
+        expect(error !== transformed).to.equal(true);
+        expect(transformed.merge()).to.equal(increment(value));
+      });
+
+      it('should catch exceptions thrown in the mapError callback and return an Aborted', () => {
+        const expected = 4;
+
+        const result = Error().abortOnErrorWith(() => {
+          throw expected;
+        });
+
+        expect(result.isOk).to.equal(false);
+        expect(result.isError).to.equal(true);
+        expect(result.isAborted).to.equal(true);
+        expect(result.merge()).to.equal(expected);
+      });
+
+      it('should return a Pending wrapping an Aborted if λ is asynchronous', done => {
+        const expected = 4;
+
+        const result = Error(expected).abortOnErrorWith(asyncIncrement);
+
+        expect(result.isAsynchronous).to.equal(true);
+
+        result
+        .mapError(increment)
+        .toPromise()
+        .then(increment)
+        .then(value => {
+          expect(value).to.equal(expected);
+        })
+        .catch(identity)
+        .then(() => done());
+      });
+
+      it('should return a Pending wrapping an Abored if λ throws asynchronously', done => {
+        const expected = 4;
+
+        const result = Ok().map(constant(Promise.reject(expected)));
+
+        expect(result.isAsynchronous).to.equal(true);
+
+        result
+        .mapError(increment)
         .toPromise()
         .then(increment)
         .catch(identity)
@@ -363,7 +440,7 @@ describe('The Result type', () => {
         expect(transformed.merge()).to.equal(increment(value));
       });
 
-      it('should catch exceptions thrown in the mapError callback and return an Error', () => {
+      it('should catch exceptions thrown in the mapError callback and return an Aborted', () => {
         const expected = 4;
 
         const result = Error().recover(() => {
@@ -392,7 +469,7 @@ describe('The Result type', () => {
         .then(done);
       });
 
-      it('should return a Pending wrapping an Error if λ throws asynchronously', done => {
+      it('should return a Pending wrapping an Aborted if λ throws asynchronously', done => {
         const expected = 4;
 
         const result = Error().recover(constant(Promise.reject(expected)));
@@ -432,11 +509,11 @@ describe('The Result type', () => {
       });
     });
 
-    describe('abortIfError()', () => {
+    describe('abortOnError()', () => {
       it('should return an Aborted that holds the same error', () => {
         const expected = 3;
 
-        const result = Error(expected).abortIfError();
+        const result = Error(expected).abortOnError();
 
         expect(result.isOk).to.equal(false);
         expect(result.isAborted).to.equal(true);
@@ -541,7 +618,8 @@ describe('The Result type', () => {
         ['merge'],
         ['toPromise'],
         ['toOptional'],
-        ['abortIfError'],
+        ['abortOnError'],
+        ['abortOnErrorWith',                                             increment],
         ['map',                                                          increment],
         ['mapError',                                                     increment],
         ['recover',                                                    constant(1)],
@@ -604,7 +682,8 @@ describe('The Result type', () => {
 
       const aborted = Aborted(value)
       .map(increment)
-      .abortIfError()
+      .abortOnError()
+      .abortOnErrorWith(increment)
       .flatMap(increment)
       .recover(increment)
       .mapError(increment);
@@ -721,7 +800,7 @@ describe('The Result type', () => {
       .then(done);
     });
 
-    it('should return a Pending wrapping an Error if λ throws asynchronously', done => {
+    it('should return a Pending wrapping an Aborted if λ throws asynchronously', done => {
       const expected = 4;
 
       const result = Ok().map(constant(Promise.reject(expected)));

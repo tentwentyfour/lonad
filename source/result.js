@@ -56,10 +56,11 @@ Ok = function newOk(value) {
 Ok.prototype = Object.create(Result.prototype);
 
 Object.assign(Ok.prototype, {
-  mapError: unaryReturnThis,
-  recover:  unaryReturnThis,
+  abortOnErrorWith: unaryReturnThis,
+  mapError:         unaryReturnThis,
+  recover:          unaryReturnThis,
 
-  abortIfError() {
+  abortOnError() {
     return this;
   },
 
@@ -134,8 +135,12 @@ Object.assign(Error.prototype, {
     return (callbacks.Error || identity)(this.error);
   },
 
-  abortIfError() {
+  abortOnError() {
     return Aborted(this.error);
+  },
+
+  abortOnErrorWith(λ) {
+    return transformResult(() => λ(this.error), Aborted);
   },
 
   asynchronous() {
@@ -166,13 +171,14 @@ Aborted = function createAborted(error) {
 Aborted.prototype = Object.create(Result.prototype);
 
 Object.assign(Aborted.prototype, {
-  map:          unaryReturnThis,
-  flatMap:      unaryReturnThis,
-  filter:       unaryReturnThis,
-  mapError:     unaryReturnThis,
-  recover:      unaryReturnThis,
+  map:              unaryReturnThis,
+  flatMap:          unaryReturnThis,
+  filter:           unaryReturnThis,
+  mapError:         unaryReturnThis,
+  recover:          unaryReturnThis,
+  abortOnErrorWith: unaryReturnThis,
 
-  abortIfError() {
+  abortOnError() {
     return this;
   },
 
@@ -225,17 +231,18 @@ const callWrappedResultMethod = methodName => {
 };
 
 Object.assign(Pending.prototype, {
-  asynchronous: unaryReturnThis,
-  map:          callWrappedResultMethod('map'),
-  filter:       callWrappedResultMethod('filter'),
-  recover:      callWrappedResultMethod('recover'),
-  flatMap:      callWrappedResultMethod('flatMap'),
-  mapError:     callWrappedResultMethod('mapError'),
-  abortIfError: callWrappedResultMethod('abortIfError'),
-  match:        pipe(callWrappedResultMethod('match'), property('promise')),
-  merge:        pipe(callWrappedResultMethod('merge'), property('promise')),
-  toPromise:    pipe(callWrappedResultMethod('toPromise'), property('promise')),
-  toOptional:   pipe(callWrappedResultMethod('toOptional'), property('promise'))
+  asynchronous:     unaryReturnThis,
+  map:              callWrappedResultMethod('map'),
+  filter:           callWrappedResultMethod('filter'),
+  recover:          callWrappedResultMethod('recover'),
+  flatMap:          callWrappedResultMethod('flatMap'),
+  mapError:         callWrappedResultMethod('mapError'),
+  abortOnError:     callWrappedResultMethod('abortOnError'),
+  abortOnErrorWith: callWrappedResultMethod('abortOnErrorWith'),
+  match:            pipe(callWrappedResultMethod('match'), property('promise')),
+  merge:            pipe(callWrappedResultMethod('merge'), property('promise')),
+  toPromise:        pipe(callWrappedResultMethod('toPromise'), property('promise')),
+  toOptional:       pipe(callWrappedResultMethod('toOptional'), property('promise'))
 });
 
 const doTry = λ => transformResult(λ, value => {

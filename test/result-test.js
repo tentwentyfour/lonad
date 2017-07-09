@@ -604,6 +604,26 @@ describe('The Result type', () => {
       .then(done);
     });
 
+    describe('match(callbacks)', () => {
+      it('should return rejected promises by default for wrapped errors', done => {
+        const expected = 3;
+
+        Promise
+        .all(
+          [Error(expected), Aborted(expected)].map(instance => {
+            return Pending(Promise.resolve(instance))
+            .match({})
+            .then(increment, identity)
+            .then(value => {
+              expect(value).to.equal(expected);
+            })
+            .catch(identity);
+          })
+        )
+        .then(() => done());
+      });
+    });
+
     describe('asynchronous()', () => {
       it('should return an equivalent Pending instance', () => {
         const base = Pending(Promise.resolve(Ok(3)));

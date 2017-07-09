@@ -1,4 +1,4 @@
-const defineStaticFunctions = require('./define-static-functions');
+const defineStaticFunctions = require('helpbox/source/demethodify-prototype');
 const unaryReturnThis       = require('./unary-return-this');
 const identity              = require('lodash.identity');
 const property              = require('lodash.property');
@@ -268,7 +268,7 @@ const fromPromise = promise => {
   return Pending(promise.then(Ok, Error));
 };
 
-defineStaticFunctions(Result, { Ok, Error });
+defineStaticFunctions(Ok.prototype, Result);
 
 Object.assign(Result, {
   Ok,

@@ -27,10 +27,11 @@
     "mocha": "^3.4.2"
   },
   "dependencies": {
+    "helpbox": "^5.7.0",
+    "lodash.constant": "^3.0.0",
     "lodash.flow": "^3.5.0",
     "lodash.identity": "^3.0.0",
     "lodash.property": "^4.4.2",
-    "lodash.constant": "^3.0.0",
     "lodash.some": "^4.6.0"
   }
 }

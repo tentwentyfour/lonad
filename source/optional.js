@@ -1,7 +1,7 @@
 const some                  = require('lodash.some');
 const identity              = require('lodash.identity');
 const unaryReturnThis       = require('./unary-return-this');
-const defineStaticFunctions = require('./define-static-functions');
+const defineStaticFunctions = require('helpbox/source/demethodify-prototype');
 
 class Optional {}
 
@@ -103,7 +103,7 @@ const all = optionals => {
   return Some(optionals.map(Optional.get));
 };
 
-defineStaticFunctions(Optional, { Some, None });
+defineStaticFunctions(Some.prototype, Optional);
 
 Object.assign(Optional, { Some, None, fromNullable, fromJson, all });
 

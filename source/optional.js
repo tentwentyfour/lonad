@@ -83,9 +83,9 @@ const fromNullable = value => {
   return Some(value);
 };
 
-const fromJson = object => {
-  if (!object.isOptionalInstance) {
-    throw new Error('The deserialized value is not an Optional instance');
+const fromParsedJson = object => {
+  if (!object || !object.isOptionalInstance) {
+    return Optional.fromNullable(object);
   }
 
   if (object.valueAbsent) {
@@ -105,6 +105,6 @@ const all = optionals => {
 
 defineStaticFunctions(Some.prototype, Optional);
 
-Object.assign(Optional, { Some, None, fromNullable, fromJson, all });
+Object.assign(Optional, { Some, None, fromNullable, fromParsedJson, all });
 
 module.exports = Optional;

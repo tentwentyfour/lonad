@@ -32,11 +32,16 @@ describe('The Optional type', () => {
     ).to.not.equal(notExpected);
   });
 
-  describe('fromJson(optional)', () => {
+  describe('fromParsedJson(optional)', () => {
+    it('should use fromNullable() for non-Optionals', () => {
+      expect(Optional.fromParsedJson(3).valuePresent).to.equal(true);
+      expect(Optional.fromParsedJson(null).valueAbsent).to.equal(true);
+    });
+
     it('should be able to pick up Some instances contained in deserialized JSON strings', () => {
       const some = Some(3);
 
-      const deserializedSome = Optional.fromJson(JSON.parse(JSON.stringify(some)));
+      const deserializedSome = Optional.fromParsedJson(JSON.parse(JSON.stringify(some)));
 
       expect(deserializedSome instanceof Optional).to.equal(true);
       expect(deserializedSome instanceof Some).to.equal(true);
@@ -51,7 +56,7 @@ describe('The Optional type', () => {
     it('should be able to pick up None instances contained in deserialized JSON strings', () => {
       const none = None();
 
-      const deserializedNone = Optional.fromJson(JSON.parse(JSON.stringify(none)));
+      const deserializedNone = Optional.fromParsedJson(JSON.parse(JSON.stringify(none)));
 
       expect(deserializedNone instanceof Optional).to.equal(true);
       expect(deserializedNone instanceof None).to.equal(true);

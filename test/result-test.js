@@ -657,6 +657,7 @@ describe('The Result type', () => {
               if (JSON.stringify(expectedValue) !== JSON.stringify(transformedValue)) {
                 console.log(methodName, instance);
               }
+
               expect(JSON.stringify(expectedValue)).to.equal(JSON.stringify(transformedValue));
             });
           }));
@@ -752,8 +753,8 @@ describe('The Result type', () => {
     it('should transform non-lonads into Result using Optional.fromNullable', () => {
       const expected = 2;
 
-      expect(Result.try(constant(expected)).merge()).to.equal(expected);
-      expect(Result.try(constant(null)).mapError(constant(expected)).merge()).to.equal(expected);
+      expect(Result.expect(expected).merge()).to.equal(expected);
+      expect(Result.expect(null).mapError(constant(expected)).merge()).to.equal(expected);
     });
 
     it('should transforn Some into Ok', () => {
@@ -784,10 +785,10 @@ describe('The Result type', () => {
       });
     });
 
-    it('should return a Pending if λ is asynchronous', done => {
+    it('should return a Pending if the passed value is a promise', done => {
       const expected = 4;
 
-      const result = Result.try(async () => Some(expected));
+      const result = Result.expect(Promise.resolve(expected));
 
       expect(result.isAsynchronous).to.equal(true);
 
@@ -800,10 +801,10 @@ describe('The Result type', () => {
       .then(done);
     });
 
-    it('should return a Pending wrapping an Aborted if λ throws asynchronously', done => {
+    it('should return a Pending wrapping an Aborted if the passed promise is rejected', done => {
       const expected = 4;
 
-      const result = Ok().map(constant(Promise.reject(expected)));
+      const result = Result.expect(Promise.reject(expected));
 
       expect(result.isAsynchronous).to.equal(true);
 

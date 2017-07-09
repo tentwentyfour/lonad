@@ -260,12 +260,24 @@ const doTry = λ => transformResult(λ, value => {
   });
 });
 
-const expect = optionalOrResult => {
-  if (optionalOrResult.isResultInstance) {
-    return optionalOrResult;
+const expect = optionalOrResultOrPromise => {
+  if (!optionalOrResultOrPromise) {
+    return Error();
   }
 
-  return optionalOrResult.match({
+  if (isPromise(optionalOrResultOrPromise)) {
+    return Pending(optionalOrResultOrPromise.then(expect, Aborted));
+  }
+
+  if (optionalOrResultOrPromise.isResultInstance) {
+    return optionalOrResultOrPromise;
+  }
+
+  if (!optionalOrResultOrPromise.isOptionalInstance) {
+    optionalOrResultOrPromise = Optional.fromNullable(optionalOrResultOrPromise);
+  }
+
+  return optionalOrResultOrPromise.match({
     Some: Ok,
     None: Error
   });

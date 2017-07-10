@@ -5,7 +5,10 @@ const defineStaticFunctions = require('helpbox/source/demethodify-prototype');
 
 class Optional {}
 
-let None = function None() {
+let Some;
+let None;
+
+None = function makeNone() {
   return Object.assign(Object.create(None.prototype), {
     isOptionalInstance: true,
     valueAbsent:        true,
@@ -37,7 +40,7 @@ Object.assign(None.prototype, {
   }
 });
 
-const Some = function Some(value) {
+Some = function newSome(value) {
   return Object.assign(Object.create(Some.prototype), {
     value,
 

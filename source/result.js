@@ -1,8 +1,8 @@
 const defineStaticFunctions = require('helpbox/source/demethodify-prototype');
-const unaryReturnThis       = require('./unary-return-this');
 const identity              = require('lodash.identity');
 const property              = require('lodash.property');
 const constant              = require('lodash.constant');
+const returnThis            = require('./return-this');
 const pipe                  = require('lodash.flow');
 const Exception             = require('./exception');
 const Optional              = require('./optional');
@@ -56,13 +56,11 @@ Ok = function newOk(value) {
 Ok.prototype = Object.create(Result.prototype);
 
 Object.assign(Ok.prototype, {
-  abortOnErrorWith: unaryReturnThis,
-  mapError:         unaryReturnThis,
-  recover:          unaryReturnThis,
-
-  abortOnError() {
-    return this;
-  },
+  abortOnErrorWith: returnThis.unary,
+  mapError:         returnThis.unary,
+  recover:          returnThis.unary,
+  recoverWhen:      returnThis.binary,
+  abortOnError:     returnThis.nullary,
 
   merge() {
     return this.value;
@@ -115,9 +113,15 @@ Error = function createError(error) {
 Error.prototype = Object.create(Result.prototype);
 
 Object.assign(Error.prototype, {
-  map:     unaryReturnThis,
-  filter:  unaryReturnThis,
-  flatMap: unaryReturnThis,
+  map:     returnThis.unary,
+  filter:  returnThis.unary,
+  flatMap: returnThis.unary,
+
+  recoverWhen(predicate, λ) {
+    return Ok(this.error)
+    .map(λ)
+    .filter(predicate);
+  },
 
   merge() {
     return this.error;
@@ -171,16 +175,15 @@ Aborted = function createAborted(error) {
 Aborted.prototype = Object.create(Result.prototype);
 
 Object.assign(Aborted.prototype, {
-  map:              unaryReturnThis,
-  flatMap:          unaryReturnThis,
-  filter:           unaryReturnThis,
-  mapError:         unaryReturnThis,
-  recover:          unaryReturnThis,
-  abortOnErrorWith: unaryReturnThis,
-
-  abortOnError() {
-    return this;
-  },
+  toOptional:       None,
+  map:              returnThis.unary,
+  flatMap:          returnThis.unary,
+  filter:           returnThis.unary,
+  mapError:         returnThis.unary,
+  recover:          returnThis.unary,
+  abortOnErrorWith: returnThis.unary,
+  recoverWhen:      returnThis.binary,
+  abortOnError:     returnThis.nullary,
 
   merge() {
     return this.error;
@@ -196,10 +199,6 @@ Object.assign(Aborted.prototype, {
 
   toPromise() {
     return Promise.reject(this.error);
-  },
-
-  toOptional() {
-    return None();
   }
 });
 
@@ -231,7 +230,7 @@ const callWrappedResultMethod = methodName => {
 };
 
 Object.assign(Pending.prototype, {
-  asynchronous:     unaryReturnThis,
+  asynchronous:     returnThis.nullary,
   map:              callWrappedResultMethod('map'),
   filter:           callWrappedResultMethod('filter'),
   recover:          callWrappedResultMethod('recover'),

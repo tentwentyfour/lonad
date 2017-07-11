@@ -123,6 +123,18 @@ describe('The Result type', () => {
       });
     });
 
+    describe('recoverWhen(predicate, λ)', () => {
+      it('should return an equivalent Ok', () => {
+        const value = 3;
+
+        const ok = Ok(value);
+
+        const transformed = ok.recoverWhen(increment, increment);
+
+        expect(transformed.merge()).to.equal(value);
+      });
+    });
+
     describe('flatMap(λ)', () => {
       it('should pass the Ok value to an asynchronous λ and return its Result', done => {
         const instances = [Some(5), None(), Ok(1), Error(2), Aborted(3), Pending(Promise.resolve(Ok(4)))];
@@ -636,25 +648,24 @@ describe('The Result type', () => {
       const instances = [Ok(31), Error(32), Aborted(33)];
 
       const testData = [
-        ['merge'],
-        ['toPromise'],
-        ['toOptional'],
-        ['abortOnError'],
-        ['abortOnErrorWith',                                             increment],
-        ['map',                                                          increment],
-        ['mapError',                                                     increment],
-        ['recover',                                                    constant(1)],
-        ['filter',                                                  constant(true)],
-        ['flatMap',                                                constant(Ok(1))],
-        ['match',    { Ok: constant(1), Error: constant(2), Aborted: constant(3) }]
+        ['merge',                                                                 []],
+        ['toPromise',                                                             []],
+        ['toOptional',                                                            []],
+        ['abortOnError',                                                          []],
+        ['abortOnErrorWith',                                             [increment]],
+        ['map',                                                          [increment]],
+        ['mapError',                                                     [increment]],
+        ['recover',                                                    [constant(1)]],
+        ['filter',                                                  [constant(true)]],
+        ['flatMap',                                                [constant(Ok(1))]],
+        ['match',    [{ Ok: constant(1), Error: constant(2), Aborted: constant(3) }]]
       ];
 
       Promise
       .all(
-        testData.map(([methodName, parameter]) => {
+        testData.map(([methodName, parameters]) => {
           return Promise.all(instances.map(async instance => {
-            const expected   = instance[methodName](parameter);
-            const parameters = parameter ? [parameter] : [];
+            const expected = instance[methodName](...parameters);
 
             const transformed = instance.asynchronous()[methodName](...parameters);
 
@@ -708,6 +719,7 @@ describe('The Result type', () => {
       .abortOnErrorWith(increment)
       .flatMap(increment)
       .recover(increment)
+      .recoverWhen(increment, increment)
       .mapError(increment);
 
       expect(aborted.isError).to.equal(true);

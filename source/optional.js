@@ -1,6 +1,6 @@
 const some                  = require('lodash.some');
 const identity              = require('lodash.identity');
-const unaryReturnThis       = require('./unary-return-this');
+const unaryReturnThis       = require('./return-this').unary;
 const defineStaticFunctions = require('helpbox/source/demethodify-prototype');
 
 class Optional {}

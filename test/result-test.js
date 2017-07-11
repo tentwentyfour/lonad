@@ -5,6 +5,7 @@ const identity       = require('lodash.identity');
 const constant       = require('lodash.constant');
 const Result         = require('../source/result');
 const { Some, None } = require('../source/optional');
+const Exception      = require('../source/exception');
 
 const { Ok, Error, Aborted, Pending } = Result;
 
@@ -60,30 +61,26 @@ describe('The Result type', () => {
 
         result
         .toPromise()
-        .catch(increment)
+        .catch(() => Promise.reject(new Exception('The promise is not rejected')), increment)
         .then(value => {
           expect(value).to.equal(increment(expected));
         })
-        .catch(identity)
-        .then(done);
+        .then(done, done);
       });
 
       it('should return a Pending wrapping an Aborted if λ throws asynchronously', done => {
-        const expected = 4;
-
-        const result = Ok().map(constant(Promise.reject(expected)));
+        const result = Ok().map(constant(Promise.reject()));
 
         expect(result.isAsynchronous).to.equal(true);
 
         result
-        .toPromise()
-        .then(increment)
-        .catch(identity)
-        .then(value => {
-          expect(value).to.equal(expected);
+        .promise
+        .then(wrappedResult => {
+          expect(wrappedResult.isError).to.equal(true);
+          expect(wrappedResult.isAborted).to.equal(true);
+          expect(wrappedResult.isResultInstance).to.equal(true);
         })
-        .catch(identity)
-        .then(done);
+        .then(done, done);
       });
     });
 
@@ -136,21 +133,59 @@ describe('The Result type', () => {
     });
 
     describe('flatMap(λ)', () => {
-      it('should pass the Ok value to an asynchronous λ and return its Result', done => {
-        const instances = [Some(5), None(), Ok(1), Error(2), Aborted(3), Pending(Promise.resolve(Ok(4)))];
+      it('should pass the Ok value to an asynchronous λ and pass the output through Result.expect() except if λ throws or returns a rejected promise', done => {
+        const instances = [
+          null,
+          3,
+          Promise.resolve(1),
+          Some(5),
+          None(),
+          Ok(9),
+          Error(6),
+          Aborted(3),
+          Pending(Promise.resolve(Ok(4)))
+        ];
 
         Promise
         .all(instances.map(instance => {
           return Ok()
-          .flatMap(() => instance)
+          .flatMap(constant(instance))
           .asynchronous()
-          .merge()
+          .promise
           .then(outputInstance => {
-            expect(instance.merge()).to.equal(outputInstance);
+            return Result
+            .expect(instance)
+            .asynchronous()
+            .promise
+            .then(throughExpect => {
+              expect(JSON.stringify(outputInstance)).to.equal(JSON.stringify(throughExpect));
+            });
           });
         }))
-        .catch(identity)
-        .then(() => done());
+        .then(constant(undefined))
+        .then(done, done);
+      });
+
+      it('should be a Pending wrapping an Aborted if λ throws or returns a rejected promise', done => {
+        const cases = [
+          () => { throw new Exception('test'); },
+          () => Promise.reject()
+        ];
+
+        Promise
+        .all(cases.map(λ => {
+          return Ok()
+          .flatMap(λ)
+          .asynchronous()
+          .promise
+          .then(outputInstance => {
+            expect(outputInstance.isResultInstance).to.equal(true);
+            expect(outputInstance.isAborted).to.equal(true);
+            expect(outputInstance.isError).to.equal(true);
+          }, console.log.bind(console));
+        }))
+        .then(constant(undefined))
+        .then(done, done);
       });
     });
 
@@ -188,7 +223,7 @@ describe('The Result type', () => {
         .then(value => {
           expect(value).to.equal(expected);
         })
-        .then(done);
+        .then(done, done);
       });
 
       it('should return a Pending wrapping an Aborted if λ throws asynchronously', done => {
@@ -205,8 +240,7 @@ describe('The Result type', () => {
         .then(value => {
           expect(value).to.equal(expected);
         })
-        .catch(identity)
-        .then(done);
+        .then(done, done);
       });
     });
 
@@ -262,7 +296,7 @@ describe('The Result type', () => {
     });
 
     describe('toPromise()', () => {
-      it('should transform the Ok into a resolve promise', done => {
+      it('should transform the Ok into a resolved promise', done => {
         const expected = 3;
 
         const promise = Ok(expected).toPromise();
@@ -270,28 +304,29 @@ describe('The Result type', () => {
         expect(promise.then !== undefined).to.equal(true);
 
         promise
-        .then(value => {
-          expect(value).to.equal(expected);
-        }, identity)
-        .then(done);
+        .then(
+          value => {
+            expect(value).to.equal(expected);
+          },
+          constant(Promise.reject(new Exception('The promise is rejected')))
+        )
+        .then(done, done);
       });
     });
 
     describe('asynchronous()', () => {
       it('should transform the Ok into a pending resolved with the Ok', done => {
-        const expected = 3;
-
-        const pending = Ok(expected).asynchronous();
+        const pending = Ok().asynchronous();
 
         expect(pending.isAsynchronous).to.equal(true);
 
         pending
-        .toPromise()
-        .then(identity, constant(increment(expected)))
+        .promise
+        .catch(Error)
         .then(value => {
-          expect(value).to.equal(expected);
+          expect(value.isOk).to.equal(true);
         })
-        .then(done);
+        .then(done, done);
       });
     });
   });
@@ -339,7 +374,7 @@ describe('The Result type', () => {
         expect(result.merge()).to.equal(expected);
       });
 
-      it('should return a Pending wrapping an Aborted if λ is asynchronous', done => {
+      it('should return a Pending wrapping an Error if λ is asynchronous', done => {
         const expected = 4;
 
         const result = Error(expected).mapError(asyncIncrement);
@@ -347,31 +382,26 @@ describe('The Result type', () => {
         expect(result.isAsynchronous).to.equal(true);
 
         result
-        .toPromise()
-        .then(increment)
+        .promise
         .then(value => {
-          expect(value).to.equal(expected);
+          expect(value.isError).to.equal(true);
+          expect(value.isAborted).to.equal(false);
         })
-        .catch(identity)
-        .then(() => done());
+        .then(done, done);
       });
 
       it('should return a Pending wrapping an Aborted if λ throws asynchronously', done => {
-        const expected = 4;
-
-        const result = Ok().map(constant(Promise.reject(expected)));
+        const result = Ok().map(constant(Promise.reject()));
 
         expect(result.isAsynchronous).to.equal(true);
 
         result
-        .toPromise()
-        .then(increment)
-        .catch(identity)
+        .promise
         .then(value => {
-          expect(value).to.equal(expected);
+          expect(value.isError).to.equal(true);
+          expect(value.isAborted).to.equal(true);
         })
-        .catch(identity)
-        .then(() => done());
+        .then(done, done);
       });
     });
 
@@ -407,17 +437,13 @@ describe('The Result type', () => {
 
         const result = Error(expected).abortOnErrorWith(asyncIncrement);
 
-        expect(result.isAsynchronous).to.equal(true);
-
         result
-        .mapError(increment)
-        .toPromise()
-        .then(increment)
+        .promise
         .then(value => {
-          expect(value).to.equal(expected);
+          expect(value.isError).to.equal(true);
+          expect(value.isAborted).to.equal(true);
         })
-        .catch(identity)
-        .then(() => done());
+        .then(done, done);
       });
 
       it('should return a Pending wrapping an Abored if λ throws asynchronously', done => {
@@ -776,8 +802,8 @@ describe('The Result type', () => {
     });
   });
 
-  describe('expect(optional)', () => {
-    it('should transform non-lonads into Result using Optional.fromNullable', () => {
+  describe('expect(optionalOrResultOrPromise)', () => {
+    it('should transform non-lonads and non-promises into Result using Optional.fromNullable', () => {
       const expected = 2;
 
       expect(Result.expect(expected).merge()).to.equal(expected);
@@ -804,7 +830,7 @@ describe('The Result type', () => {
       expect(error.isError).to.equal(true);
     });
 
-    it('should return passed results', () => {
+    it('should return passed Result', () => {
       const instances = [Ok(3), Error(3), Aborted(3), Pending(Promise.resolve(Ok(3)))];
 
       instances.forEach(instance => {
@@ -836,13 +862,13 @@ describe('The Result type', () => {
       expect(result.isAsynchronous).to.equal(true);
 
       result
-      .merge()
-      .catch(identity)
-      .then(value => {
-        expect(value).to.equal(expected);
+      .promise
+      .then(wrappedResult => {
+        expect(wrappedResult.isResultInstance).to.equal(true);
+        expect(wrappedResult.isAborted).to.equal(false);
+        expect(wrappedResult.isError).to.equal(true);
       })
-      .catch(identity)
-      .then(done);
+      .then(done, done);
     });
   });
 
@@ -871,26 +897,23 @@ describe('The Result type', () => {
       Result
       .fromPromise(Promise.resolve())
       .toPromise()
-      .then(constant(expected), constant(increment(expected)))
+      .then(constant(expected), () => new Exception('The promise is rejected'))
       .then(value => {
         expect(value).to.equal(expected);
       })
-      .catch(identity)
-      .then(done);
+      .then(done, done);
     });
 
-    it('should convert rejected Promise into Pending wrapping Oks', done => {
-      const expected = 3;
-
+    it('should convert rejected Promise into Pending wrapping Errors', done => {
       Result
       .fromPromise(Promise.reject())
-      .toPromise()
-      .then(constant(expected), constant(increment(expected)))
-      .then(value => {
-        expect(value).to.equal(increment(expected));
+      .promise
+      .then(result => {
+        expect(result.isResultInstance).to.equal(true);
+        expect(result.isAborted).to.equal(false);
+        expect(result.isError).to.equal(true);
       })
-      .catch(identity)
-      .then(done);
+      .then(done, done);
     });
   });
 });

@@ -272,13 +272,17 @@ const doTry = λ => transformResult(λ, value => {
   });
 });
 
+const fromPromise = promise => {
+  return Pending(promise.then(Ok, Error));
+};
+
 const expect = optionalOrResultOrPromise => {
   if (!optionalOrResultOrPromise) {
     return Error();
   }
 
   if (isPromise(optionalOrResultOrPromise)) {
-    return Pending(optionalOrResultOrPromise.then(expect, Aborted));
+    return fromPromise(optionalOrResultOrPromise);
   }
 
   if (optionalOrResultOrPromise.isResultInstance) {
@@ -293,10 +297,6 @@ const expect = optionalOrResultOrPromise => {
     Some: Ok,
     None: Error
   });
-};
-
-const fromPromise = promise => {
-  return Pending(promise.then(Ok, Error));
 };
 
 defineStaticFunctions(Ok.prototype, Result);

@@ -96,7 +96,7 @@ describe('The Result type', () => {
       });
     });
 
-    describe('abortOnErrorWith(λ)', () => {
+    describe('abortOnErrorWith(λOrValue)', () => {
       it('should return an equivalent Ok', () => {
         const value = 3;
 
@@ -308,7 +308,7 @@ describe('The Result type', () => {
           value => {
             expect(value).to.equal(expected);
           },
-          constant(Promise.reject(new Exception('The promise is rejected')))
+          () => Promise.reject(new Exception('The promise is rejected'))
         )
         .then(done, done);
       });
@@ -405,8 +405,8 @@ describe('The Result type', () => {
       });
     });
 
-    describe('abortOnErrorWith(λ)', () => {
-      it('should return an Aborted instance holding the value of λ for the value of the Error instance', () => {
+    describe('abortOnErrorWith(λOrValue)', () => {
+      it('should return an Aborted instance holding the value of λ for the value of the Error instance if λOrValue is a function', () => {
         const value = 3;
 
         const error = Error(value);
@@ -419,7 +419,7 @@ describe('The Result type', () => {
         expect(transformed.merge()).to.equal(increment(value));
       });
 
-      it('should catch exceptions thrown in the mapError callback and return an Aborted', () => {
+      it('should catch exceptions λOrValue', () => {
         const expected = 4;
 
         const result = Error().abortOnErrorWith(() => {
@@ -432,18 +432,15 @@ describe('The Result type', () => {
         expect(result.merge()).to.equal(expected);
       });
 
-      it('should return a Pending wrapping an Aborted if λ is asynchronous', done => {
+      it('should wrap non-functions into Aborted', () => {
         const expected = 4;
 
-        const result = Error(expected).abortOnErrorWith(asyncIncrement);
+        const aborted = Error().abortOnErrorWith(expected);
 
-        result
-        .promise
-        .then(value => {
-          expect(value.isError).to.equal(true);
-          expect(value.isAborted).to.equal(true);
-        })
-        .then(done, done);
+        expect(aborted.isResultInstance).to.equal(true);
+        expect(aborted.merge()).to.equal(expected);
+        expect(aborted.isAborted).to.equal(true);
+        expect(aborted.isError).to.equal(true);
       });
 
       it('should return a Pending wrapping an Abored if λ throws asynchronously', done => {

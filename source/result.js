@@ -143,8 +143,14 @@ Object.assign(Error.prototype, {
     return Aborted(this.error);
   },
 
-  abortOnErrorWith(λ) {
-    return transformResult(() => λ(this.error), Aborted);
+  abortOnErrorWith(λOrValue) {
+    return transformResult(() => {
+      if (typeof λOrValue === 'function') {
+        return λOrValue(this.error);
+      }
+
+      return λOrValue;
+    }, Aborted);
   },
 
   asynchronous() {

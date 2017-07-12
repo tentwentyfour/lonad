@@ -234,11 +234,13 @@ describe('The Result type', () => {
         expect(result.isAsynchronous).to.equal(true);
 
         result
-        .toPromise()
-        .then(increment)
-        .catch(identity)
-        .then(value => {
-          expect(value).to.equal(expected);
+        .promise
+        .then(wrappedResult => {
+          expect(wrappedResult.isResultInstance).to.equal(true);
+          expect(wrappedResult.isAborted).to.equal(true);
+          expect(wrappedResult.error).to.equal(expected);
+          expect(wrappedResult.isError).to.equal(true);
+          expect(wrappedResult.isError).to.equal(true);
         })
         .then(done, done);
       });
@@ -513,14 +515,15 @@ describe('The Result type', () => {
         expect(result.isAsynchronous).to.equal(true);
 
         result
-        .toPromise()
-        .then(increment)
-        .catch(identity)
-        .then(value => {
-          expect(value).to.equal(expected);
+        .promise
+        .then(wrappedResult => {
+          expect(wrappedResult.isResultInstance).to.equal(true);
+          expect(wrappedResult.isAborted).to.equal(true);
+          expect(wrappedResult.error).to.equal(expected);
+          expect(wrappedResult.isError).to.equal(true);
+          expect(wrappedResult.isError).to.equal(true);
         })
-        .catch(identity)
-        .then(done);
+        .then(done, done);
       });
     });
 
@@ -668,12 +671,12 @@ describe('The Result type', () => {
     });
 
     describe('flatMap(λ)', () => {
-      it('should return a correct Pending if λ is asynchronous', done => {
+      it('should return a correct Pending if λ is asynchronous and it succeeds', done => {
         const base = 3;
 
         const expected = increment(base);
 
-        const pending = Pending(Promise.resolve(Ok(base))).flatMap(Promise.resolve.bind(Promise));
+        const pending = Pending(Promise.resolve(Ok())).flatMap(async () => Ok(base));
 
         expect(pending.isResultInstance).to.equal(true);
         expect(pending.isAsynchronous).to.equal(true);
@@ -681,6 +684,23 @@ describe('The Result type', () => {
         pending
         .map(increment)
         .toPromise()
+        .then(value => {
+          expect(value).to.equal(expected);
+        })
+        .then(done, done);
+      });
+
+      it('should return a Pending wrapping an Aborted if λ is asynchronous and is rejected', done => {
+        const expected = 3;
+
+        const pending = Pending(Promise.resolve(Ok())).flatMap(constant(Promise.reject(expected)));
+
+        expect(pending.isResultInstance).to.equal(true);
+        expect(pending.isAsynchronous).to.equal(true);
+
+        pending
+        .map(increment)
+        .merge()
         .then(value => {
           expect(value).to.equal(expected);
         })

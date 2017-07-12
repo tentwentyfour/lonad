@@ -230,7 +230,10 @@ Pending.prototype = Object.create(Pending.prototype);
 const callWrappedResultMethod = methodName => {
   return function doCallWrappedResultMethod(...parameters) {
     return Pending(
-      findNextNonPending(this.promise.then(Result[methodName](...parameters), Error))
+      this
+      .promise
+      .then(Result[methodName](...parameters))
+      .catch(Aborted)
     );
   };
 };
@@ -245,8 +248,11 @@ Object.assign(Pending.prototype, {
   abortOnError:     callWrappedResultMethod('abortOnError'),
   abortOnErrorWith: callWrappedResultMethod('abortOnErrorWith'),
   merge:            pipe(callWrappedResultMethod('merge'), property('promise')),
-  toPromise:        pipe(callWrappedResultMethod('toPromise'), property('promise')),
   toOptional:       pipe(callWrappedResultMethod('toOptional'), property('promise')),
+
+  toPromise() {
+    return this.promise.then(Result.toPromise);
+  },
 
   match(callbacks) {
     return this.promise.then(result => {

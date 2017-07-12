@@ -230,7 +230,7 @@ Pending.prototype = Object.create(Pending.prototype);
 const callWrappedResultMethod = methodName => {
   return function doCallWrappedResultMethod(...parameters) {
     return Pending(
-      this.promise.then(Result[methodName](...parameters), Error)
+      findNextNonPending(this.promise.then(Result[methodName](...parameters), Error))
     );
   };
 };

@@ -667,6 +667,27 @@ describe('The Result type', () => {
       });
     });
 
+    describe('flatMap(λ)', () => {
+      it('should return a correct Pending if λ is asynchronous', done => {
+        const base = 3;
+
+        const expected = increment(base);
+
+        const pending = Pending(Promise.resolve(Ok(base))).flatMap(Promise.resolve.bind(Promise));
+
+        expect(pending.isResultInstance).to.equal(true);
+        expect(pending.isAsynchronous).to.equal(true);
+
+        pending
+        .map(increment)
+        .toPromise()
+        .then(value => {
+          expect(value).to.equal(expected);
+        })
+        .then(done, done);
+      });
+    });
+
     it('should call transformation methods on children and return a new instance', done => {
       const instances = [Ok(31), Error(32), Aborted(33)];
 

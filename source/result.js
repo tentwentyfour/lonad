@@ -1,4 +1,5 @@
 const defineStaticFunctions = require('helpbox/source/demethodify-prototype');
+const throwArgument         = require('./throw-argument');
 const identity              = require('lodash.identity');
 const property              = require('lodash.property');
 const constant              = require('lodash.constant');
@@ -136,7 +137,7 @@ Object.assign(Error.prototype, {
   },
 
   match(callbacks) {
-    return (callbacks.Error || identity)(this.error);
+    return (callbacks.Error || throwArgument)(this.error);
   },
 
   abortOnError() {
@@ -196,7 +197,7 @@ Object.assign(Aborted.prototype, {
   },
 
   match(callbacks) {
-    return (callbacks.Aborted || identity)(this.error);
+    return (callbacks.Aborted || throwArgument)(this.error);
   },
 
   asynchronous() {
@@ -247,25 +248,12 @@ Object.assign(Pending.prototype, {
   mapError:         callWrappedResultMethod('mapError'),
   abortOnError:     callWrappedResultMethod('abortOnError'),
   abortOnErrorWith: callWrappedResultMethod('abortOnErrorWith'),
+  match:            pipe(callWrappedResultMethod('match'), property('promise')),
   merge:            pipe(callWrappedResultMethod('merge'), property('promise')),
   toOptional:       pipe(callWrappedResultMethod('toOptional'), property('promise')),
 
   toPromise() {
     return this.promise.then(Result.toPromise);
-  },
-
-  match(callbacks) {
-    return this.promise.then(result => {
-      if (result.isError) {
-        const hasCallback = result.isAborted ? callbacks.Aborted : callbacks.Error;
-
-        if (!hasCallback) {
-          return Promise.reject(result.match(callbacks));
-        }
-      }
-
-      return result.match(callbacks);
-    });
   }
 });
 

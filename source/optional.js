@@ -1,5 +1,6 @@
 const some                  = require('lodash.some');
 const identity              = require('lodash.identity');
+const throwArgument         = require('./throw-argument');
 const unaryReturnThis       = require('./return-this').unary;
 const defineStaticFunctions = require('helpbox/source/demethodify-prototype');
 
@@ -36,7 +37,7 @@ Object.assign(None.prototype, {
   },
 
   match(callbacks) {
-    return (callbacks.None || identity)();
+    return (callbacks.None || throwArgument)();
   }
 });
 

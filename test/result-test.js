@@ -567,10 +567,16 @@ describe('The Result type', () => {
         expect(Error().match({ Error: constant(expected) })).to.equal(expected);
       });
 
-      it('should just return the wrapped error when the callbacks.Error callback does not exist', () => {
+      it('should just throw the wrapped error when the callbacks.Error callback does not exist', () => {
         const value = 3;
 
-        expect(Error(value).match({})).to.equal(value);
+        try {
+          Error(value).match({});
+
+          expect(false).to.equal(true);
+        } catch (error) {
+          expect(error).to.equal(value);
+        }
       });
     });
 
@@ -803,10 +809,16 @@ describe('The Result type', () => {
         ).to.equal(expected);
       });
 
-      it('should just return the wrapped error when callbacks.Aborted does not exist', () => {
+      it('should just throw the wrapped error when the callbacks.Aborted callback does not exist', () => {
         const value = 3;
 
-        expect(Aborted(value).match({})).to.equal(value);
+        try {
+          Aborted(value).match({});
+
+          expect(false).to.equal(true);
+        } catch (error) {
+          expect(error).to.equal(value);
+        }
       });
     });
 

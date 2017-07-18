@@ -249,8 +249,14 @@ describe('The Optional type', () => {
         expect(None().match({ None: constant(expected) })).to.equal(expected);
       });
 
-      it('should just return undefined when the callback.None callback does not exist', () => {
-        expect(None().match({})).to.equal(undefined);
+      it('should just throw undefined when the callback.None callback does not exist', () => {
+        try {
+          None().match({});
+
+          expect(false).to.equal(true);
+        } catch (error) {
+          expect(error).to.equal(undefined);
+        }
       });
     });
   });

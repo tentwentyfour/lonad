@@ -299,10 +299,19 @@ const expect = optionalOrResultOrPromise => {
   });
 };
 
+const when = truthy => {
+  if (truthy) {
+    return Ok();
+  }
+
+  return Error();
+};
+
 defineStaticFunctions(Ok.prototype, Result);
 
 Object.assign(Result, {
   Ok,
+  when,
   Error,
   expect,
   Pending,

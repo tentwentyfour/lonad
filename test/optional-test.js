@@ -32,6 +32,20 @@ describe('The Optional type', () => {
     ).to.not.equal(notExpected);
   });
 
+  describe('when(truthy)', () => {
+    it('should convert truthies to Some instances', () => {
+      [1, 'a', 3, {}, []].forEach(truthy => {
+        expect(Optional.when(truthy).valuePresent).to.equal(true);
+      });
+    });
+
+    it('should convert falsies to Some instances', () => {
+      ['', NaN, 0, null, undefined].forEach(falsy => {
+        expect(Optional.when(falsy).valuePresent).to.equal(false);
+      });
+    });
+  });
+
   describe('fromParsedJson(optional)', () => {
     it('should use fromNullable() for non-Optionals', () => {
       expect(Optional.fromParsedJson(3).valuePresent).to.equal(true);

@@ -113,8 +113,16 @@ const all = optionals => {
   return Some(optionals.map(Optional.get));
 };
 
+const when = truthy => {
+  if (truthy) {
+    return Some();
+  }
+
+  return None();
+};
+
 defineStaticFunctions(Some.prototype, Optional);
 
-Object.assign(Optional, { Some, None, fromNullable, fromParsedJson, all });
+Object.assign(Optional, { Some, None, fromNullable, fromParsedJson, all, when });
 
 module.exports = Optional;

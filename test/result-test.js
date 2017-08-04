@@ -852,6 +852,21 @@ describe('The Result type', () => {
     });
   });
 
+  describe('when(truthy)', () => {
+    it('should convert truthies to Ok instances', () => {
+      [1, 'a', 3, {}, []].forEach(truthy => {
+        expect(Result.when(truthy).isOk).to.equal(true);
+      });
+    });
+
+    it('should convert falsies to Some instances', () => {
+      ['', NaN, 0, null, undefined].forEach(falsy => {
+        expect(Result.when(falsy).isOk).to.equal(false);
+        expect(Result.when(falsy).isAborted).to.equal(false);
+      });
+    });
+  });
+
   describe('expect(optionalOrResultOrPromise)', () => {
     it('should transform non-lonads and non-promises into Result using Optional.fromNullable', () => {
       const expected = 2;

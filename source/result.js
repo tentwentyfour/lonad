@@ -282,7 +282,10 @@ const expect = optionalOrResultOrPromise => {
   }
 
   if (isPromise(optionalOrResultOrPromise)) {
-    return fromPromise(optionalOrResultOrPromise);
+    return Pending(optionalOrResultOrPromise.then(
+      Result.expect,
+      Result.Aborted
+    ));
   }
 
   if (optionalOrResultOrPromise.isResultInstance) {

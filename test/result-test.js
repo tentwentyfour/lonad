@@ -930,7 +930,7 @@ describe('The Result type', () => {
       .promise
       .then(wrappedResult => {
         expect(wrappedResult.isResultInstance).to.equal(true);
-        expect(wrappedResult.isAborted).to.equal(false);
+        expect(wrappedResult.isAborted).to.equal(true);
         expect(wrappedResult.isError).to.equal(true);
       })
       .then(done, done);

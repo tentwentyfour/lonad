@@ -106,7 +106,7 @@ describe('The Optional type', () => {
     });
 
     describe('recover(λ)', () => {
-      it('should return an equivalent Ok', () => {
+      it('should return an equivalent Some', () => {
         const some = Some();
 
         expect(some.recover(increment)).to.equal(some);

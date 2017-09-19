@@ -109,7 +109,15 @@ describe('The Optional type', () => {
       it('should return an equivalent Some', () => {
         const some = Some();
 
-        expect(some.recover(increment)).to.equal(some);
+        expect(some.or(increment)).to.equal(some);
+      });
+    });
+
+    describe('or(λOrOptional)', () => {
+      it('should return an equivalent Some', () => {
+        const some = Some();
+
+        expect(some.or(increment)).to.equal(some);
       });
     });
 
@@ -204,6 +212,20 @@ describe('The Optional type', () => {
       expect(none.isOptionalInstance).to.equal(true);
       expect(none.valuePresent).to.equal(false);
       expect(none.valueAbsent).to.equal(true);
+    });
+
+    describe('or(λOrOptional)', () => {
+      it('should return the value of λOrOptional if it is a function', () => {
+        const none = None();
+
+        expect(none.or(() => Optional.Some(4)).value).to.equal(4);
+      });
+
+      it('should return the value of λOrOptional if it is an Optional instance', () => {
+        const none = None();
+
+        expect(none.or(Optional.Some(3)).value).to.equal(3);
+      });
     });
 
     describe('recover(λ)', () => {

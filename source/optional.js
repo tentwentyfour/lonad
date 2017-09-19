@@ -24,6 +24,14 @@ Object.assign(None.prototype, {
   filter:  unaryReturnThis,
   flatMap: unaryReturnThis,
 
+  or(λOrOptional) {
+    if (typeof λOrOptional === 'function') {
+      return λOrOptional();
+    }
+
+    return λOrOptional;
+  },
+
   recover(λ) {
     return Some(λ());
   },
@@ -54,6 +62,7 @@ Some = function newSome(value) {
 Some.prototype = Object.create(Optional.prototype);
 
 Object.assign(Some.prototype, {
+  or:      unaryReturnThis,
   recover: unaryReturnThis,
 
   get() {

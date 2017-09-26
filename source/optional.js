@@ -130,8 +130,18 @@ const when = truthy => {
   return None();
 };
 
+const first = optionals => {
+  const firstIndex = optionals.findIndex(optional => optional.valuePresent);
+
+  if (firstIndex === -1) {
+    return Optional.None();
+  }
+
+  return optionals[firstIndex];
+};
+
 defineStaticFunctions(Some.prototype, Optional);
 
-Object.assign(Optional, { Some, None, fromNullable, fromParsedJson, all, when });
+Object.assign(Optional, { Some, None, fromNullable, fromParsedJson, all, when, first });
 
 module.exports = Optional;

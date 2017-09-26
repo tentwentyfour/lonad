@@ -46,6 +46,18 @@ describe('The Optional type', () => {
     });
   });
 
+  describe('when(truthy)', () => {
+    it('should return the first Some in a list of Optional', () => {
+      const target = Optional.Some(3);
+
+      expect(Optional.first([Optional.None(), target])).to.equal(target);
+    });
+
+    it('should return a None when all passed optionals are None instances', () => {
+      expect(Optional.first([Optional.None(), Optional.None]).valueAbsent).to.equal(true);
+    });
+  });
+
   describe('fromParsedJson(optional)', () => {
     it('should use fromNullable() for non-Optionals', () => {
       expect(Optional.fromParsedJson(3).valuePresent).to.equal(true);

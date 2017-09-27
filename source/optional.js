@@ -8,6 +8,7 @@ class Optional {}
 
 let Some;
 let None;
+let fromNullable;
 
 None = function makeNone() {
   return Object.assign(Object.create(None.prototype), {
@@ -20,9 +21,11 @@ None = function makeNone() {
 None.prototype = Object.create(Optional.prototype);
 
 Object.assign(None.prototype, {
-  map:     unaryReturnThis,
-  filter:  unaryReturnThis,
-  flatMap: unaryReturnThis,
+  getOptionalProperty: unaryReturnThis,
+  getNullableProperty: unaryReturnThis,
+  map:                 unaryReturnThis,
+  filter:              unaryReturnThis,
+  flatMap:             unaryReturnThis,
 
   or(λOrOptional) {
     if (typeof λOrOptional === 'function') {
@@ -65,6 +68,14 @@ Object.assign(Some.prototype, {
   or:      unaryReturnThis,
   recover: unaryReturnThis,
 
+  getOptionalProperty(propertyName) {
+    return this.flatMap(() => this.value[propertyName]);
+  },
+
+  getNullableProperty(propertyName) {
+    return this.flatMap(() => fromNullable(this.value[propertyName]));
+  },
+
   get() {
     return this.value;
   },
@@ -94,7 +105,7 @@ Object.assign(Some.prototype, {
   }
 });
 
-const fromNullable = value => {
+fromNullable = value => {
   if (value === null || value === undefined) {
     return None();
   }

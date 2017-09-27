@@ -46,7 +46,7 @@ describe('The Optional type', () => {
     });
   });
 
-  describe('when(truthy)', () => {
+  describe('first(truthy)', () => {
     it('should return the first Some in a list of Optional', () => {
       const target = Optional.Some(3);
 
@@ -122,6 +122,34 @@ describe('The Optional type', () => {
         const some = Some();
 
         expect(some.or(increment)).to.equal(some);
+      });
+    });
+
+    describe('getNullableProperty(propertyName)', () => {
+      it('should return a Some with the right value if the wrapped value has the non-null `propertyName` property', () => {
+        const some = Some({ a: 2 });
+
+        expect(some.getNullableProperty('a').get()).to.equal(some.value.a);
+      });
+
+      it('should return a None if the wrapped value does not have the non-null `propertyName` property', () => {
+        const some = Some({});
+
+        expect(some.getNullableProperty('a').valueAbsent).to.equal(true);
+      });
+    });
+
+    describe('getOptionalProperty(propertyName)', () => {
+      it('should return a Some with the right value if the wrapped value has a Some named `propertyName`', () => {
+        const some = Some({ a: Some(2) });
+
+        expect(some.getOptionalProperty('a').get()).to.equal(some.value.a.value);
+      });
+
+      it('should return a None if the wrapped value does not have a Some named `propertyName`', () => {
+        const some = Some({});
+
+        expect(some.getNullableProperty('a').valueAbsent).to.equal(true);
       });
     });
 
@@ -224,6 +252,18 @@ describe('The Optional type', () => {
       expect(none.isOptionalInstance).to.equal(true);
       expect(none.valuePresent).to.equal(false);
       expect(none.valueAbsent).to.equal(true);
+    });
+
+    describe('getNullableProperty(propertyName)', () => {
+      it('should return a None()', () => {
+        expect(None().getNullableProperty('a').valueAbsent).to.equal(true);
+      });
+    });
+
+    describe('getOptionalProperty(propertyName)', () => {
+      it('should return a None()', () => {
+        expect(None().getOptionalProperty('a').valueAbsent).to.equal(true);
+      });
     });
 
     describe('or(λOrOptional)', () => {

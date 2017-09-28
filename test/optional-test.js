@@ -125,31 +125,39 @@ describe('The Optional type', () => {
       });
     });
 
-    describe('getNullableProperty(propertyName)', () => {
+    describe('property(propertyName)', () => {
+      it('should return the requested property of the wrapped value', () => {
+        const some = Some({ a: 2 });
+
+        expect(some.property('a').get()).to.equal(some.value.a);
+      });
+    });
+
+    describe('nullableProperty(propertyName)', () => {
       it('should return a Some with the right value if the wrapped value has the non-null `propertyName` property', () => {
         const some = Some({ a: 2 });
 
-        expect(some.getNullableProperty('a').get()).to.equal(some.value.a);
+        expect(some.nullableProperty('a').get()).to.equal(some.value.a);
       });
 
       it('should return a None if the wrapped value does not have the non-null `propertyName` property', () => {
         const some = Some({});
 
-        expect(some.getNullableProperty('a').valueAbsent).to.equal(true);
+        expect(some.nullableProperty('a').valueAbsent).to.equal(true);
       });
     });
 
-    describe('getOptionalProperty(propertyName)', () => {
+    describe('optionalProperty(propertyName)', () => {
       it('should return a Some with the right value if the wrapped value has a Some named `propertyName`', () => {
         const some = Some({ a: Some(2) });
 
-        expect(some.getOptionalProperty('a').get()).to.equal(some.value.a.value);
+        expect(some.optionalProperty('a').get()).to.equal(some.value.a.value);
       });
 
       it('should return a None if the wrapped value does not have a Some named `propertyName`', () => {
-        const some = Some({});
+        const some = Some({ a: None() });
 
-        expect(some.getNullableProperty('a').valueAbsent).to.equal(true);
+        expect(some.optionalProperty('a').valueAbsent).to.equal(true);
       });
     });
 
@@ -273,15 +281,21 @@ describe('The Optional type', () => {
       expect(none.valueAbsent).to.equal(true);
     });
 
-    describe('getNullableProperty(propertyName)', () => {
+    describe('property(propertyName)', () => {
       it('should return a None()', () => {
-        expect(None().getNullableProperty('a').valueAbsent).to.equal(true);
+        expect(None().property('a').valueAbsent).to.equal(true);
       });
     });
 
-    describe('getOptionalProperty(propertyName)', () => {
+    describe('nullableProperty(propertyName)', () => {
       it('should return a None()', () => {
-        expect(None().getOptionalProperty('a').valueAbsent).to.equal(true);
+        expect(None().nullableProperty('a').valueAbsent).to.equal(true);
+      });
+    });
+
+    describe('optionalProperty(propertyName)', () => {
+      it('should return a None()', () => {
+        expect(None().optionalProperty('a').valueAbsent).to.equal(true);
       });
     });
 

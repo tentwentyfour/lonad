@@ -63,6 +63,18 @@ Object.assign(Ok.prototype, {
   recoverWhen:      returnThis.binary,
   abortOnError:     returnThis.nullary,
 
+  getOrElse(_) {
+    return this.value;
+  },
+
+  expectProperty(propertyName) {
+    return Result.expect(this.value[propertyName]);
+  },
+
+  property(propertyName) {
+    return Ok(this.value[propertyName]);
+  },
+
   merge() {
     return this.value;
   },
@@ -121,10 +133,16 @@ Error = function createError(error) {
 Error.prototype = Object.create(Result.prototype);
 
 Object.assign(Error.prototype, {
-  map:     returnThis.unary,
-  filter:  returnThis.unary,
-  reject:  returnThis.unary,
-  flatMap: returnThis.unary,
+  map:              returnThis.unary,
+  filter:           returnThis.unary,
+  reject:           returnThis.unary,
+  flatMap:          returnThis.unary,
+  property:         returnThis.unary,
+  expectProperty:   returnThis.unary,
+
+  getOrElse(value) {
+    return value;
+  },
 
   recoverWhen(predicate, λ) {
     return Ok(this.error)
@@ -198,8 +216,14 @@ Object.assign(Aborted.prototype, {
   mapError:         returnThis.unary,
   recover:          returnThis.unary,
   abortOnErrorWith: returnThis.unary,
+  property:         returnThis.unary,
+  expectProperty:   returnThis.unary,
   recoverWhen:      returnThis.binary,
   abortOnError:     returnThis.nullary,
+
+  getOrElse(value) {
+    return value;
+  },
 
   merge() {
     return this.error;
@@ -256,10 +280,13 @@ Object.assign(Pending.prototype, {
   recover:          callWrappedResultMethod('recover'),
   flatMap:          callWrappedResultMethod('flatMap'),
   mapError:         callWrappedResultMethod('mapError'),
+  property:         callWrappedResultMethod('property'),
   abortOnError:     callWrappedResultMethod('abortOnError'),
+  expectProperty:   callWrappedResultMethod('expectProperty'),
   abortOnErrorWith: callWrappedResultMethod('abortOnErrorWith'),
   match:            pipe(callWrappedResultMethod('match'), property('promise')),
   merge:            pipe(callWrappedResultMethod('merge'), property('promise')),
+  getOrElse:        pipe(callWrappedResultMethod('getOrElse'), property('promise')),
   toOptional:       pipe(callWrappedResultMethod('toOptional'), property('promise')),
 
   toPromise() {

@@ -21,12 +21,13 @@ None = function makeNone() {
 None.prototype = Object.create(Optional.prototype);
 
 Object.assign(None.prototype, {
-  getOptionalProperty: unaryReturnThis,
-  getNullableProperty: unaryReturnThis,
-  map:                 unaryReturnThis,
-  filter:              unaryReturnThis,
-  reject:              unaryReturnThis,
-  flatMap:             unaryReturnThis,
+  optionalProperty: unaryReturnThis,
+  nullableProperty: unaryReturnThis,
+  map:              unaryReturnThis,
+  filter:           unaryReturnThis,
+  reject:           unaryReturnThis,
+  flatMap:          unaryReturnThis,
+  property:         unaryReturnThis,
 
   or(λOrOptional) {
     if (typeof λOrOptional === 'function') {
@@ -69,12 +70,16 @@ Object.assign(Some.prototype, {
   or:      unaryReturnThis,
   recover: unaryReturnThis,
 
-  getOptionalProperty(propertyName) {
-    return this.flatMap(() => this.value[propertyName]);
+  property(propertyName) {
+    return Some(this.value[propertyName]);
   },
 
-  getNullableProperty(propertyName) {
-    return this.flatMap(() => fromNullable(this.value[propertyName]));
+  optionalProperty(propertyName) {
+    return this.value[propertyName];
+  },
+
+  nullableProperty(propertyName) {
+    return fromNullable(this.value[propertyName]);
   },
 
   get() {

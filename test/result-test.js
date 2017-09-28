@@ -28,6 +28,28 @@ describe('The Result type', () => {
       expect(ok.isOk).to.equal(true);
     });
 
+    describe('property(propertyName)', () => {
+      it('should return the requested property of the wrapped value', () => {
+        const ok = Ok({ a: 2 });
+
+        expect(ok.property('a').getOrElse(ok.value.a + 1)).to.equal(ok.value.a);
+      });
+    });
+
+    describe('expectProperty(propertyName)', () => {
+      it('should return a Ok with the right value if the wrapped value has an expectable property named `propertyName` that is a OK', () => {
+        const ok = Ok({ a: Ok(2) });
+
+        expect(ok.expectProperty('a').getOrElse(ok.value.a.value + 1)).to.equal(ok.value.a.value);
+      });
+
+      it('should return a None if the wrapped value does not have a Some named `propertyName`', () => {
+        const ok = Ok({});
+
+        expect(ok.expectProperty('a').isError).to.equal(true);
+      });
+    });
+
     describe('map(λ)', () => {
       it('should return a new Ok instance holding the value of λ for the value of the Ok instance', () => {
         const value = 3;
@@ -311,6 +333,14 @@ describe('The Result type', () => {
       });
     });
 
+    describe('getOrElse(value)', () => {
+      it('should unwrap Ok instances', () => {
+        const value = 3;
+
+        expect(Ok(value).getOrElse(value + 1)).to.equal(value);
+      });
+    });
+
     describe('abortOnError()', () => {
       it('should return an equivalent Ok', () => {
         const expected = 3;
@@ -399,6 +429,18 @@ describe('The Result type', () => {
       expect(error.isAborted).to.equal(false);
       expect(error.isError).to.equal(true);
       expect(error.isOk).to.equal(false);
+    });
+
+    describe('property(λ)', () => {
+      it('should return an Error()', () => {
+        expect(Error().property('a').isError).to.equal(true);
+      });
+    });
+
+    describe('expectProperty(λ)', () => {
+      it('should return an Error()', () => {
+        expect(Error().expectProperty('a').isError).to.equal(true);
+      });
     });
 
     describe('map(λ)', () => {
@@ -612,6 +654,14 @@ describe('The Result type', () => {
       });
     });
 
+    describe('getOrElse(value)', () => {
+      it('should return `value`', () => {
+        const value = 3;
+
+        expect(Error(33).getOrElse(value)).to.equal(value);
+      });
+    });
+
     describe('abortOnError()', () => {
       it('should return an Aborted that holds the same error', () => {
         const expected = 3;
@@ -793,6 +843,9 @@ describe('The Result type', () => {
         ['filter',                                                  [constant(true)]],
         ['reject',                                                 [constant(false)]],
         ['flatMap',                                                [constant(Ok(1))]],
+        ['getOrElse',                                                            [3]],
+        ['property',                                                     ['toFixed']],
+        ['expectProperty',                                               ['toFixed']],
         ['match',    [{ Ok: constant(1), Error: constant(2), Aborted: constant(3) }]]
       ];
 
@@ -854,6 +907,8 @@ describe('The Result type', () => {
       .abortOnErrorWith(increment)
       .flatMap(increment)
       .recover(increment)
+      .property('a')
+      .expectProperty('a')
       .reject(constant(true))
       .recoverWhen(increment, increment)
       .mapError(increment);
@@ -861,6 +916,14 @@ describe('The Result type', () => {
       expect(aborted.isError).to.equal(true);
       expect(aborted.merge()).to.equal(value);
       expect(aborted.isAborted).to.equal(true);
+    });
+
+    describe('getOrElse(value)', () => {
+      it('should return `value`', () => {
+        const value = 3;
+
+        expect(Aborted(value + 1).getOrElse(value)).to.equal(value);
+      });
     });
 
     describe('match(callbacks)', () => {

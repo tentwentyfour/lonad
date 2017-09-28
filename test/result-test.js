@@ -431,13 +431,13 @@ describe('The Result type', () => {
       expect(error.isOk).to.equal(false);
     });
 
-    describe('property(λ)', () => {
+    describe('property(propertyName)', () => {
       it('should return an Error()', () => {
         expect(Error().property('a').isError).to.equal(true);
       });
     });
 
-    describe('expectProperty(λ)', () => {
+    describe('expectProperty(propertyName)', () => {
       it('should return an Error()', () => {
         expect(Error().expectProperty('a').isError).to.equal(true);
       });

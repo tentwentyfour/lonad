@@ -75,10 +75,17 @@ Object.assign(Ok.prototype, {
     return transformResult(() => λ(this.value), Result.expect);
   },
 
+  reject(predicate) {
+    return transformResult(
+      ()       => predicate(this.value),
+      isTruthy => (isTruthy ? Error() : Ok(this.value))
+    );
+  },
+
   filter(predicate) {
     return transformResult(
-      () => predicate(this.value),
-      isTrue => (isTrue ? Ok(this.value) : Error())
+      ()       => predicate(this.value),
+      isTruthy => (isTruthy ? Ok(this.value) : Error())
     );
   },
 
@@ -116,6 +123,7 @@ Error.prototype = Object.create(Result.prototype);
 Object.assign(Error.prototype, {
   map:     returnThis.unary,
   filter:  returnThis.unary,
+  reject:  returnThis.unary,
   flatMap: returnThis.unary,
 
   recoverWhen(predicate, λ) {
@@ -186,6 +194,7 @@ Object.assign(Aborted.prototype, {
   map:              returnThis.unary,
   flatMap:          returnThis.unary,
   filter:           returnThis.unary,
+  reject:           returnThis.unary,
   mapError:         returnThis.unary,
   recover:          returnThis.unary,
   abortOnErrorWith: returnThis.unary,
@@ -243,6 +252,7 @@ Object.assign(Pending.prototype, {
   asynchronous:     returnThis.nullary,
   map:              callWrappedResultMethod('map'),
   filter:           callWrappedResultMethod('filter'),
+  reject:           callWrappedResultMethod('reject'),
   recover:          callWrappedResultMethod('recover'),
   flatMap:          callWrappedResultMethod('flatMap'),
   mapError:         callWrappedResultMethod('mapError'),

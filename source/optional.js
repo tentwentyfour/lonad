@@ -25,6 +25,7 @@ Object.assign(None.prototype, {
   getNullableProperty: unaryReturnThis,
   map:                 unaryReturnThis,
   filter:              unaryReturnThis,
+  reject:              unaryReturnThis,
   flatMap:             unaryReturnThis,
 
   or(λOrOptional) {
@@ -90,6 +91,14 @@ Object.assign(Some.prototype, {
 
   flatMap(λ) {
     return λ(this.value);
+  },
+
+  reject(predicate) {
+    if (!predicate(this.value)) {
+      return this;
+    }
+
+    return None();
   },
 
   filter(predicate) {

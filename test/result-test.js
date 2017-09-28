@@ -229,7 +229,64 @@ describe('The Result type', () => {
       it('should return a Pending wrapping an Aborted if λ throws asynchronously', done => {
         const expected = 4;
 
-        const result = Ok().map(constant(Promise.reject(expected)));
+        const result = Ok().filter(constant(Promise.reject(expected)));
+
+        expect(result.isAsynchronous).to.equal(true);
+
+        result
+        .promise
+        .then(wrappedResult => {
+          expect(wrappedResult.isResultInstance).to.equal(true);
+          expect(wrappedResult.isAborted).to.equal(true);
+          expect(wrappedResult.error).to.equal(expected);
+          expect(wrappedResult.isError).to.equal(true);
+          expect(wrappedResult.isError).to.equal(true);
+        })
+        .then(done, done);
+      });
+    });
+
+    describe('reject(λ)', () => {
+      it('should return an equivalent Ok if the predicate is false when passed the Ok value', () => {
+        const value = 3;
+
+        const ok = Ok(value).reject(n => n !== value);
+
+        expect(ok.isOk).to.equal(true);
+        expect(ok.merge()).to.equal(value);
+      });
+
+      it('should return an Error if the predicate is true when passed the Ok value', () => {
+        const value = 3;
+
+        const ok = Ok(value).reject(n => n === value);
+
+        expect(ok.isError).to.equal(true);
+      });
+
+      it('should return a Pending wrapping an Ok if the predicate is false asynchronously', done => {
+        const expected = 4;
+
+        const result = Ok().reject(async () => false);
+
+        expect(result.isAsynchronous).to.equal(true);
+
+        result
+        .map(increment)
+        .match({
+          Ok:    constant(expected),
+          Error: constant(increment(expected))
+        })
+        .then(value => {
+          expect(value).to.equal(expected);
+        })
+        .then(done, done);
+      });
+
+      it('should return a Pending wrapping an Aborted if λ throws asynchronously', done => {
+        const expected = 4;
+
+        const result = Ok().reject(constant(Promise.reject(expected)));
 
         expect(result.isAsynchronous).to.equal(true);
 
@@ -540,6 +597,13 @@ describe('The Result type', () => {
       });
     });
 
+    describe('reject(λ)', () => {
+      it('should return an Error()', () => {
+        expect(Error().reject(constant(true)).isError).to.equal(true);
+        expect(Error().reject(constant(false)).isError).to.equal(true);
+      });
+    });
+
     describe('merge()', () => {
       it('should return the wrapped error', () => {
         const value = 3;
@@ -727,6 +791,7 @@ describe('The Result type', () => {
         ['mapError',                                                     [increment]],
         ['recover',                                                    [constant(1)]],
         ['filter',                                                  [constant(true)]],
+        ['reject',                                                 [constant(false)]],
         ['flatMap',                                                [constant(Ok(1))]],
         ['match',    [{ Ok: constant(1), Error: constant(2), Aborted: constant(3) }]]
       ];
@@ -789,6 +854,7 @@ describe('The Result type', () => {
       .abortOnErrorWith(increment)
       .flatMap(increment)
       .recover(increment)
+      .reject(constant(true))
       .recoverWhen(increment, increment)
       .mapError(increment);
 

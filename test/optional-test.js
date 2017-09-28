@@ -206,6 +206,25 @@ describe('The Optional type', () => {
       });
     });
 
+    describe('reject(λ)', () => {
+      it('should return an equivalent Some value if the predicate is false when passed the Some value', () => {
+        const value = 3;
+
+        const some = Some(value).reject(n => n !== value);
+
+        expect(some.valuePresent).to.equal(true);
+        expect(some.get()).to.equal(value);
+      });
+
+      it('should return a None if the predicate is true when passed the Some value', () => {
+        const value = 3;
+
+        const some = Some(value).reject(n => n === value);
+
+        expect(some.valuePresent).to.equal(false);
+      });
+    });
+
     describe('getOrElse(λ)', () => {
       it('should return the value of Some instances', () => {
         const value        = 3;
@@ -307,6 +326,13 @@ describe('The Optional type', () => {
       it('should return a None()', () => {
         expect(None().filter(constant(true)).valueAbsent).to.equal(true);
         expect(None().filter(constant(false)).valueAbsent).to.equal(true);
+      });
+    });
+
+    describe('reject(λ)', () => {
+      it('should return a None()', () => {
+        expect(None().reject(constant(true)).valueAbsent).to.equal(true);
+        expect(None().reject(constant(false)).valueAbsent).to.equal(true);
       });
     });
 

@@ -169,6 +169,29 @@ describe('The Optional type', () => {
       });
     });
 
+    describe('nullableMap(λ)', () => {
+      it('should return a new Some instance holding the value of λ for the value of the Some instance if it is not nullable', () => {
+        const value = 3;
+
+        const some = Some(value);
+
+        const transformed = some.nullableMap(increment);
+
+        expect(some !== transformed).to.equal(true);
+        expect(transformed.getOrElse(value)).to.equal(increment(value));
+      });
+
+      it('should return a None if the value of λ for the value of the Some instance is nullable', () => {
+        const value = 3;
+
+        const some = Some(value);
+
+        const transformed = some.nullableMap(constant(null));
+
+        expect(transformed.valueAbsent).to.equal(true);
+      });
+    });
+
     describe('map(λ)', () => {
       it('should return a new Some instance holding the value of λ for the value of the Some instance', () => {
         const value = 3;
@@ -321,6 +344,12 @@ describe('The Optional type', () => {
 
         expect(some.valuePresent).to.equal(true);
         expect(some.get()).to.equal(expected);
+      });
+    });
+
+    describe('nullableMap(λ)', () => {
+      it('should return a None()', () => {
+        expect(None().nullableMap(increment).valueAbsent).to.equal(true);
       });
     });
 

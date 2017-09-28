@@ -28,6 +28,7 @@ Object.assign(None.prototype, {
   reject:           unaryReturnThis,
   flatMap:          unaryReturnThis,
   property:         unaryReturnThis,
+  nullableMap:      unaryReturnThis,
 
   or(λOrOptional) {
     if (typeof λOrOptional === 'function') {
@@ -69,6 +70,10 @@ Some.prototype = Object.create(Optional.prototype);
 Object.assign(Some.prototype, {
   or:      unaryReturnThis,
   recover: unaryReturnThis,
+
+  nullableMap(λ) {
+    return Optional.fromNullable(λ(this.value));
+  },
 
   property(propertyName) {
     return Some(this.value[propertyName]);

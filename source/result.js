@@ -63,6 +63,10 @@ Object.assign(Ok.prototype, {
   recoverWhen:      returnThis.binary,
   abortOnError:     returnThis.nullary,
 
+  expectMap(λ) {
+    return Result.expect(λ(this.value));
+  },
+
   getOrElse(_) {
     return this.value;
   },
@@ -133,6 +137,7 @@ Error = function createError(error) {
 Error.prototype = Object.create(Result.prototype);
 
 Object.assign(Error.prototype, {
+  expectMap:        returnThis.unary,
   map:              returnThis.unary,
   filter:           returnThis.unary,
   reject:           returnThis.unary,
@@ -209,6 +214,7 @@ Aborted.prototype = Object.create(Result.prototype);
 
 Object.assign(Aborted.prototype, {
   toOptional:       None,
+  expectMap:        returnThis.unary,
   map:              returnThis.unary,
   flatMap:          returnThis.unary,
   filter:           returnThis.unary,
@@ -281,6 +287,7 @@ Object.assign(Pending.prototype, {
   flatMap:          callWrappedResultMethod('flatMap'),
   mapError:         callWrappedResultMethod('mapError'),
   property:         callWrappedResultMethod('property'),
+  expectMap:        callWrappedResultMethod('expectMap'),
   abortOnError:     callWrappedResultMethod('abortOnError'),
   expectProperty:   callWrappedResultMethod('expectProperty'),
   abortOnErrorWith: callWrappedResultMethod('abortOnErrorWith'),

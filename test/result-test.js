@@ -50,6 +50,18 @@ describe('The Result type', () => {
       });
     });
 
+    describe('expectMap(λ)', () => {
+      it('should return a Ok with the right value when applying the wrapped value to λ returns a Ok expectable value', () => {
+        const value = 2;
+
+        expect(Ok().expectMap(constant(value)).getOrElse(value + 1)).to.equal(value);
+      });
+
+      it('should return a None when applying λ to the wrapped value returns a non-Ok expectable value', () => {
+        expect(Ok().expectMap(constant(null)).isError).to.equal(true);
+      });
+    });
+
     describe('map(λ)', () => {
       it('should return a new Ok instance holding the value of λ for the value of the Ok instance', () => {
         const value = 3;
@@ -429,6 +441,12 @@ describe('The Result type', () => {
       expect(error.isAborted).to.equal(false);
       expect(error.isError).to.equal(true);
       expect(error.isOk).to.equal(false);
+    });
+
+    describe('expectMap(λ)', () => {
+      it('should return an Error()', () => {
+        expect(Error().expectMap(constant(2)).isError).to.equal(true);
+      });
     });
 
     describe('property(propertyName)', () => {
@@ -846,6 +864,7 @@ describe('The Result type', () => {
         ['getOrElse',                                                            [3]],
         ['property',                                                     ['toFixed']],
         ['expectProperty',                                               ['toFixed']],
+        ['expectMap',                                                  [constant(3)]],
         ['match',    [{ Ok: constant(1), Error: constant(2), Aborted: constant(3) }]]
       ];
 
@@ -911,6 +930,7 @@ describe('The Result type', () => {
       .expectProperty('a')
       .reject(constant(true))
       .recoverWhen(increment, increment)
+      .expectMap(increment)
       .mapError(increment);
 
       expect(aborted.isError).to.equal(true);

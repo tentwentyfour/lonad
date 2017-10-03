@@ -134,7 +134,7 @@ fromNullable = value => {
 
 const fromParsedJson = object => {
   if (!object || !object.isOptionalInstance) {
-    return Optional.fromNullable(object);
+    throw new Error('fromParsedJson(object) expects an object obtained from JSON.parsing an Optional stringified with JSON.stringify');
   }
 
   if (object.valueAbsent) {

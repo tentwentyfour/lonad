@@ -59,9 +59,16 @@ describe('The Optional type', () => {
   });
 
   describe('fromParsedJson(optional)', () => {
-    it('should use fromNullable() for non-Optionals', () => {
-      expect(Optional.fromParsedJson(3).valuePresent).to.equal(true);
-      expect(Optional.fromParsedJson(null).valueAbsent).to.equal(true);
+    it('should throw when passed non-destringified Optionals', () => {
+      let thrown = false;
+
+      try {
+        expect(Optional.fromParsedJson(3).valuePresent).to.equal(true);
+      } catch (error) {
+        thrown = true;
+      }
+
+      expect(thrown).to.equal(true);
     });
 
     it('should be able to pick up Some instances contained in deserialized JSON strings', () => {

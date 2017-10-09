@@ -28,6 +28,16 @@ describe('The Result type', () => {
       expect(ok.isOk).to.equal(true);
     });
 
+    describe('valueEquals(value)', () => {
+      it('should return true when the wrapped value equals `value`', () => {
+        expect(Ok(3).valueEquals(3)).to.equal(true);
+      });
+
+      it('should return false when the wrapped value does not equal `value`', () => {
+        expect(Ok(3).valueEquals(2)).to.equal(false);
+      });
+    });
+
     describe('property(propertyName)', () => {
       it('should return the requested property of the wrapped value', () => {
         const ok = Ok({ a: 2 });
@@ -443,6 +453,12 @@ describe('The Result type', () => {
       expect(error.isOk).to.equal(false);
     });
 
+    describe('valueEquals(value)', () => {
+      it('should return false', () => {
+        expect(Error(3).valueEquals(3)).to.equal(false);
+      });
+    });
+
     describe('expectMap(λ)', () => {
       it('should return an Error()', () => {
         expect(Error().expectMap(constant(2)).isError).to.equal(true);
@@ -854,6 +870,7 @@ describe('The Result type', () => {
         ['toPromise',                                                             []],
         ['toOptional',                                                            []],
         ['abortOnError',                                                          []],
+        ['valueEquals',                                                          [31]],
         ['abortOnErrorWith',                                             [increment]],
         ['map',                                                          [increment]],
         ['mapError',                                                     [increment]],
@@ -936,6 +953,7 @@ describe('The Result type', () => {
       expect(aborted.isError).to.equal(true);
       expect(aborted.merge()).to.equal(value);
       expect(aborted.isAborted).to.equal(true);
+      expect(aborted.valueEquals(value)).to.equal(false);
     });
 
     describe('getOrElse(value)', () => {

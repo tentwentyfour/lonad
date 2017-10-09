@@ -124,6 +124,16 @@ describe('The Optional type', () => {
       expect(some.valueAbsent).to.equal(false);
     });
 
+    describe('valueEquals(value)', () => {
+      it('should return true when the wrapped value equals `value`', () => {
+        expect(Some(3).valueEquals(3)).to.equal(true);
+      });
+
+      it('should return false when the wrapped value does not equal `value`', () => {
+        expect(Some(3).valueEquals(2)).to.equal(false);
+      });
+    });
+
     describe('recover(λ)', () => {
       it('should return an equivalent Some', () => {
         const some = Some();
@@ -309,6 +319,12 @@ describe('The Optional type', () => {
       expect(none.isOptionalInstance).to.equal(true);
       expect(none.valuePresent).to.equal(false);
       expect(none.valueAbsent).to.equal(true);
+    });
+
+    describe('valueEquals(value)', () => {
+      it('should return false', () => {
+        expect(None().valueEquals(3)).to.equal(false);
+      });
     });
 
     describe('property(propertyName)', () => {

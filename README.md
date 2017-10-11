@@ -34,7 +34,7 @@ This allows you to avoid the dreaded `x is undefined` class of Javascript errors
 * [⚓](#optionals-propertypropertyname) Transforming a `Some` into a `Some` wrapping a property of the initial `Some`'s wrapped value.
 * [⚓](#optionals-nullablepropertypropertyname) Transforming a `Some` into an `Optional` based on a nullable property of the initial `Some`'s wrapped value.
 * [⚓](#optionals-optionalpropertypropertyname) Transforming a `Some` into an `Optional` based on a nullable property of the initial `Some`'s wrapped value.
-* [⚓](#optionals-valueequalsvalue) Checking if a `Some`'s value equals another one.
+* [⚓](#optionals-valueequalsvalue) Checking if a `Some`'s value equals a given value.
 * [⚓](#optionals-flatmapλ) Transforming a `Some` into another `Optional`.
 * [⚓](#optionals-matchmatcher) `Optional` pattern matching.
 * [⚓](#optionals-orλoroptional) Selecting the first available `Some`.

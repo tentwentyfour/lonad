@@ -25,25 +25,25 @@ This allows you to avoid the dreaded `x is undefined` class of Javascript errors
 ### Recipes
 
 * [⚓](#optional-construction) Constructing an `Optional`.
-* [⚓](#optional.fromnullable(nullablevalue)) Constructing an `Optional` using a nullable value.
-* [⚓](#optional's.map(λ)) Transforming the value wrapped in an `Optional`.
-* [⚓](#optional's-get()) Unsafe unboxing of `Optional` values.
-* [⚓](#optional's-getorelse(value)) Safe unboxing of `Optional` values.
-* [⚓](#optional's-filter(λ)) Transforming a `Some` into a `None` when a condition is met.
-* [⚓](#optional's-reject(λ)) Transforming a `Some` into a `None` when a condition is not met.
-* [⚓](#optional's-property(λ)) Transforming a `Some` into a `Some` wrapping a property of the initial `Some`'s wrapped value.
-* [⚓](#optional's-nullableproperty(λ)) Transforming a `Some` into an `Optional` based on a nullable property of the initial `Some`'s wrapped value.
-* [⚓](#optional's-optionalproperty(λ)) Transforming a `Some` into an `Optional` based on a nullable property of the initial `Some`'s wrapped value.
-* [⚓](#optional's-valueequals(value)) Checking if a `Some`'s value equals another one.
-* [⚓](#optional's-flatmap(λ)) Transforming a `Some` into another `Optional`.
-* [⚓](#optional's-match(matcher)) `Optional` pattern matching.
-* [⚓](#optional's-or(λoroptional)) Selecting the first available `Some`.
-* [⚓](#optional.first(optionals)) Selecting the first available `Some` in an array.
-* [⚓](#optional's-recover(λ)) Transforming a `None` into a `Some`.
-* [⚓](#optional's-or(λoroptional)) Transforming a `None` into an `Optional`.
+* [⚓](#optionalfromnullablenullablevalue) Constructing an `Optional` using a nullable value.
+* [⚓](#optionals.mapλ) Transforming the value wrapped in an `Optional`.
+* [⚓](#optionals-get) Unsafe unboxing of `Optional` values.
+* [⚓](#optionals-getorelsevalue) Safe unboxing of `Optional` values.
+* [⚓](#optionals-filterλ) Transforming a `Some` into a `None` when a condition is met.
+* [⚓](#optionals-rejectλ) Transforming a `Some` into a `None` when a condition is not met.
+* [⚓](#optionals-propertyλ) Transforming a `Some` into a `Some` wrapping a property of the initial `Some`'s wrapped value.
+* [⚓](#optionals-nullablepropertyλ) Transforming a `Some` into an `Optional` based on a nullable property of the initial `Some`'s wrapped value.
+* [⚓](#optionals-optionalpropertyλ) Transforming a `Some` into an `Optional` based on a nullable property of the initial `Some`'s wrapped value.
+* [⚓](#optionals-valueequalsvalue) Checking if a `Some`'s value equals another one.
+* [⚓](#optionals-flatmapλ) Transforming a `Some` into another `Optional`.
+* [⚓](#optionals-matchmatcher) `Optional` pattern matching.
+* [⚓](#optionals-orλoroptional) Selecting the first available `Some`.
+* [⚓](#optionalfirstoptionals) Selecting the first available `Some` in an array.
+* [⚓](#optionals-recoverλ) Transforming a `None` into a `Some`.
+* [⚓](#optionals-orλoroptional) Transforming a `None` into an `Optional`.
 * [⚓](#optional-serialization) `Optional` serialization.
-* [⚓](#optional.all(optionals)) Constructing a `Some` wrapping an array of values from other `Some` instances.
-* [⚓](#optional.when(truthy)) Construct a new Some if a condition is met.
+* [⚓](#optionalalloptionals) Constructing a `Some` wrapping an array of values from other `Some` instances.
+* [⚓](#optionalwhentruthy) Construct a new Some if a condition is met.
 
 ## General tips
 
@@ -245,7 +245,7 @@ function retrieveUserFromDatabase(id) {
   } else if (id === 2) {
     return Some({ id, carId: None() });
   }
-  
+
   return None();
 }
 
@@ -253,7 +253,7 @@ function retrieveCarFromDatabase(id) {
   if (id === 1) {
     return Some({ id, model: 'Ford T' });
   }
-  
+
   return None();
 }
 ```

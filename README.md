@@ -26,14 +26,14 @@ This allows you to avoid the dreaded `x is undefined` class of Javascript errors
 
 * [⚓](#optional-construction) Constructing an `Optional`.
 * [⚓](#optionalfromnullablenullablevalue) Constructing an `Optional` using a nullable value.
-* [⚓](#optionals.mapλ) Transforming the value wrapped in an `Optional`.
+* [⚓](#optionals-mapλ) Transforming the value wrapped in an `Optional`.
 * [⚓](#optionals-get) Unsafe unboxing of `Optional` values.
 * [⚓](#optionals-getorelsevalue) Safe unboxing of `Optional` values.
 * [⚓](#optionals-filterλ) Transforming a `Some` into a `None` when a condition is met.
 * [⚓](#optionals-rejectλ) Transforming a `Some` into a `None` when a condition is not met.
 * [⚓](#optionals-propertyλ) Transforming a `Some` into a `Some` wrapping a property of the initial `Some`'s wrapped value.
-* [⚓](#optionals-nullablepropertyλ) Transforming a `Some` into an `Optional` based on a nullable property of the initial `Some`'s wrapped value.
-* [⚓](#optionals-optionalpropertyλ) Transforming a `Some` into an `Optional` based on a nullable property of the initial `Some`'s wrapped value.
+* [⚓](#optionals-nullablepropertypropertyname) Transforming a `Some` into an `Optional` based on a nullable property of the initial `Some`'s wrapped value.
+* [⚓](#optionals-optionalpropertypropertyname) Transforming a `Some` into an `Optional` based on a nullable property of the initial `Some`'s wrapped value.
 * [⚓](#optionals-valueequalsvalue) Checking if a `Some`'s value equals another one.
 * [⚓](#optionals-flatmapλ) Transforming a `Some` into another `Optional`.
 * [⚓](#optionals-matchmatcher) `Optional` pattern matching.

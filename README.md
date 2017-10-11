@@ -212,8 +212,8 @@ Some(2).valueEquals(2);
 // This will evaluate to false.
 Some(3).valueEquals(2);
 
-// This will evaluate to None().
-None().optionalProperty('a');
+// This will evaluate to false.
+None().valueEquals('a');
 ```
 
 #### `Optional`'s `flatMap(λ)`

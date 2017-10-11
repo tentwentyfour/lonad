@@ -28,6 +28,7 @@ This allows you to avoid the dreaded `x is undefined` class of Javascript errors
 * [⚓](#optionalfromnullablenullablevalue) Constructing an `Optional` using a nullable value.
 * [⚓](#optionals-mapλ) Transforming the value wrapped in an `Optional`.
 * [⚓](#optionals-get) Unsafe unboxing of `Optional` values.
+* [⚓](#optional-value-presence) Checking presence or absence of `Optional` value.
 * [⚓](#optionals-getorelsevalue) Safe unboxing of `Optional` values.
 * [⚓](#optionals-filterλ) Transforming a `Some` into a `None` when a condition is met.
 * [⚓](#optionals-rejectλ) Transforming a `Some` into a `None` when a condition is not met.
@@ -110,6 +111,20 @@ Some(2).get();
 
 // This will throw.
 None().get();
+```
+
+#### `Optional` value presence
+
+*Note: writing a check based on these flags, then doing `optional.get()` is a **very bad** code smell.*
+
+```javascript
+// These will evaluate to true.
+Some(2).valuePresent;
+None().valueAbsent;
+
+// These will evaluate to false.
+None().valuePresent;
+Some(2).valueAbsent;
 ```
 
 #### `Optional`'s `getOrElse(value)`

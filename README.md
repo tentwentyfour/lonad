@@ -318,7 +318,7 @@ Some(2).or(() => Some(3));
 const serialized = JSON.stringify(Some(3));
 
 // And deserialize it using Optional.fromParsedJson. This evaluates to Some(3).
-Optional.fromParsedJson(serialized);
+Optional.fromParsedJson(JSON.parse(serialized));
 ```
 
 #### `Optional.when(truthy)`

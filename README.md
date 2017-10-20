@@ -45,7 +45,7 @@ This allows you to avoid the dreaded `x is undefined` class of Javascript errors
 * [⚓](#optionals-orλoroptional) Transforming a `None` into an `Optional`.
 * [⚓](#optional-serialization) `Optional` serialization.
 * [⚓](#optionalalloptionals) Constructing a `Some` wrapping an array of values from other `Some` instances.
-* [⚓](#optionalwhentruthy) Construct a new Some if a condition is met.
+* [⚓](#optionalwhentruthy-value) Construct a new Some if a condition is met.
 
 ## General tips
 
@@ -350,7 +350,7 @@ const serialized = JSON.stringify(Some(3));
 Optional.fromParsedJson(JSON.parse(serialized));
 ```
 
-#### `Optional.when(truthy)`
+#### `Optional.when(truthy, value)`
 
 ```javascript
 // These evaluate to None().
@@ -360,11 +360,11 @@ Optional.when(0);
 Optional.when('');
 Optional.when(NaN);
 
-// These evaluate to Some(undefined).
-Optional.when(true);
-Optional.when(' ');
-Optional.when(1);
-Optional.when({});
+// These evaluate to Some(4).
+Optional.when(true, 4);
+Optional.when(' ', 4);
+Optional.when({}, 4);
+Optional.when(1, 4);
 ```
 
 #### `Optional.first(optionals)`

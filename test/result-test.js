@@ -1042,14 +1042,26 @@ describe('The Result type', () => {
   describe('when(truthy)', () => {
     it('should convert truthies to Ok instances', () => {
       [1, 'a', 3, {}, []].forEach(truthy => {
-        expect(Result.when(truthy).isOk).to.equal(true);
+        const value = 4;
+
+        const result = Result.when(truthy, value);
+
+        expect(result.isOk).to.equal(true);
+        expect(result.merge()).to.equal(value);
       });
     });
 
     it('should convert falsies to Some instances', () => {
       ['', NaN, 0, null, undefined].forEach(falsy => {
-        expect(Result.when(falsy).isOk).to.equal(false);
-        expect(Result.when(falsy).isAborted).to.equal(false);
+        const value = 4;
+
+        const result = Result.when(falsy, value + 1, value);
+
+        expect(result.isOk).to.equal(false);
+        expect(result.isAborted).to.equal(false);
+
+        expect(result.isError).to.equal(true);
+        expect(result.merge()).to.equal(value);
       });
     });
   });

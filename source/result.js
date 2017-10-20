@@ -372,12 +372,12 @@ const expect = optionalOrResultOrPromise => {
   });
 };
 
-const when = truthy => {
+const when = (truthy, value, error) => {
   if (truthy) {
-    return Ok();
+    return Ok(value);
   }
 
-  return Error();
+  return Error(error);
 };
 
 [['transform', 'map']].forEach(([alias, method]) => {

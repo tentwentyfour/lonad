@@ -32,10 +32,12 @@ describe('The Optional type', () => {
     ).to.not.equal(notExpected);
   });
 
-  describe('when(truthy)', () => {
+  describe('when(truthy, value)', () => {
     it('should convert truthies to Some instances', () => {
       [1, 'a', 3, {}, []].forEach(truthy => {
-        expect(Optional.when(truthy).valuePresent).to.equal(true);
+        const value = 6;
+
+        expect(Optional.when(truthy, value).value).to.equal(value);
       });
     });
 

@@ -169,9 +169,9 @@ const all = optionals => {
   return Some(optionals.map(Optional.get));
 };
 
-const when = truthy => {
+const when = (truthy, value) => {
   if (truthy) {
-    return Some();
+    return Some(value);
   }
 
   return None();

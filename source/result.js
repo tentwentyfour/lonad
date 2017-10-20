@@ -367,6 +367,13 @@ const when = truthy => {
   return Error();
 };
 
+[['transform', 'map']].forEach(([alias, method]) => {
+  Ok.prototype[alias]      = Ok.prototype[method];
+  Error.prototype[alias]   = Error.prototype[method];
+  Pending.prototype[alias] = Pending.prototype[method];
+  Aborted.prototype[alias] = Aborted.prototype[method];
+});
+
 defineStaticFunctions(Ok.prototype, Result);
 
 Object.assign(Result, {

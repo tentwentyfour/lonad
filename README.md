@@ -139,6 +139,8 @@ None().getOrElse(0);
 
 #### `Optional`'s `map(λ)`
 
+*`map` is also aliased to `transform` if you have a tendency to confuse `Optional`'s `map` with `Array`'s.*
+
 ```javascript
 // This will evaluate to 3.
 Some(2).map(x => x + 1).getOrElse(0);

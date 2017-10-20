@@ -24,6 +24,7 @@ Object.assign(None.prototype, {
   optionalProperty: unaryReturnThis,
   nullableProperty: unaryReturnThis,
   map:              unaryReturnThis,
+  transform:        unaryReturnThis,
   filter:           unaryReturnThis,
   reject:           unaryReturnThis,
   flatMap:          unaryReturnThis,
@@ -177,6 +178,11 @@ const first = optionals => {
 
   return optionals[firstIndex];
 };
+
+[['transform', 'map']].forEach(([alias, method]) => {
+  Some.prototype[alias] = Some.prototype[method];
+  None.prototype[alias] = None.prototype[method];
+});
 
 defineStaticFunctions(Some.prototype, Optional);
 

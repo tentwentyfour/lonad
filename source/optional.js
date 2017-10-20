@@ -31,6 +31,10 @@ Object.assign(None.prototype, {
   property:         unaryReturnThis,
   nullableMap:      unaryReturnThis,
 
+  satisfies(_) {
+    return false;
+  },
+
   valueEquals(_) {
     return false;
   },
@@ -75,6 +79,10 @@ Some.prototype = Object.create(Optional.prototype);
 Object.assign(Some.prototype, {
   or:      unaryReturnThis,
   recover: unaryReturnThis,
+
+  satisfies(predicate) {
+    return predicate(this.value);
+  },
 
   valueEquals(value) {
     return this.value === value;

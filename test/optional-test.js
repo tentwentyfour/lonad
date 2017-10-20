@@ -178,6 +178,17 @@ describe('The Optional type', () => {
       });
     });
 
+    describe('satisfies(predicate)', () => {
+      it('should return true when the wrapped value satisfies the given predicate', () => {
+        expect(Some(2).satisfies(value => value === 2)).to.equal(true);
+      });
+
+
+      it('should return false when the wrapped value does not satisfy the given predicate', () => {
+        expect(Some(3).satisfies(value => value === 2)).to.equal(false);
+      });
+    });
+
     describe('or(λOrOptional)', () => {
       it('should return an equivalent Some', () => {
         const some = Some();
@@ -342,6 +353,13 @@ describe('The Optional type', () => {
     describe('optionalProperty(propertyName)', () => {
       it('should return a None()', () => {
         expect(None().optionalProperty('a').valueAbsent).to.equal(true);
+      });
+    });
+
+    describe('satisfies(predicate)', () => {
+      it('should return false', () => {
+        expect(None().satisfies(() => true)).to.equal(false);
+        expect(None().satisfies(() => false)).to.equal(false);
       });
     });
 

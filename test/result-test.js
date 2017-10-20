@@ -28,6 +28,16 @@ describe('The Result type', () => {
       expect(ok.isOk).to.equal(true);
     });
 
+    describe('satisfies(predicate)', () => {
+      it('should return true when the wrapped value satisfies the passed predicate', () => {
+        expect(Ok(3).satisfies(x => x === 3)).to.equal(true);
+      });
+
+      it('should return false when the wrapped value does not satisfy the passed predicate', () => {
+        expect(Ok(3).satisfies(x => x === 2)).to.equal(false);
+      });
+    });
+
     describe('valueEquals(value)', () => {
       it('should return true when the wrapped value equals `value`', () => {
         expect(Ok(3).valueEquals(3)).to.equal(true);
@@ -453,6 +463,13 @@ describe('The Result type', () => {
       expect(error.isOk).to.equal(false);
     });
 
+    describe('satisfies(predicate)', () => {
+      it('should always return false', () => {
+        expect(Error(3).satisfies(() => false)).to.equal(false);
+        expect(Error(3).satisfies(() => true)).to.equal(false);
+      });
+    });
+
     describe('valueEquals(value)', () => {
       it('should return false', () => {
         expect(Error(3).valueEquals(3)).to.equal(false);
@@ -870,7 +887,8 @@ describe('The Result type', () => {
         ['toPromise',                                                             []],
         ['toOptional',                                                            []],
         ['abortOnError',                                                          []],
-        ['valueEquals',                                                          [31]],
+        ['valueEquals',                                                         [31]],
+        ['satisfies',                                                   [() => true]],
         ['abortOnErrorWith',                                             [increment]],
         ['map',                                                          [increment]],
         ['mapError',                                                     [increment]],
@@ -954,6 +972,8 @@ describe('The Result type', () => {
       expect(aborted.merge()).to.equal(value);
       expect(aborted.isAborted).to.equal(true);
       expect(aborted.valueEquals(value)).to.equal(false);
+      expect(aborted.satisfies(() => true)).to.equal(false);
+      expect(aborted.satisfies(() => false)).to.equal(false);
     });
 
     describe('getOrElse(value)', () => {

@@ -63,6 +63,10 @@ Object.assign(Ok.prototype, {
   recoverWhen:      returnThis.binary,
   abortOnError:     returnThis.nullary,
 
+  satisfies(predicate) {
+    return transformResult(() => predicate(this.value), identity);
+  },
+
   valueEquals(value) {
     return this.value === value;
   },
@@ -148,6 +152,10 @@ Object.assign(Error.prototype, {
   flatMap:          returnThis.unary,
   property:         returnThis.unary,
   expectProperty:   returnThis.unary,
+
+  satisfies(_) {
+    return false;
+  },
 
   valueEquals(_) {
     return false;
@@ -235,6 +243,10 @@ Object.assign(Aborted.prototype, {
   recoverWhen:      returnThis.binary,
   abortOnError:     returnThis.nullary,
 
+  satisfies(_) {
+    return false;
+  },
+
   valueEquals(_) {
     return false;
   },
@@ -305,6 +317,7 @@ Object.assign(Pending.prototype, {
   abortOnErrorWith: callWrappedResultMethod('abortOnErrorWith'),
   match:            pipe(callWrappedResultMethod('match'), property('promise')),
   merge:            pipe(callWrappedResultMethod('merge'), property('promise')),
+  satisfies:        pipe(callWrappedResultMethod('satisfies'), property('promise')),
   getOrElse:        pipe(callWrappedResultMethod('getOrElse'), property('promise')),
   toOptional:       pipe(callWrappedResultMethod('toOptional'), property('promise')),
   valueEquals:      pipe(callWrappedResultMethod('valueEquals'), property('promise')),

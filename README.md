@@ -29,6 +29,7 @@ This allows you to avoid the dreaded `x is undefined` class of Javascript errors
 * [⚓](#optionals-mapλ) Transforming the value wrapped in an `Optional`.
 * [⚓](#optionals-get) Unsafe unboxing of `Optional` values.
 * [⚓](#optional-value-presence) Checking presence or absence of `Optional` value.
+* [⚓](#optionals-satisfiespredicate) Checking that a wrapped value satisfies a predicate.
 * [⚓](#optionals-getorelsevalue) Safe unboxing of `Optional` values.
 * [⚓](#optionals-filterλ) Transforming a `Some` into a `None` when a condition is met.
 * [⚓](#optionals-rejectλ) Transforming a `Some` into a `None` when a condition is not met.
@@ -125,6 +126,17 @@ None().valueAbsent;
 // These will evaluate to false.
 None().valuePresent;
 Some(2).valueAbsent;
+```
+
+#### `Optional`'s `satisfies(predicate)`
+
+```javascript
+// This evaluates to true.
+Some(3).satisfies(x => x === 3);
+
+// These evaluate to false.
+Some(3).satisfies(x => x === 4);
+None().satisfies(() => true);
 ```
 
 #### `Optional`'s `getOrElse(value)`

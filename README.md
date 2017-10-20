@@ -1,4 +1,4 @@
-# Lonad
+# Lonad (0.0.28)
 
 *Like lodash, but for monads…*
 

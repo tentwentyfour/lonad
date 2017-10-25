@@ -14,7 +14,7 @@ Compared to folktale's `Result`, lonad's `Result` handles asynchronous computati
 
 `$ npm install lonad`
 
-The library is currently not going transpiled, so you have to transpile it yourself inside your project.
+The library is currently not being transpiled, so you have to transpile it yourself inside your project.
 
 ## What is an `Optional`
 

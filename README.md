@@ -4,9 +4,11 @@
 
 ## Focus
 
-This currently provides `Optional` and `Result` quasi-monadic types in Javascript.
+This currently provides `Optional` and `Result` types in Javascript.
 
-What's different in this `Maybe`/`Optional`/`Either`/`Result` implementation? Here, pragmatism is valued above fantasy-land compliance. Like lodash, lonad draws inspiration on Haskell's `Maybe` and tortures the concept to put emphasis on user-friendliness and convenience.
+What's different in this `Maybe`/`Optional`/`Either`/`Result` implementation? Here, pragmatism is valued above fantasy-land compliance. lonad draws inspiration on Haskell's `Maybe`, and, like lodash, tortures nice concepts to put emphasis on user-friendliness and convenience.
+
+Compared to folktale's `Result`, lonad's `Result` handles asynchronous computation chains.
 
 ## Installing
 
@@ -59,6 +61,7 @@ Every `Optional` or `Result` method is available in auto-curried, instance-last 
 const optionals = [1, 2, 3].map(Optional.Some);
 const addThree  = x => x + 3;
 
+// This evaluates to [4, 5, 6].
 const results = optionals
 .map(Optional.map(addThree))
 .map(Optional.getOrElse(0));

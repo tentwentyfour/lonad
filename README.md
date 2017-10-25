@@ -24,7 +24,22 @@ An `Optional` is, as its name suggests, a wrapper for a value that can potential
 
 This allows you to avoid the dreaded `x is undefined` class of Javascript errors completely, by providing a safe API, that the rest of this document will explain.
 
+## What is a `Result`
+
+A `Result` models the result of a computation chain in a functional way. In other words, it encapsulates the result of executing code. It can handle asynchronous code, code that may fail with a specific value and even computation chains that may be interrupted (*aborted*) in the middle of the chain if some error occurred. A `Result` can have one of the 4 following subtypes:
+
+* `Ok`: Similar to `Optional`'s `Some`, models return values of computation chains.
+* `Error`: Similar to `Optional`'s `None`, models chains that errored in a recoverable way. The difference with `None` is that errors can also have values.
+* `Aborted`: Same as `Error`, but it's not recoverable.
+* `Pending`: Wraps the 3 other types in asynchronous contexts.
+
+### What's the point?
+
+The point here is the same as for `Optional` (safety), but with a focus on readability. Returning a `Result` from a function signals that your function may fail and gives you details about the failure when it occurs. In certain contexts, you can also see it as an interruptible `Promise` chain. If you never liked `async`/`await` because of the verbosity of error handling using `try`/`catch`, then you'll love `Result`.
+
 ### Recipes
+
+#### `Optional` recipes
 
 * [⚓](#optional-construction) Constructing an `Optional`.
 * [⚓](#optionalfromnullablenullablevalue) Constructing an `Optional` using a nullable value.
@@ -48,6 +63,10 @@ This allows you to avoid the dreaded `x is undefined` class of Javascript errors
 * [⚓](#optional-serialization) `Optional` serialization.
 * [⚓](#optionalalloptionals) Constructing a `Some` wrapping an array of values from other `Some` instances.
 * [⚓](#optionalwhentruthy-value) Construct a new Some if a condition is met.
+
+#### `Result` recipes
+
+*Coming soon*
 
 ## General tips
 

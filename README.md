@@ -35,7 +35,7 @@ A `Result` models the result of a computation chain in a functional way. In othe
 
 ### What's the point?
 
-The point here is the same as for `Optional` (safety), but with a focus on readability. Returning a `Result` from a function signals that your function may fail and gives you details about the failure when it occurs. In certain contexts, you can also see it as an interruptible `Promise` chain. If you never liked `async`/`await` because of the verbosity of error handling using `try`/`catch`, then you'll love `Result`. A nice advantage is that it makes it easy to be specific about errors without writing tons of try catch blocks, which makes your error code more testable.
+The point here is the same as for `Optional` (safety), but with a focus on readability. Returning a `Result` from a function signals that your function may fail and gives you details about the failure when it occurs. In certain contexts, you can also see it as an interruptible `Promise` chain. If you never liked `async`/`await` because of the verbosity of error handling using `try`/`catch`, then you'll love `Result`. A nice advantage is that it makes it easy to be specific about errors without writing tons of try catch blocks, which makes your error-handling code more testable.
 
 ### Recipes
 

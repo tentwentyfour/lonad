@@ -136,6 +136,28 @@ describe('The Optional type', () => {
       });
     });
 
+    describe('tap(λ)', () => {
+      it('should pass λ its value and return an equivalent Some', () => {
+        const initialA = 2;
+        const value    = 3;
+
+        let a = initialA;
+
+        const some = Some(value);
+
+        const result = some.tap(x => {
+          a += x;
+
+          return a;
+        });
+
+        expect(result).to.equal(some);
+        expect(result.getOrElse(0)).to.equal(value);
+
+        expect(a).to.equal(initialA + value);
+      });
+    });
+
     describe('recover(λ)', () => {
       it('should return an equivalent Some', () => {
         const some = Some();
@@ -399,6 +421,12 @@ describe('The Optional type', () => {
     describe('map(λ)', () => {
       it('should return a None()', () => {
         expect(None().map(increment).valueAbsent).to.equal(true);
+      });
+    });
+
+    describe('tap(λ)', () => {
+      it('should return a None()', () => {
+        expect(None().tap(increment).valueAbsent).to.equal(true);
       });
     });
 

@@ -63,6 +63,10 @@ Object.assign(Ok.prototype, {
   recoverWhen:      returnThis.binary,
   abortOnError:     returnThis.nullary,
 
+  tap(λ) {
+    return transformResult(() => λ(this.value), constant(this));
+  },
+
   satisfies(predicate) {
     return transformResult(() => predicate(this.value), identity);
   },
@@ -147,6 +151,7 @@ Error.prototype = Object.create(Result.prototype);
 Object.assign(Error.prototype, {
   expectMap:        returnThis.unary,
   map:              returnThis.unary,
+  tap:              returnThis.unary,
   filter:           returnThis.unary,
   reject:           returnThis.unary,
   flatMap:          returnThis.unary,
@@ -232,6 +237,7 @@ Object.assign(Aborted.prototype, {
   toOptional:       None,
   expectMap:        returnThis.unary,
   map:              returnThis.unary,
+  tap:              returnThis.unary,
   flatMap:          returnThis.unary,
   filter:           returnThis.unary,
   reject:           returnThis.unary,
@@ -305,6 +311,7 @@ const callWrappedResultMethod = methodName => {
 Object.assign(Pending.prototype, {
   asynchronous:     returnThis.nullary,
   map:              callWrappedResultMethod('map'),
+  tap:              callWrappedResultMethod('tap'),
   filter:           callWrappedResultMethod('filter'),
   reject:           callWrappedResultMethod('reject'),
   recover:          callWrappedResultMethod('recover'),

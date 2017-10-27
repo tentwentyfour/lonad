@@ -82,6 +82,71 @@ describe('The Result type', () => {
       });
     });
 
+    describe('tap(λ)', () => {
+      it('should return an equivalent Ok instance and pass λ its value', () => {
+        const value = 3;
+
+        let called = false;
+
+        const ok = Ok(value);
+
+        const transformed = ok.tap(x => {
+          called = true;
+
+          return value + 1;
+        });
+
+        expect(called).to.equal(true);
+        expect(ok === transformed).to.equal(true);
+
+        expect(ok.merge()).to.equal(value);
+        expect(transformed.merge()).to.equal(value);
+      });
+
+      it('should catch exceptions thrown in the map callback and return an Aborted', () => {
+        const expected = 4;
+
+        const result = Ok().tap(() => {
+          throw expected;
+        });
+
+        expect(result.isError).to.equal(true);
+        expect(result.isAborted).to.equal(true);
+        expect(result.merge()).to.equal(expected);
+      });
+
+      it('should return a Pending wrapping an Ok if λ is asynchronous', done => {
+        const expected = 4;
+
+        const result = Ok(expected).tap(asyncIncrement);
+
+        expect(result.isAsynchronous).to.equal(true);
+
+        result
+        .toPromise()
+        .catch(() => Promise.reject(new Exception('The promise is not rejected')), increment)
+        .then(value => {
+          expect(value).to.equal(expected);
+        })
+        .then(done, done);
+      });
+
+      it('should return a Pending wrapping an Aborted if λ throws asynchronously', done => {
+        const result = Ok().map(constant(Promise.reject()));
+
+        expect(result.isAsynchronous).to.equal(true);
+
+        result
+        .promise
+        .then(wrappedResult => {
+          expect(wrappedResult.isError).to.equal(true);
+          expect(wrappedResult.isAborted).to.equal(true);
+          expect(wrappedResult.isResultInstance).to.equal(true);
+        })
+        .then(done, done);
+      });
+    });
+
     describe('map(λ)', () => {
       it('should return a new Ok instance holding the value of λ for the value of the Ok instance', () => {
         const value = 3;
@@ -500,6 +565,12 @@ describe('The Result type', () => {
       });
     });
 
+    describe('tap(λ)', () => {
+      it('should return an Error()', () => {
+        expect(Error().tap(increment).isError).to.equal(true);
+      });
+    });
+
     describe('mapError(λ)', () => {
       it('should return a new Error instance holding the value of λ for the value of the Error instance', () => {
         const value = 3;
@@ -891,6 +962,7 @@ describe('The Result type', () => {
         ['satisfies',                                                   [() => true]],
         ['abortOnErrorWith',                                             [increment]],
         ['map',                                                          [increment]],
+        ['tap',                                                          [increment]],
         ['mapError',                                                     [increment]],
         ['recover',                                                    [constant(1)]],
         ['filter',                                                  [constant(true)]],
@@ -962,6 +1034,7 @@ describe('The Result type', () => {
       .flatMap(increment)
       .recover(increment)
       .property('a')
+      .tap(increment)
       .expectProperty('a')
       .reject(constant(true))
       .recoverWhen(increment, increment)

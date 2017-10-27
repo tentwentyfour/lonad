@@ -63,6 +63,7 @@ The point here is the same as for `Optional` (safety), but with a focus on reada
 * [⚓](#optional-serialization) `Optional` serialization.
 * [⚓](#optionalalloptionals) Constructing a `Some` wrapping an array of values from other `Some` instances.
 * [⚓](#optionalwhentruthy-value) Construct a new Some if a condition is met.
+* [⚓](#optionals-tapλ) Executing a function on a Some without changing it.
 
 #### `Result` recipes
 
@@ -413,4 +414,14 @@ Optional.all([None(),  Some(3), Some(3)]);
 
 // This evaluates to Some([1, 2, 3]).
 Optional.all([Some(1), Some(2), Some(3)]);
+```
+
+#### `Optional`'s `tap(λ)`
+
+```javascript
+// This prints 'hello' and evaluates to Some(3).
+Optional.Some(3).tap(x => console.log("Hello") || x + 1);
+
+// This does not call λ and does not print 'Test'.
+Optional.None().tap(x => console.log("Test"));
 ```

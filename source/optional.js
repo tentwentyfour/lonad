@@ -56,8 +56,8 @@ Object.assign(None.prototype, {
     return elseValue;
   },
 
-  get() {
-    throw new Error('Cannot unwrap None instances');
+  get(message) {
+    throw new Error(message || 'Cannot unwrap None instances');
   },
 
   match(callbacks) {

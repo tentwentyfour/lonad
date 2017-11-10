@@ -460,11 +460,14 @@ describe('The Optional type', () => {
 
     describe('get(λ)', () => {
       it('should throw an error', () => {
+        const message = 'a';
+
         try {
-          None().get();
+          None().get(message);
 
           expect('This should not happen').to.equal('but it did!');
         } catch (error) {
+          expect(error.message).to.equal(message);
           // Do nothing!
         }
       });

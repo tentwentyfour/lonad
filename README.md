@@ -127,7 +127,7 @@ Optional.fromNullable(undefined);
 
 #### `Optional`'s `get()`
 
-*Note: using this is **NOT** recommended!*
+*Note: using this is **NOT** recommended!*.
 
 ```javascript
 // This will evaluate to 2.
@@ -135,6 +135,14 @@ Some(2).get();
 
 // This will throw.
 None().get();
+
+// You can also pass a custom exception message:
+try {
+  None().get("message");
+} catch (error) {
+  // This will log "message".
+  console.log(error.message);
+}
 ```
 
 #### `Optional` value presence

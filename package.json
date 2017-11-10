@@ -1,7 +1,7 @@
 {
   "name": "lonad",
   "version": "0.0.30",
-  "description": "Optional and Result monads implentations",
+  "description": "Optional and Result monads implementations",
   "main": "index.js",
   "scripts": {
     "test": "node ./node_modules/.bin/mocha"

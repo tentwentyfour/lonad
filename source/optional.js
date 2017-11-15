@@ -111,7 +111,7 @@ Object.assign(Some.prototype, {
     return fromNullable(this.value[propertyName]);
   },
 
-  get() {
+  get(_) {
     return this.value;
   },
 

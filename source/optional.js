@@ -173,7 +173,7 @@ const all = optionals => {
     return None();
   }
 
-  return Some(optionals.map(Optional.get));
+  return Some(optionals.map(Optional.get(undefined)));
 };
 
 const when = (truthy, value) => {

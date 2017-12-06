@@ -64,6 +64,7 @@ The point here is the same as for `Optional` (safety), but with a focus on reada
 * [⚓](#optionalalloptionals) Constructing a `Some` wrapping an array of values from other `Some` instances.
 * [⚓](#optionalwhentruthy-value) Construct a new Some if a condition is met.
 * [⚓](#optionals-tapλ) Executing a function on a Some without changing it.
+* [⚓](#optionallift) Transforming a function that operates on wrapped value to make them accept Optionals
 
 #### `Result` recipes
 
@@ -432,4 +433,20 @@ Optional.Some(3).tap(x => console.log("Hello") || x + 1);
 
 // This does not call λ and does not print 'Test'.
 Optional.None().tap(x => console.log("Test"));
+```
+
+#### Optional.lift
+
+*The `this` binding of the wrapper function will be passed to the lifted function.*
+
+```javascript
+const base      = 3;
+const increment = x => x + 1;
+
+const expected = increment(base);
+
+const liftedIncrement = Optional.lift(increment);
+
+// Evaluates to 3.
+liftedIncrement(Optional.Some(base)).getOrElse(0)
 ```

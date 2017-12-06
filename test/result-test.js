@@ -1112,6 +1112,30 @@ describe('The Result type', () => {
     });
   });
 
+  describe('lift(λ)', () => {
+    it('should return a version of λ that can operate on results', () => {
+      const base = 3;
+
+      const expected = increment(base);
+
+      const liftedIncrement = Result.lift(increment);
+
+      expect(liftedIncrement(Result.Ok(base)).merge()).to.equal(expected);
+    });
+
+    it('should forward the `this` binding of the wrapper function to λ', () => {
+      const value = 3;
+
+      function getter() {
+        return this.value;
+      }
+
+      const liftedGetter = Result.lift(getter.bind({ value }));
+
+      expect(liftedGetter(Result.Ok()).merge()).to.equal(value);
+    });
+  });
+
   describe('when(truthy)', () => {
     it('should convert truthies to Ok instances', () => {
       [1, 'a', 3, {}, []].forEach(truthy => {

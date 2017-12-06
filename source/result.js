@@ -387,6 +387,12 @@ const when = (truthy, value, error) => {
   return Error(error);
 };
 
+const lift = λ => {
+  return function liftedOptionalMap(result) {
+    return result.map(λ.bind(this));
+  };
+};
+
 [['transform', 'map']].forEach(([alias, method]) => {
   Ok.prototype[alias]      = Ok.prototype[method];
   Error.prototype[alias]   = Error.prototype[method];
@@ -398,6 +404,7 @@ defineStaticFunctions(Ok.prototype, Result);
 
 Object.assign(Result, {
   Ok,
+  lift,
   when,
   Error,
   expect,

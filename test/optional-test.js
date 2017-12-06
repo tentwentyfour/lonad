@@ -60,30 +60,6 @@ describe('The Optional type', () => {
     });
   });
 
-  describe('lift(λ)', () => {
-    it('should return a version of λ that can operate on optionals', () => {
-      const base = 3;
-
-      const expected = increment(base);
-
-      const liftedIncrement = Optional.lift(increment);
-
-      expect(liftedIncrement(Optional.Some(base)).getOrElse(base)).to.equal(expected);
-    });
-
-    it('should forward the `this` binding of the wrapper function to λ', () => {
-      const value = 3;
-
-      function getter() {
-        return this.value;
-      }
-
-      const liftedGetter = Optional.lift(getter.bind({ value }));
-
-      expect(liftedGetter(Optional.Some()).getOrElse(value + 1)).to.equal(value);
-    });
-  });
-
   describe('fromParsedJson(optional)', () => {
     it('should throw when passed non-destringified Optionals', () => {
       let thrown = false;

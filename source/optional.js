@@ -176,12 +176,6 @@ const all = optionals => {
   return Some(optionals.map(Optional.get(undefined)));
 };
 
-const lift = λ => {
-  return function liftedOptionalMap(optional) {
-    return optional.map(λ.bind(this));
-  };
-};
-
 const when = (truthy, value) => {
   if (truthy) {
     return Some(value);
@@ -207,6 +201,6 @@ const first = optionals => {
 
 defineStaticFunctions(Some.prototype, Optional);
 
-Object.assign(Optional, { Some, None, fromNullable, fromParsedJson, all, when, first, lift });
+Object.assign(Optional, { Some, None, fromNullable, fromParsedJson, all, when, first });
 
 module.exports = Optional;

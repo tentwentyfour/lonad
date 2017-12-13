@@ -36,6 +36,13 @@ describe('The Result type', () => {
       it('should return false when the wrapped value does not satisfy the passed predicate', () => {
         expect(Ok(3).satisfies(x => x === 2)).to.equal(false);
       });
+
+      it('should return Boolean results', () => {
+        expect(Ok(2).satisfies(x => x)).to.equal(true);
+        expect(Ok(0).satisfies(x => x)).to.equal(false);
+        expect(Error().satisfies(x => x)).to.equal(false);
+        expect(Aborted().satisfies(x => x)).to.equal(false);
+      });
     });
 
     describe('valueEquals(value)', () => {

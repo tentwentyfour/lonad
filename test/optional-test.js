@@ -207,9 +207,14 @@ describe('The Optional type', () => {
         expect(Some(2).satisfies(value => value === 2)).to.equal(true);
       });
 
-
       it('should return false when the wrapped value does not satisfy the given predicate', () => {
         expect(Some(3).satisfies(value => value === 2)).to.equal(false);
+      });
+
+      it('should return Boolean results', () => {
+        expect(Some(2).satisfies(x => x)).to.equal(true);
+        expect(Some(0).satisfies(x => x)).to.equal(false);
+        expect(None().satisfies(x => x)).to.equal(false);
       });
     });
 

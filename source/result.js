@@ -68,7 +68,7 @@ Object.assign(Ok.prototype, {
   },
 
   satisfies(predicate) {
-    return transformResult(() => predicate(this.value), identity);
+    return transformResult(() => predicate(this.value), Boolean);
   },
 
   valueEquals(value) {

@@ -88,7 +88,7 @@ Object.assign(Some.prototype, {
   },
 
   satisfies(predicate) {
-    return predicate(this.value);
+    return Boolean(predicate(this.value));
   },
 
   valueEquals(value) {

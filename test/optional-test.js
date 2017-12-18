@@ -1,8 +1,8 @@
 /* global describe, it */
 
-const { expect } = require('chai');
-const constant   = require('lodash.constant');
-const Optional   = require('../source/optional');
+const { expect }   = require('chai');
+const { constant } = require('../source/utils');
+const Optional     = require('../source/optional');
 
 const { Some, None } = Optional;
 

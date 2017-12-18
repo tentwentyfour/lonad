@@ -1,12 +1,10 @@
 const defineStaticFunctions = require('helpbox/source/demethodify-prototype');
 const throwArgument         = require('./throw-argument');
-const identity              = require('lodash.identity');
-const property              = require('lodash.property');
-const constant              = require('lodash.constant');
 const returnThis            = require('./return-this');
-const pipe                  = require('lodash.flow');
 const Exception             = require('./exception');
 const Optional              = require('./optional');
+
+const { identity, constant, pipe, property } = require('./utils');
 
 const { Some, None } = Optional;
 const isPromise      = object => Boolean(object && object.then);

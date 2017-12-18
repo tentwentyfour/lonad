@@ -1,5 +1,4 @@
-const some                  = require('lodash.some');
-const identity              = require('lodash.identity');
+const { identity }          = require('./utils');
 const throwArgument         = require('./throw-argument');
 const unaryReturnThis       = require('./return-this').unary;
 const defineStaticFunctions = require('helpbox/source/demethodify-prototype');
@@ -169,7 +168,7 @@ const fromParsedJson = object => {
 };
 
 const all = optionals => {
-  if (some(optionals, 'valueAbsent')) {
+  if (optionals.some(optional => optional.valueAbsent)) {
     return None();
   }
 

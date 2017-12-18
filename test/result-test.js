@@ -1,11 +1,10 @@
 /* global describe, it */
 
-const { expect }     = require('chai');
-const identity       = require('lodash.identity');
-const constant       = require('lodash.constant');
-const Result         = require('../source/result');
-const { Some, None } = require('../source/optional');
-const Exception      = require('../source/exception');
+const { expect }             = require('chai');
+const Result                 = require('../source/result');
+const { Some, None }         = require('../source/optional');
+const Exception              = require('../source/exception');
+const { constant, identity } = require('../source/utils');
 
 const { Ok, Error, Aborted, Pending } = Result;
 

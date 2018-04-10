@@ -331,6 +331,14 @@ describe('The Optional type', () => {
       });
     });
 
+    describe('replace(value)', () => {
+      it('should return new Some instances with replaced values', () => {
+        const value = 3;
+
+        expect(Some(value).replace(value + 1).get()).to.equal(value + 1);
+      });
+    });
+
     describe('match(callbacks)', () => {
       it('should execute callback.Some if it exists', () => {
         const expected = 3;
@@ -420,6 +428,14 @@ describe('The Optional type', () => {
     describe('nullableMap(λ)', () => {
       it('should return a None()', () => {
         expect(None().nullableMap(increment).valueAbsent).to.equal(true);
+      });
+    });
+
+    describe('replace(value)', () => {
+      it('should return a None', () => {
+        const value = 3;
+
+        expect(None().replace(value).valueAbsent).to.equal(true);
       });
     });
 

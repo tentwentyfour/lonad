@@ -44,6 +44,7 @@ The point here is the same as for `Optional` (safety), but with a focus on reada
 * [⚓](#optional-construction) Constructing an `Optional`.
 * [⚓](#optionalfromnullablenullablevalue) Constructing an `Optional` using a nullable value.
 * [⚓](#optionals-mapλ) Transforming the value wrapped in an `Optional`.
+* [⚓](#optionals-replacevalue) Changing the value wrapped in an `Optional` to another value.
 * [⚓](#optionals-get) Unsafe unboxing of `Optional` values.
 * [⚓](#optional-value-presence) Checking presence or absence of `Optional` value.
 * [⚓](#optionals-satisfiespredicate) Checking that a wrapped value satisfies a predicate.
@@ -190,6 +191,16 @@ Some(2).map(x => x + 1).getOrElse(0);
 
 // This will evaluate to 0.
 None().map(x => x + 1).getOrElse(0);
+```
+
+#### `Optional`'s `replace(value)`
+
+```javascript
+// This will evaluate to 3.
+Some(2).replace(3).getOrElse(0);
+
+// This will evaluate to 0.
+None().replace(3).getOrElse(0);
 ```
 
 #### `Optional`'s `filter(λ)`

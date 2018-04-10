@@ -30,6 +30,7 @@ Object.assign(None.prototype, {
   property:         unaryReturnThis,
   nullableMap:      unaryReturnThis,
   tap:              unaryReturnThis,
+  replace:          unaryReturnThis,
 
   satisfies(_) {
     return false;
@@ -79,6 +80,10 @@ Some.prototype = Object.create(Optional.prototype);
 Object.assign(Some.prototype, {
   or:      unaryReturnThis,
   recover: unaryReturnThis,
+
+  replace(value) {
+    return Some(value);
+  },
 
   tap(λ) {
     λ(this.value);

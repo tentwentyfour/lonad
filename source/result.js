@@ -61,6 +61,10 @@ Object.assign(Ok.prototype, {
   recoverWhen:      returnThis.binary,
   abortOnError:     returnThis.nullary,
 
+  replace(value) {
+    return transformResult(constant(value), Ok);
+  },
+
   tap(λ) {
     return transformResult(() => λ(this.value), constant(this));
   },
@@ -147,13 +151,14 @@ Error = function createError(error) {
 Error.prototype = Object.create(Result.prototype);
 
 Object.assign(Error.prototype, {
-  expectMap:        returnThis.unary,
   map:              returnThis.unary,
   tap:              returnThis.unary,
   filter:           returnThis.unary,
   reject:           returnThis.unary,
   flatMap:          returnThis.unary,
+  replace:          returnThis.unary,
   property:         returnThis.unary,
+  expectMap:        returnThis.unary,
   expectProperty:   returnThis.unary,
 
   satisfies(_) {
@@ -233,17 +238,18 @@ Aborted.prototype = Object.create(Result.prototype);
 
 Object.assign(Aborted.prototype, {
   toOptional:       None,
-  expectMap:        returnThis.unary,
   map:              returnThis.unary,
   tap:              returnThis.unary,
-  flatMap:          returnThis.unary,
   filter:           returnThis.unary,
   reject:           returnThis.unary,
-  mapError:         returnThis.unary,
   recover:          returnThis.unary,
-  abortOnErrorWith: returnThis.unary,
+  flatMap:          returnThis.unary,
+  mapError:         returnThis.unary,
   property:         returnThis.unary,
+  expectMap:        returnThis.unary,
+  replace:          returnThis.unary,
   expectProperty:   returnThis.unary,
+  abortOnErrorWith: returnThis.unary,
   recoverWhen:      returnThis.binary,
   abortOnError:     returnThis.nullary,
 
@@ -313,6 +319,7 @@ Object.assign(Pending.prototype, {
   filter:           callWrappedResultMethod('filter'),
   reject:           callWrappedResultMethod('reject'),
   recover:          callWrappedResultMethod('recover'),
+  replace:          callWrappedResultMethod('replace'),
   flatMap:          callWrappedResultMethod('flatMap'),
   mapError:         callWrappedResultMethod('mapError'),
   property:         callWrappedResultMethod('property'),

@@ -209,6 +209,44 @@ describe('The Result type', () => {
       });
     });
 
+    describe('replace(value)', () => {
+      it('should return a new Ok instance holding the passed value', () => {
+        const value = 3;
+
+        const ok = Ok(value).replace(value + 1);
+
+        expect(ok.merge()).to.equal(value + 1);
+      });
+
+      it('should catch exceptions for async values and return an Aborted', async () => {
+        const expected = 4;
+
+        const result = Ok().replace(Promise.reject(expected));
+
+        const isAborted = await result.match({
+          Aborted: constant(true),
+          Error:   constant(false),
+          Ok:      constant(false)
+        });
+
+        expect(isAborted).to.equal(true);
+        expect(await result.merge()).to.equal(expected);
+      });
+
+      it('should return a Pending wrapping an Ok with the new value for async values', async () => {
+        const initial  = 2;
+        const expected = 3;
+
+        const result = Ok(initial).replace(Promise.resolve(expected));
+
+        expect(result.isAsynchronous).to.equal(true);
+
+        const value = await result.match({ Ok: identity });
+
+        expect(value).to.equal(expected);
+      });
+    });
+
     describe('mapError(λ)', () => {
       it('should return an equivalent Ok', () => {
         const value = 3;
@@ -532,6 +570,15 @@ describe('The Result type', () => {
       expect(error.isAborted).to.equal(false);
       expect(error.isError).to.equal(true);
       expect(error.isOk).to.equal(false);
+    });
+
+    describe('replace(value)', () => {
+      it('should return synchronous errors', () => {
+        const value = 5;
+
+        expect(Error(value + 1).replace(value).merge()).to.equal(value + 1);
+        expect(Error(value + 1).replace(Promise.reject(value)).merge()).to.equal(value + 1);
+      });
     });
 
     describe('satisfies(predicate)', () => {
@@ -960,25 +1007,26 @@ describe('The Result type', () => {
       const instances = [Ok(31), Error(32), Aborted(33)];
 
       const testData = [
-        ['merge',                                                                 []],
-        ['toPromise',                                                             []],
-        ['toOptional',                                                            []],
-        ['abortOnError',                                                          []],
-        ['valueEquals',                                                         [31]],
-        ['satisfies',                                                   [() => true]],
-        ['abortOnErrorWith',                                             [increment]],
-        ['map',                                                          [increment]],
-        ['tap',                                                          [increment]],
-        ['mapError',                                                     [increment]],
-        ['recover',                                                    [constant(1)]],
-        ['filter',                                                  [constant(true)]],
-        ['reject',                                                 [constant(false)]],
-        ['flatMap',                                                [constant(Ok(1))]],
-        ['getOrElse',                                                            [3]],
-        ['property',                                                     ['toFixed']],
-        ['expectProperty',                                               ['toFixed']],
-        ['expectMap',                                                  [constant(3)]],
-        ['match',    [{ Ok: constant(1), Error: constant(2), Aborted: constant(3) }]]
+        ['merge',                                                                         []],
+        ['toPromise',                                                                     []],
+        ['toOptional',                                                                    []],
+        ['abortOnError',                                                                  []],
+        ['valueEquals',                                                                 [31]],
+        ['satisfies',                                                           [() => true]],
+        ['abortOnErrorWith',                                                     [increment]],
+        ['map',                                                                  [increment]],
+        ['tap',                                                                  [increment]],
+        ['mapError',                                                             [increment]],
+        ['recover',                                                            [constant(1)]],
+        ['filter',                                                          [constant(true)]],
+        ['reject',                                                         [constant(false)]],
+        ['flatMap',                                                        [constant(Ok(1))]],
+        ['replace',                                                                      [1]],
+        ['getOrElse',                                                                    [3]],
+        ['property',                                                             ['toFixed']],
+        ['expectProperty',                                                       ['toFixed']],
+        ['expectMap',                                                          [constant(3)]],
+        ['match',            [{ Ok: constant(1), Error: constant(2), Aborted: constant(3) }]]
       ];
 
       Promise
@@ -1036,6 +1084,7 @@ describe('The Result type', () => {
       const aborted = Aborted(value)
       .map(increment)
       .abortOnError()
+      .replace(Promise.resolve(5))
       .abortOnErrorWith(increment)
       .flatMap(increment)
       .recover(increment)

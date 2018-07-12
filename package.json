@@ -1,6 +1,6 @@
 {
   "name": "lonad",
-  "version": "0.0.37",
+  "version": "0.0.38",
   "description": "Optional and Result monads implementations",
   "main": "index.js",
   "scripts": {
@@ -27,7 +27,7 @@
     "mocha": "^3.4.2"
   },
   "dependencies": {
-    "helpbox": "^5.7.0",
+    "helpbox": "^7.1.1",
     "lodash.flow": "^3.5.0"
   }
 }

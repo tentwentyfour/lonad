@@ -61,6 +61,10 @@ Object.assign(Ok.prototype, {
   recoverWhen:      returnThis.binary,
   abortOnError:     returnThis.nullary,
 
+  get() {
+    return this.value;
+  },
+
   replace(value) {
     return transformResult(constant(value), Ok);
   },
@@ -161,6 +165,10 @@ Object.assign(Error.prototype, {
   expectMap:        returnThis.unary,
   expectProperty:   returnThis.unary,
 
+  get() {
+    throw this.error;
+  },
+
   satisfies(_) {
     return false;
   },
@@ -253,6 +261,10 @@ Object.assign(Aborted.prototype, {
   recoverWhen:      returnThis.binary,
   abortOnError:     returnThis.nullary,
 
+  get() {
+    throw this.error;
+  },
+
   satisfies(_) {
     return false;
   },
@@ -333,6 +345,10 @@ Object.assign(Pending.prototype, {
   getOrElse:        pipe(callWrappedResultMethod('getOrElse'), property('promise')),
   toOptional:       pipe(callWrappedResultMethod('toOptional'), property('promise')),
   valueEquals:      pipe(callWrappedResultMethod('valueEquals'), property('promise')),
+
+  get() {
+    return this.toPromise();
+  },
 
   toPromise() {
     return this.promise.then(Result.toPromise);

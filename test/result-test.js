@@ -482,6 +482,14 @@ describe('The Result type', () => {
       });
     });
 
+    describe('get()', () => {
+      it('should unwrap Ok instances', () => {
+        const value = 3;
+
+        expect(Ok(value).get()).to.equal(value);
+      });
+    });
+
     describe('abortOnError()', () => {
       it('should return an equivalent Ok', () => {
         const expected = 3;
@@ -610,6 +618,18 @@ describe('The Result type', () => {
       it('should return an Error()', () => {
         expect(Error().expectProperty('a').isError).to.equal(true);
       });
+    });
+
+    describe('get()', () => {
+      const value = 3;
+
+      try {
+        Error(value).get();
+
+        expect(false).to.equal(true);
+      } catch (error) {
+        expect(error).to.equal(value);
+      }
     });
 
     describe('map(λ)', () => {
@@ -1065,6 +1085,39 @@ describe('The Result type', () => {
       )
       .then(() => done(), error => done(error));
     });
+
+    describe('get()', () => {
+      it('should return the right values for Ok instances', async () => {
+        const value = 3;
+
+        const asyncOk = Pending(Promise.resolve(Ok(value)));
+
+        const unwrapped = asyncOk.get();
+
+        expect(unwrapped.then !== undefined).to.equal(true);
+        expect(await unwrapped).to.equal(value);
+      });
+
+      it('should throw for Error/Aborted instances', async () => {
+        const value = 3;
+
+        return Promise.all([Aborted, Error].map(async Type => {
+          const pending = Pending(Promise.resolve(Type(value)));
+
+          const unwrapped = pending.get();
+
+          expect(unwrapped.then !== undefined).to.equal(true);
+
+          try {
+            await unwrapped;
+
+            expect(false).to.equal(true);
+          } catch (error) {
+            expect(error).to.equal(value);
+          }
+        }));
+      });
+    });
   });
 
   describe('The Aborted subtype', () => {
@@ -1102,6 +1155,18 @@ describe('The Result type', () => {
       expect(aborted.valueEquals(value)).to.equal(false);
       expect(aborted.satisfies(() => true)).to.equal(false);
       expect(aborted.satisfies(() => false)).to.equal(false);
+    });
+
+    describe('get()', () => {
+      const value = 3;
+
+      try {
+        Aborted(value).get();
+
+        expect(false).to.equal(true);
+      } catch (error) {
+        expect(error).to.equal(value);
+      }
     });
 
     describe('getOrElse(value)', () => {

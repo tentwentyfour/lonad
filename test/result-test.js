@@ -63,6 +63,20 @@ describe('The Result type', () => {
     });
 
     describe('expectProperty(propertyName)', () => {
+      it('should return a Ok with the right value if the wrapped value has an property named `propertyName` that is 0, "" or NaN', () => {
+        const ok1 = Ok({ a: NaN });
+        const ok2 = Ok({ a: '' });
+        const ok3 = Ok({ a: 0 });
+
+        expect(ok1.expectProperty('a').isOk).to.equal(true);
+        expect(ok2.expectProperty('a').isOk).to.equal(true);
+        expect(ok3.expectProperty('a').isOk).to.equal(true);
+
+        expect(ok2.expectProperty('a').value).to.equal(ok2.value.a);
+        expect(ok3.expectProperty('a').value).to.equal(ok3.value.a);
+        expect(isNaN(ok1.expectProperty('a').value)).to.equal(true);
+      });
+
       it('should return a Ok with the right value if the wrapped value has an expectable property named `propertyName` that is a OK', () => {
         const ok = Ok({ a: Ok(2) });
 

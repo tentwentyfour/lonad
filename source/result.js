@@ -375,8 +375,10 @@ const fromPromise = promise => {
 };
 
 const expect = optionalOrResultOrPromise => {
-  if (!optionalOrResultOrPromise) {
+  if ([null, undefined].includes(optionalOrResultOrPromise)) {
     return Error();
+  } else if (typeof optionalOrResultOrPromise !== 'object') {
+    return Ok(optionalOrResultOrPromise);
   }
 
   if (isPromise(optionalOrResultOrPromise)) {

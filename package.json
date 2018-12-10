@@ -1,6 +1,6 @@
 {
   "name": "lonad",
-  "version": "0.0.40",
+  "version": "0.0.41",
   "description": "Optional and Result monads implementations",
   "main": "index.js",
   "scripts": {
@@ -20,14 +20,14 @@
   "author": "Florian Simon",
   "license": "MIT",
   "devDependencies": {
-    "chai": "^4.0.2",
-    "eslint": "^4.1.1",
+    "chai": "^4.2.0",
+    "eslint": "^5.10.0",
     "eslint-config-airbnb": "^15.0.2",
-    "eslint-plugin-import": "^2.7.0",
-    "mocha": "^3.4.2"
+    "eslint-plugin-import": "^2.14.0",
+    "mocha": "^5.2.0"
   },
   "dependencies": {
-    "helpbox": "^7.1.1",
+    "helpbox": "^7.2.0",
     "lodash.flow": "^3.5.0"
   }
 }

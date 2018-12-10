@@ -1,5 +1,5 @@
 
-# Lonad (0.0.40)
+# Lonad (0.0.41)
 by [Florian Simon](https://github.com/floriansimon1)
 
 

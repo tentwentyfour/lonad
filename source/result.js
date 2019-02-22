@@ -336,6 +336,7 @@ Object.assign(Pending.prototype, {
   mapError:         callWrappedResultMethod('mapError'),
   property:         callWrappedResultMethod('property'),
   expectMap:        callWrappedResultMethod('expectMap'),
+  recoverWhen:      callWrappedResultMethod('recoverWhen'),
   abortOnError:     callWrappedResultMethod('abortOnError'),
   expectProperty:   callWrappedResultMethod('expectProperty'),
   abortOnErrorWith: callWrappedResultMethod('abortOnErrorWith'),

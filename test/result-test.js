@@ -1055,6 +1055,7 @@ describe('The Result type', () => {
         ['filter',                                                          [constant(true)]],
         ['reject',                                                         [constant(false)]],
         ['flatMap',                                                        [constant(Ok(1))]],
+        ['recoverWhen',                                                 [Boolean, increment]],
         ['replace',                                                                      [1]],
         ['getOrElse',                                                                    [3]],
         ['property',                                                             ['toFixed']],

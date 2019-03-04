@@ -23,6 +23,7 @@ interface ParsedOptional<T> extends OptionalMembers {
 
 export interface Optional<T> extends OptionalMembers {
   nullableMap<U>(λ: NullableTransformationFunction<T, U>): Optional<U>;
+  or<U>(replacement: (() => Optional<U>) | Optional<U>):   Optional<T> | Optional<U>;
   match<U, V>(clauses: OptionalMatchClauses<T, U, V>):     U | V;
   transform<U>(λ: TransformationFunction<T, U>):           Optional<U>;
   map<U>(λ: TransformationFunction<T, U>):                 Optional<U>;
@@ -30,7 +31,6 @@ export interface Optional<T> extends OptionalMembers {
   optionalProperty<U>(property: string):                   Optional<U>;
   nullableProperty<U>(property: string):                   Optional<U>;
   flatMap<U>(λ: (T) => Optional<U>):                       Optional<U>;
-  or<U>(replacement: Optional<U>):                         Optional<T> | Optional<U>;
   tap(λ: SideEffectsFunction<T>):                          Optional<T>;
   property<U>(property: string):                           Optional<U>;
   getOrElse<U>(replacement: U):                            T | U;
@@ -120,9 +120,9 @@ interface OptionalModule {
     optional: Optional<T>
   ): Optional<T>;
 
-  or<T, U>(replacement: Optional<U>): OptionalMapper<T, U>;
+  or<T, U>(replacement: (() => Optional<U>) | Optional<U>): OptionalMapper<T, U>;
   or<T, U>(
-    replacement: Optional<U>,
+    replacement: (() => Optional<U>) | Optional<U>,
     optional:    Optional<T>
   ): Optional<U>;
 

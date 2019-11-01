@@ -1259,7 +1259,7 @@ describe('The Result type', () => {
       });
     });
 
-    it('should convert falsies to Some instances', () => {
+    it('should convert falsies to Error instances', () => {
       ['', NaN, 0, null, undefined].forEach(falsy => {
         const value = 4;
 

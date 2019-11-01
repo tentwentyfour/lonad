@@ -7,7 +7,7 @@ module.exports = {
     return this;
   },
 
-  binary: function unaryReturnThis(unusedArgument, secondUnusedArgument) {
+  binary: function binaryReturnThis(unusedArgument, secondUnusedArgument) {
     return this;
   }
 };

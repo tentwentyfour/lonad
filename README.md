@@ -896,7 +896,7 @@ Result.expect(Result.Error());
 // This evaluates to Ok(x => x * 3)
 Result.expect(x => x * 3);
 
-// This evaluates to Ok()
+// This evaluates to Ok(4)
 Result.expect(Optional.Some(4));
 
 // This evaluates to Error()
@@ -905,7 +905,9 @@ Result.expect(Optional.None());
 
 #### `Result`'s `get`
 
-`Result`'s `get` works similar to `Optional`'s [`get`](#optionals-get) in that it unwraps the raw value contained in your `Result`, but doesn't take a message:
+`Result`'s `get` works similar to `Optional`'s [`get`](#optionals-get) in that it unwraps the raw value contained in your `Result`. However, `Result`'s `get` doesn't take a message.
+
+Calling `get` on an `Error` or `Aborted` throws an error, while calling it on a `Pending` returns a `Promise`.
 
 ```javascript
 // This evaluates to 6
@@ -915,7 +917,7 @@ Ok(3).map(x => x*2).get();
 Error('Oops').get();
 Aborted('Oops').get();
 
-// Returns a Promise
+// Evalualtes to a Promise
 Pending().get();
 ```
 
@@ -944,9 +946,9 @@ Ok(3).map(x => x * 2).getOrElse(8);
 Error().map(x => x * 2).getOrElse(8);
 ```
 
-#### `Result`'s `replace`
+#### `Result`'s `replace(value)`
 
-`Result`'s `replace` will replace any content that it currently wraps by the value that you pass to `replace`:
+`Result`'s `replace` will replace values wrapped in the `Ok` subtype by the `value` that you pass to `replace`.
 
 ```javascript
 // This evaluates to Ok(2)
@@ -961,7 +963,7 @@ Aborted().replace(2);
 
 #### `Result`'s `satisfies(predicate)`
 
-An `Error` never `satisfies` any predicates and always evaluates to `false`.
+`Error` or `Aborted` subtypes never `satisfie` any predicates and always evaluate to `false`.
 
 ```javascript
 // This evaluates to true
@@ -1002,11 +1004,10 @@ Aborted('Dead').mapError(x => x + 1);
 
 #### `Result`'s `tap(λ)`
 
-Like `map`, but returns the value wrapped by your Result unmodified.
-You'd mostly use this if you need the value of your Result for side-effects, such as modifying an existing variable that lives outside your `Result` chain, or using the `Result` in an API call, but continuing with the original value, not the result from the API call.
+Like `map`, but returns the value wrapped by your `Result` unmodified.
+You'd mostly use this if you need the value of your `Result` for side-effects, such as modifying an existing variable that lives outside your `Result` chain, or using the `Result` in an API call, but continuing with the original value, not the return value from the API call.
 
 ```javascript
-
 // Evaluates to 4
 Ok(4).tap(x => x + 1);
 
@@ -1021,11 +1022,61 @@ Aborted().tap(x => x + 1);
 
 If your `Result` is an `Ok`, `flatMap` maps your `Result` to `λ`, then runs the result through `Result.expect`.
 
-TODO: I don't fully understand the difference to expectMap(λ)
+__TODO__: I don't fully understand the difference to expectMap(λ)
 
 ```javascript
 // Evaluates to "1,2,31" <-- is that expected?
 Ok([1, 2, 3]).flatMap(x => x + 1);
+```
+
+#### `Result`'s `expectMap(λ)`
+
+First maps the `Result` to λ, then runs an expect on it:
+
+_TODO_ !! THIS IS'T WORKING AS EXPECTED!!
+
+Also, what's the difference between expectMap and flatMap ?
+
+```javascript
+// Evaluates to Ok(['Bearer', 'xyz'])
+Result
+.expect({'authorization': 'Bearer xyz'})
+.expectMap(R.split('Bearer'))
+```
+
+#### `Result`'s `expectProperty(propertyName)`
+
+When your result is an object, runs an `expect()` on the given property and returns
+that property wrapped in a `Result`.
+
+```javascript
+const header = {
+  'authorization': 'Bearer xyz',
+  'accept-encoding': 'UTF-8',
+};
+
+// This evaluates to Ok('Bearer xyz')
+Result.Ok(header).expectProperty('authorization');
+
+// This evaluates to Error
+Result.Ok(header).expectProperty('x-custom-header');
+```
+
+#### `Result`'s `property(propertyName)`
+
+Extracts a given property from a Result.
+
+```javascript
+const header = {
+  'authorization': 'Bearer xyz',
+  'accept-encoding': 'UTF-8',
+};
+
+// This evaluates to Ok('Bearer xyz')
+Result.Ok(header).property('authorization');
+
+// This evaluates to Ok(undefined) <-- not sure we want this?
+Result.Ok(header).property('authorization');
 ```
 
 #### `Result`'s `valueEquals(value)`
@@ -1139,6 +1190,8 @@ Error('Oops').abortOnError();
 
 Transforms an `Error` into an unrecoverable `Aborted` by substituting or applying `λOrValue`
 
+__TODO__: The last case throws, is that expected?
+
 ```javascript
 // Evaluates to Ok(3)
 Ok(3).abortOnErrorWith(4);
@@ -1148,59 +1201,6 @@ Error('Oops').abortOnErrorWith('You shall not pass!');
 
 // Evaluates to Aborted('Oops, that was a failure')
 Error('Oops').abortOnErrorWith(x => `${x}, that was a failure`);
-```
-
-__TODO__: The last case throws, is that expected?
-
-
-#### `Result`'s `expectMap(λ)`
-
-First maps the `Result` to λ, then runs an expect on it:
-
-TODO !! THIS IS'T WORKING AS EXPECTED!!
-
-Also, what's the difference between expectMap and flatMap ?
-
-```javascript
-// Evaluates to Ok(['Bearer', 'xyz'])
-Result
-.expect({'authorization': 'Bearer xyz'})
-.expectMap(split('Bearer'))
-```
-
-#### `Result`'s `expectProperty(propertyName)`
-
-When your result is an object, runs an `expect()` on the given property and returns
-that property wrapped in a `Result`.
-
-```javascript
-const header = {
-  'authorization': 'Bearer xyz',
-  'accept-encoding': 'UTF-8',
-};
-
-// This evaluates to Ok('Bearer xyz')
-Result.Ok(header).expectProperty('authorization');
-
-// This evaluates to Error
-Result.Ok(header).expectProperty('x-custom-header');
-```
-
-#### `Result`'s `property(propertyName)`
-
-Extracts a given property from a Result.
-
-```javascript
-const header = {
-  'authorization': 'Bearer xyz',
-  'accept-encoding': 'UTF-8',
-};
-
-// This evaluates to Ok('Bearer xyz')
-Result.Ok(header).property('authorization');
-
-// This evaluates to Ok(undefined) <-- not sure we want this?
-Result.Ok(header).property('authorization');
 ```
 
 #### `Result`'s `asynchronous`

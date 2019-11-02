@@ -861,8 +861,7 @@ Result.when(false, 3, 'Oops');
 
 #### `Result`'s `try(λ)`
 
-If the result of executing `λ` is a `Result`, then this `Result` is returned.
-If, however, the result of executing `λ` is a false, `null`, `undefined` or any scalar value, then it gets mapped to `Ok` for any values mapping to `Optional.Some` and to `Error` for any values mapping to `Optional.None`.
+Takes a `λ` and returns the result wrapped in a `Result`.
 
 ```javascript
 // Evaluates to Ok(3)
@@ -875,7 +874,9 @@ Result.try(() => 3);
 Result.try(() => null);
 ```
 
-#### `Result`'s `expect()`
+#### `Result`'s `expect(object)`
+
+Takes any type of object and return it wrapped in a `Result` with the appropriate subtype.
 
 ```javascript
 // This evaluates to Result.Error

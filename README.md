@@ -954,11 +954,11 @@ Error().map(x => x * 2).getOrElse(8);
 // This evaluates to Ok(2)
 Ok(3).replace(2);
 
-// This evaluates to Error
-Error().replace(2);
+// This evaluates to Error(3)
+Error(3).replace(2);
 
-// This evaluates to Aborted
-Aborted().replace(2);
+// This evaluates to Aborted(3)
+Aborted(3).replace(2);
 ```
 
 #### `Result`'s `satisfies(predicate)`
@@ -973,8 +973,8 @@ Ok(3).satisfies(x => x * 3 === 9);
 Ok(3).satisfies(x => x * 2 === 7);
 
 // These also evaluate to false
-Error().satisfies(x => x === 3);
-Aborted().satisfies(x => x === 3);
+Error(3).satisfies(x => x === 3);
+Aborted(3).satisfies(x => x === 3);
 ```
 
 #### `Result`'s `map(λ)`
@@ -998,7 +998,7 @@ Error(4).mapError(x => x + 1);
 // Evaluates to 4
 Ok(4).mapError(x => x + 1);
 
-// Evaluates to Aborted
+// Evaluates to Aborted('Dead')
 Aborted('Dead').mapError(x => x + 1);
 ```
 
@@ -1092,8 +1092,8 @@ Ok(3).valueEquals(3);
 Ok(3).valueEquals('foo');
 
 // These unconditionally evaluate to false
-Error().valueEquals('bar');
-Aborted().valueEquals('baz');
+Error('bar').valueEquals('bar');
+Aborted('baz').valueEquals('baz');
 ```
 
 #### `Result`'s `filter(predicate)`

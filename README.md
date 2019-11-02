@@ -923,14 +923,20 @@ Pending().get();
 
 #### `Result`'s `merge`
 
-__TODO: What's the use of this?__
+While `get` extracts raw values from the `Ok` subtype only, `merge` returns the value wrapped inside the `Result` structure, regardless of its state.
 
 ```javascript
 // This evaluates to 3
-Ok(3).merge()
+Ok(3).merge();
 
 // This evaluates to 3 too
-Error(3).merge()
+Error(3).merge();
+
+// And so does this
+Aborted(3).merge();
+
+// And this returns the wrapped Promise:
+Pending(Promise.resolve(Ok(3))).merge();
 ```
 
 #### `Result`'s `getOrElse(value)`
@@ -938,7 +944,6 @@ Error(3).merge()
 Unwraps the value from a `Result` if it is an `Ok`, else returns the substitute value passed to `getOrElse`.
 
 ```javascript
-
 // This evaluates to 6
 Ok(3).map(x => x * 2).getOrElse(8);
 
@@ -982,7 +987,6 @@ Aborted(3).satisfies(x => x === 3);
 Applies `λ` to your `Result`, returning an `Ok` wrapping the result, if the orignal `Result` is an `Ok`. Otherwise, it evaluates to whatever `Error` or `Aborted` it was applied to.
 
 ```javascript
-
 // Evaluates to Ok(5)
 Ok(4).map(x => x + 1);
 ```
@@ -1022,26 +1026,23 @@ Aborted().tap(x => x + 1);
 
 If your `Result` is an `Ok`, `flatMap` maps your `Result` to `λ`, then runs the result through `Result.expect`.
 
-__TODO__: I don't fully understand the difference to expectMap(λ)
-
 ```javascript
-// Evaluates to "1,2,31" <-- is that expected?
-Ok([1, 2, 3]).flatMap(x => x + 1);
+// This evaluates to Error(undefined)
+Ok(null).flatMap(x => x)
+
+// This evaluates to Ok(1)
+Ok(null).flatMap(x => x + 1)
 ```
 
 #### `Result`'s `expectMap(λ)`
 
-First maps the `Result` to λ, then runs an expect on it:
-
-_TODO_ !! THIS IS'T WORKING AS EXPECTED!!
-
-Also, what's the difference between expectMap and flatMap ?
+First maps the `Result` to λ, then runs `expect` on it. The main difference with `flatMap` is that the return value of `λ(value)` is not transformed before being passed to `expect`.
 
 ```javascript
 // Evaluates to Ok(['Bearer', 'xyz'])
 Result
-.expect({'authorization': 'Bearer xyz'})
-.expectMap(R.split('Bearer'))
+.expect('Bearer xyz')
+.expectMap(R.split(' '))
 ```
 
 #### `Result`'s `expectProperty(propertyName)`
@@ -1189,8 +1190,6 @@ Error('Oops').abortOnError();
 #### `Result`'s `abortOnErrorWith(λOrValue)`
 
 Transforms an `Error` into an unrecoverable `Aborted` by substituting or applying `λOrValue`
-
-__TODO__: The last case throws, is that expected?
 
 ```javascript
 // Evaluates to Ok(3)

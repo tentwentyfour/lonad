@@ -90,15 +90,15 @@ describe('The Result type', () => {
       });
     });
 
-    describe('expectMap(λ)', () => {
+    describe('chain(λ)', () => {
       it('should return a Ok with the right value when applying the wrapped value to λ returns a Ok expectable value', () => {
         const value = 2;
 
-        expect(Ok().expectMap(constant(value)).getOrElse(value + 1)).to.equal(value);
+        expect(Ok().chain(constant(value)).getOrElse(value + 1)).to.equal(value);
       });
 
       it('should return a None when applying λ to the wrapped value returns a non-Ok expectable value', () => {
-        expect(Ok().expectMap(constant(null)).isError).to.equal(true);
+        expect(Ok().chain(constant(null)).isError).to.equal(true);
       });
     });
 
@@ -123,7 +123,7 @@ describe('The Result type', () => {
         expect(transformed.merge()).to.equal(value);
       });
 
-      it('should catch exceptions thrown in the map callback and return an Aborted', () => {
+      it('should catch exceptions thrown in the tap callback and return an Aborted', () => {
         const expected = 4;
 
         const result = Ok().tap(() => {
@@ -152,7 +152,7 @@ describe('The Result type', () => {
       });
 
       it('should return a Pending wrapping an Aborted if λ throws asynchronously', done => {
-        const result = Ok().map(constant(Promise.reject()));
+        const result = Ok().chain(constant(Promise.reject()));
 
         expect(result.isAsynchronous).to.equal(true);
 
@@ -167,22 +167,22 @@ describe('The Result type', () => {
       });
     });
 
-    describe('map(λ)', () => {
+    describe('chain(λ)', () => {
       it('should return a new Ok instance holding the value of λ for the value of the Ok instance', () => {
         const value = 3;
 
         const ok = Ok(value);
 
-        const transformed = ok.map(increment);
+        const transformed = ok.chain(increment);
 
         expect(ok !== transformed).to.equal(true);
         expect(transformed.merge()).to.equal(increment(value));
       });
 
-      it('should catch exceptions thrown in the map callback and return an Aborted', () => {
+      it('should catch exceptions thrown in the chain callback and return an Aborted', () => {
         const expected = 4;
 
-        const result = Ok().map(() => {
+        const result = Ok().chain(() => {
           throw expected;
         });
 
@@ -194,7 +194,7 @@ describe('The Result type', () => {
       it('should return a Pending wrapping an Ok if λ is asynchronous', done => {
         const expected = 4;
 
-        const result = Ok(expected).map(asyncIncrement);
+        const result = Ok(expected).chain(asyncIncrement);
 
         expect(result.isAsynchronous).to.equal(true);
 
@@ -208,7 +208,7 @@ describe('The Result type', () => {
       });
 
       it('should return a Pending wrapping an Aborted if λ throws asynchronously', done => {
-        const result = Ok().map(constant(Promise.reject()));
+        const result = Ok().chain(constant(Promise.reject()));
 
         expect(result.isAsynchronous).to.equal(true);
 
@@ -309,7 +309,7 @@ describe('The Result type', () => {
       });
     });
 
-    describe('flatMap(λ)', () => {
+    describe('chain(λ)', () => {
       it('should pass the Ok value to an asynchronous λ and pass the output through Result.expect() except if λ throws or returns a rejected promise', done => {
         const instances = [
           null,
@@ -326,7 +326,7 @@ describe('The Result type', () => {
         Promise
         .all(instances.map(instance => {
           return Ok()
-          .flatMap(constant(instance))
+          .chain(constant(instance))
           .asynchronous()
           .promise
           .then(outputInstance => {
@@ -352,7 +352,7 @@ describe('The Result type', () => {
         Promise
         .all(cases.map(λ => {
           return Ok()
-          .flatMap(λ)
+          .chain(λ)
           .asynchronous()
           .promise
           .then(outputInstance => {
@@ -392,7 +392,7 @@ describe('The Result type', () => {
         expect(result.isAsynchronous).to.equal(true);
 
         result
-        .map(increment)
+        .chain(increment)
         .match({
           Ok:    constant(expected),
           Error: constant(increment(expected))
@@ -449,7 +449,7 @@ describe('The Result type', () => {
         expect(result.isAsynchronous).to.equal(true);
 
         result
-        .map(increment)
+        .chain(increment)
         .match({
           Ok:    constant(expected),
           Error: constant(increment(expected))
@@ -616,9 +616,9 @@ describe('The Result type', () => {
       });
     });
 
-    describe('expectMap(λ)', () => {
+    describe('chain(λ)', () => {
       it('should return an Error()', () => {
-        expect(Error().expectMap(constant(2)).isError).to.equal(true);
+        expect(Error().chain(constant(2)).isError).to.equal(true);
       });
     });
 
@@ -646,9 +646,9 @@ describe('The Result type', () => {
       }
     });
 
-    describe('map(λ)', () => {
+    describe('chain(λ)', () => {
       it('should return an Error()', () => {
-        expect(Error().map(increment).isError).to.equal(true);
+        expect(Error().chain(increment).isError).to.equal(true);
       });
     });
 
@@ -701,7 +701,7 @@ describe('The Result type', () => {
       });
 
       it('should return a Pending wrapping an Aborted if λ throws asynchronously', done => {
-        const result = Ok().map(constant(Promise.reject()));
+        const result = Ok().chain(constant(Promise.reject()));
 
         expect(result.isAsynchronous).to.equal(true);
 
@@ -756,7 +756,7 @@ describe('The Result type', () => {
       it('should return a Pending wrapping an Abored if λ throws asynchronously', done => {
         const expected = 4;
 
-        const result = Ok().map(constant(Promise.reject(expected)));
+        const result = Ok().chain(constant(Promise.reject(expected)));
 
         expect(result.isAsynchronous).to.equal(true);
 
@@ -835,9 +835,9 @@ describe('The Result type', () => {
       });
     });
 
-    describe('flatMap(λ)', () => {
+    describe('chain(λ)', () => {
       it('should return an Error()', () => {
-        expect(Error().flatMap(increment).isError).to.equal(true);
+        expect(Error().chain(increment).isError).to.equal(true);
       });
     });
 
@@ -999,19 +999,19 @@ describe('The Result type', () => {
       });
     });
 
-    describe('flatMap(λ)', () => {
+    describe('chain(λ)', () => {
       it('should return a correct Pending if λ is asynchronous and it succeeds', done => {
         const base = 3;
 
         const expected = increment(base);
 
-        const pending = Pending(Promise.resolve(Ok())).flatMap(async () => Ok(base));
+        const pending = Pending(Promise.resolve(Ok())).chain(async () => Ok(base));
 
         expect(pending.isResultInstance).to.equal(true);
         expect(pending.isAsynchronous).to.equal(true);
 
         pending
-        .map(increment)
+        .chain(increment)
         .toPromise()
         .then(value => {
           expect(value).to.equal(expected);
@@ -1022,13 +1022,13 @@ describe('The Result type', () => {
       it('should return a Pending wrapping an Aborted if λ is asynchronous and is rejected', done => {
         const expected = 3;
 
-        const pending = Pending(Promise.resolve(Ok())).flatMap(constant(Promise.reject(expected)));
+        const pending = Pending(Promise.resolve(Ok())).chain(constant(Promise.reject(expected)));
 
         expect(pending.isResultInstance).to.equal(true);
         expect(pending.isAsynchronous).to.equal(true);
 
         pending
-        .map(increment)
+        .chain(increment)
         .merge()
         .then(value => {
           expect(value).to.equal(expected);
@@ -1048,19 +1048,17 @@ describe('The Result type', () => {
         ['valueEquals',                                                                 [31]],
         ['satisfies',                                                           [() => true]],
         ['abortOnErrorWith',                                                     [increment]],
-        ['map',                                                                  [increment]],
+        ['chain',                                                                [increment]],
         ['tap',                                                                  [increment]],
         ['mapError',                                                             [increment]],
         ['recover',                                                            [constant(1)]],
         ['filter',                                                          [constant(true)]],
         ['reject',                                                         [constant(false)]],
-        ['flatMap',                                                        [constant(Ok(1))]],
         ['recoverWhen',                                                 [Boolean, increment]],
         ['replace',                                                                      [1]],
         ['getOrElse',                                                                    [3]],
         ['property',                                                             ['toFixed']],
         ['expectProperty',                                                       ['toFixed']],
-        ['expectMap',                                                          [constant(3)]],
         ['match',            [{ Ok: constant(1), Error: constant(2), Aborted: constant(3) }]]
       ];
 
@@ -1150,18 +1148,18 @@ describe('The Result type', () => {
       const value = 3;
 
       const aborted = Aborted(value)
-      .map(increment)
+      .chain(increment)
       .abortOnError()
       .replace(Promise.resolve(5))
       .abortOnErrorWith(increment)
-      .flatMap(increment)
+      .chain(increment)
       .recover(increment)
       .property('a')
       .tap(increment)
       .expectProperty('a')
       .reject(constant(true))
       .recoverWhen(increment, increment)
-      .expectMap(increment)
+      .chain(increment)
       .mapError(increment);
 
       expect(aborted.isError).to.equal(true);
@@ -1354,7 +1352,7 @@ describe('The Result type', () => {
     describe('should turn function execution exceptions into Errors', () => {
       const expected = 4;
 
-      expect(Result.try(() => { throw expected; }).map(increment).merge()).to.equal(expected);
+      expect(Result.try(() => { throw expected; }).chain(increment).merge()).to.equal(expected);
     });
 
     describe('should turn asynchronous results into Pending', () => {

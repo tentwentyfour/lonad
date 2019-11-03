@@ -3,6 +3,7 @@ const throwArgument         = require('./throw-argument');
 const returnThis            = require('./return-this');
 const Exception             = require('./exception');
 const Optional              = require('./optional');
+const { cond }              = require('ramda');
 
 const { identity, constant, pipe, property } = require('./utils');
 
@@ -81,10 +82,6 @@ Object.assign(Ok.prototype, {
     return this.value === value;
   },
 
-  expectMap(λ) {
-    return Result.expect(λ(this.value));
-  },
-
   getOrElse(_) {
     return this.value;
   },
@@ -101,12 +98,14 @@ Object.assign(Ok.prototype, {
     return this.value;
   },
 
-  map(λ) {
-    return transformResult(() => λ(this.value), Ok);
-  },
-
-  flatMap(λ) {
-    return transformResult(() => λ(this.value), Result.expect);
+  chain(λ) {
+    try {
+      const value = λ(this.value);
+    
+      return decideWrapper(value);
+    } catch (error) {
+      return Result.Aborted(error);
+    }
   },
 
   reject(predicate) {
@@ -155,14 +154,12 @@ Error = function createError(error) {
 Error.prototype = Object.create(Result.prototype);
 
 Object.assign(Error.prototype, {
-  map:              returnThis.unary,
   tap:              returnThis.unary,
+  chain:            returnThis.unary,
   filter:           returnThis.unary,
   reject:           returnThis.unary,
-  flatMap:          returnThis.unary,
   replace:          returnThis.unary,
   property:         returnThis.unary,
-  expectMap:        returnThis.unary,
   expectProperty:   returnThis.unary,
 
   get() {
@@ -183,7 +180,7 @@ Object.assign(Error.prototype, {
 
   recoverWhen(predicate, λ) {
     return Ok(this.error)
-    .map(λ)
+    .chain(λ)
     .filter(predicate);
   },
 
@@ -246,15 +243,13 @@ Aborted.prototype = Object.create(Result.prototype);
 
 Object.assign(Aborted.prototype, {
   toOptional:       None,
-  map:              returnThis.unary,
   tap:              returnThis.unary,
+  chain:            returnThis.unary,
   filter:           returnThis.unary,
   reject:           returnThis.unary,
   recover:          returnThis.unary,
-  flatMap:          returnThis.unary,
   mapError:         returnThis.unary,
   property:         returnThis.unary,
-  expectMap:        returnThis.unary,
   replace:          returnThis.unary,
   expectProperty:   returnThis.unary,
   abortOnErrorWith: returnThis.unary,
@@ -326,16 +321,14 @@ const callWrappedResultMethod = methodName => {
 
 Object.assign(Pending.prototype, {
   asynchronous:     returnThis.nullary,
-  map:              callWrappedResultMethod('map'),
   tap:              callWrappedResultMethod('tap'),
+  chain:            callWrappedResultMethod('chain'),
   filter:           callWrappedResultMethod('filter'),
   reject:           callWrappedResultMethod('reject'),
   recover:          callWrappedResultMethod('recover'),
   replace:          callWrappedResultMethod('replace'),
-  flatMap:          callWrappedResultMethod('flatMap'),
   mapError:         callWrappedResultMethod('mapError'),
   property:         callWrappedResultMethod('property'),
-  expectMap:        callWrappedResultMethod('expectMap'),
   recoverWhen:      callWrappedResultMethod('recoverWhen'),
   abortOnError:     callWrappedResultMethod('abortOnError'),
   expectProperty:   callWrappedResultMethod('expectProperty'),
@@ -411,7 +404,16 @@ const when = (truthy, value, error) => {
   return Error(error);
 };
 
-[['transform', 'map']].forEach(([alias, method]) => {
+const decideWrapper = cond([
+  [value => [null, undefined].includes(value), constant(Error())],
+  [value => typeof value !== 'object',         value => Ok(value)],
+  [value => isPromise(value),                  value => Result.Pending(value.then(Result.expect, Aborted))],
+  [value => value.isResultInstance,            value => value],
+  [value => value.isOptionalInstance,          value => value.match({ Some: Ok, None: Error })],
+  [constant(true),                             value => Optional.fromNullable(value).match({ Some: Ok, None: Error })]
+]);
+
+[['transform', 'chain']].forEach(([alias, method]) => {
   Ok.prototype[alias]      = Ok.prototype[method];
   Error.prototype[alias]   = Error.prototype[method];
   Pending.prototype[alias] = Pending.prototype[method];

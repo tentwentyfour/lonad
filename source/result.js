@@ -102,7 +102,7 @@ Object.assign(Ok.prototype, {
     try {
       const value = λ(this.value);
     
-      return decideWrapper(value);
+      return Result.expect(value);
     } catch (error) {
       return Result.Aborted(error);
     }
@@ -368,9 +368,14 @@ const fromPromise = promise => {
   return Pending(promise.then(Ok, Error));
 };
 
-const expect = optionalOrResultOrPromise => {
-  return decideWrapper(optionalOrResultOrPromise);
-};
+const expect = cond([
+  [value => [null, undefined].includes(value), constant(Error())],
+  [value => typeof value !== 'object',         value => Ok(value)],
+  [value => isPromise(value),                  value => Result.Pending(value.then(Result.expect, Aborted))],
+  [value => value.isResultInstance,            value => value],
+  [value => value.isOptionalInstance,          value => value.match({ Some: Ok, None: Error })],
+  [constant(true),                             value => Optional.fromNullable(value).match({ Some: Ok, None: Error })]
+]);
 
 const when = (truthy, value, error) => {
   if (truthy) {
@@ -379,15 +384,6 @@ const when = (truthy, value, error) => {
 
   return Error(error);
 };
-
-const decideWrapper = cond([
-  [value => [null, undefined].includes(value), constant(Error())],
-  [value => typeof value !== 'object',         value => Ok(value)],
-  [value => isPromise(value),                  value => Result.Pending(value.then(Result.expect, Aborted))],
-  [value => value.isResultInstance,            value => value],
-  [value => value.isOptionalInstance,          value => value.match({ Some: Ok, None: Error })],
-  [constant(true),                             value => Optional.fromNullable(value).match({ Some: Ok, None: Error })]
-]);
 
 [['transform', 'chain']].forEach(([alias, method]) => {
   Ok.prototype[alias]      = Ok.prototype[method];

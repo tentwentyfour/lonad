@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "helpbox": "^7.2.0",
-    "lodash.flow": "^3.5.0",
-    "ramda": "^0.26.1"
+    "lodash.cond": "^4.5.2",
+    "lodash.flow": "^3.5.0"
   }
 }

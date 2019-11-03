@@ -3,7 +3,7 @@ const throwArgument         = require('./throw-argument');
 const returnThis            = require('./return-this');
 const Exception             = require('./exception');
 const Optional              = require('./optional');
-const { cond }              = require('ramda');
+const cond                  = require('lodash.cond');
 
 const { identity, constant, pipe, property } = require('./utils');
 
@@ -100,9 +100,7 @@ Object.assign(Ok.prototype, {
 
   chain(λ) {
     try {
-      const value = λ(this.value);
-    
-      return Result.expect(value);
+      return Result.expect(λ(this.value));
     } catch (error) {
       return Result.Aborted(error);
     }
@@ -180,8 +178,8 @@ Object.assign(Error.prototype, {
 
   recoverWhen(predicate, λ) {
     return Ok(this.error)
-    .chain(λ)
-    .filter(predicate);
+    .filter(predicate)
+    .chain(λ);
   },
 
   merge() {
@@ -385,7 +383,12 @@ const when = (truthy, value, error) => {
   return Error(error);
 };
 
-[['transform', 'chain']].forEach(([alias, method]) => {
+[
+  ['map', 'chain'],
+  ['flatMap', 'chain'],
+  ['expectMap', 'chain'],
+  ['transform', 'chain'],
+].forEach(([alias, method]) => {
   Ok.prototype[alias]      = Ok.prototype[method];
   Error.prototype[alias]   = Error.prototype[method];
   Pending.prototype[alias] = Pending.prototype[method];

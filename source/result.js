@@ -369,31 +369,7 @@ const fromPromise = promise => {
 };
 
 const expect = optionalOrResultOrPromise => {
-  if ([null, undefined].includes(optionalOrResultOrPromise)) {
-    return Error();
-  } else if (typeof optionalOrResultOrPromise !== 'object') {
-    return Ok(optionalOrResultOrPromise);
-  }
-
-  if (isPromise(optionalOrResultOrPromise)) {
-    return Pending(optionalOrResultOrPromise.then(
-      Result.expect,
-      Result.Aborted
-    ));
-  }
-
-  if (optionalOrResultOrPromise.isResultInstance) {
-    return optionalOrResultOrPromise;
-  }
-
-  if (!optionalOrResultOrPromise.isOptionalInstance) {
-    optionalOrResultOrPromise = Optional.fromNullable(optionalOrResultOrPromise);
-  }
-
-  return optionalOrResultOrPromise.match({
-    Some: Ok,
-    None: Error
-  });
+  return decideWrapper(optionalOrResultOrPromise);
 };
 
 const when = (truthy, value, error) => {

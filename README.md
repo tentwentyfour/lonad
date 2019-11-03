@@ -1153,7 +1153,7 @@ Error('Oops').match({
 
 #### `Result`'s `recover(λ)`
 
-Unconditionally recovers from an `Error`.
+Unconditionally recovers from an `Error`, does not have any effect on an `Ok`.
 
 ```javascript
 // Evaluates to Ok('OK!')

@@ -178,8 +178,8 @@ Object.assign(Error.prototype, {
 
   recoverWhen(predicate, λ) {
     return Ok(this.error)
-    .filter(predicate)
-    .chain(λ);
+    .chain(λ)
+    .filter(predicate);
   },
 
   merge() {

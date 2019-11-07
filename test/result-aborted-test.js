@@ -23,22 +23,22 @@ describe('The Aborted subtype', () => {
     expect(error.isOk).to.equal(false);
   });
 
-  it('should be an error that you can only unwrap at the end of a computation chain', () => {
+  it('should be an error that you can only unwrap at the end of a computation transform', () => {
     const value = 3;
 
     const aborted = Aborted(value)
-    .chain(increment)
+    .transform(increment)
     .abortOnError()
     .replace(Promise.resolve(5))
     .abortOnErrorWith(increment)
-    .chain(increment)
+    .transform(increment)
     .recover(increment)
     .property('a')
     .tap(increment)
     .expectProperty('a')
     .reject(constant(true))
     .recoverWhen(increment, increment)
-    .chain(increment)
+    .transform(increment)
     .mapError(increment);
 
     expect(aborted.isError).to.equal(true);

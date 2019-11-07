@@ -122,7 +122,7 @@ describe('The Result type', () => {
     describe('should turn function execution exceptions into Errors', () => {
       const expected = 4;
 
-      expect(Result.try(() => { throw expected; }).chain(increment).merge()).to.equal(expected);
+      expect(Result.try(() => { throw expected; }).transform(increment).merge()).to.equal(expected);
     });
 
     describe('should turn asynchronous results into Pending', () => {

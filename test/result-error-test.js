@@ -46,13 +46,13 @@ describe('The Error subtype', () => {
     });
   });
 
-  describe('chain(λ)', () => {
+  describe('transform(λ)', () => {
     it('should return an Error()', () => {
-      expect(Error().chain(constant(2)).isError).to.equal(true);
+      expect(Error().transform(constant(2)).isError).to.equal(true);
     });
 
     it('should return an Error()', () => {
-      expect(Error().chain(increment).isError).to.equal(true);
+      expect(Error().transform(increment).isError).to.equal(true);
     });
   });
 
@@ -129,7 +129,7 @@ describe('The Error subtype', () => {
     });
 
     it('should return a Pending wrapping an Aborted if λ throws asynchronously', done => {
-      const result = Ok().chain(constant(Promise.reject()));
+      const result = Ok().transform(constant(Promise.reject()));
 
       expect(result.isAsynchronous).to.equal(true);
 
@@ -184,7 +184,7 @@ describe('The Error subtype', () => {
     it('should return a Pending wrapping an Abored if λ throws asynchronously', done => {
       const expected = 4;
 
-      const result = Ok().chain(constant(Promise.reject(expected)));
+      const result = Ok().transform(constant(Promise.reject(expected)));
 
       expect(result.isAsynchronous).to.equal(true);
 

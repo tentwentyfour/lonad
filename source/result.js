@@ -98,7 +98,7 @@ Object.assign(Ok.prototype, {
     return this.value;
   },
 
-  chain(λ) {
+  transform(λ) {
     try {
       return Result.expect(λ(this.value));
     } catch (error) {
@@ -153,7 +153,7 @@ Error.prototype = Object.create(Result.prototype);
 
 Object.assign(Error.prototype, {
   tap:              returnThis.unary,
-  chain:            returnThis.unary,
+  transform:        returnThis.unary,
   filter:           returnThis.unary,
   reject:           returnThis.unary,
   replace:          returnThis.unary,
@@ -178,7 +178,7 @@ Object.assign(Error.prototype, {
 
   recoverWhen(predicate, λ) {
     return Ok(this.error)
-    .chain(λ)
+    .transform(λ)
     .filter(predicate);
   },
 
@@ -242,7 +242,7 @@ Aborted.prototype = Object.create(Result.prototype);
 Object.assign(Aborted.prototype, {
   toOptional:       None,
   tap:              returnThis.unary,
-  chain:            returnThis.unary,
+  transform:        returnThis.unary,
   filter:           returnThis.unary,
   reject:           returnThis.unary,
   recover:          returnThis.unary,
@@ -320,7 +320,7 @@ const callWrappedResultMethod = methodName => {
 Object.assign(Pending.prototype, {
   asynchronous:     returnThis.nullary,
   tap:              callWrappedResultMethod('tap'),
-  chain:            callWrappedResultMethod('chain'),
+  transform:        callWrappedResultMethod('transform'),
   filter:           callWrappedResultMethod('filter'),
   reject:           callWrappedResultMethod('reject'),
   recover:          callWrappedResultMethod('recover'),
@@ -384,10 +384,9 @@ const when = (truthy, value, error) => {
 };
 
 [
-  ['map', 'chain'],
-  ['flatMap', 'chain'],
-  ['expectMap', 'chain'],
-  ['transform', 'chain'],
+  ['map', 'transform'],
+  ['flatMap', 'transform'],
+  ['expectMap', 'transform'],
 ].forEach(([alias, method]) => {
   Ok.prototype[alias]      = Ok.prototype[method];
   Error.prototype[alias]   = Error.prototype[method];

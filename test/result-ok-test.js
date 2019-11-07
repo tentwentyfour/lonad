@@ -89,15 +89,15 @@ describe('Result.Ok subtype', () => {
     });
   });
 
-  describe('chain(λ)', () => {
+  describe('transform(λ)', () => {
     it('should return a Ok with the right value when applying the wrapped value to λ returns a Ok expectable value', () => {
       const value = 2;
 
-      expect(Ok().chain(constant(value)).getOrElse(value + 1)).to.equal(value);
+      expect(Ok().transform(constant(value)).getOrElse(value + 1)).to.equal(value);
     });
 
     it('should return a None when applying λ to the wrapped value returns a non-Ok expectable value', () => {
-      expect(Ok().chain(constant(null)).isError).to.equal(true);
+      expect(Ok().transform(constant(null)).isError).to.equal(true);
     });
 
     it('should return a new Ok instance holding the value of λ for the value of the Ok instance', () => {
@@ -105,16 +105,16 @@ describe('Result.Ok subtype', () => {
 
       const ok = Ok(value);
 
-      const transformed = ok.chain(increment);
+      const transformed = ok.transform(increment);
 
       expect(ok !== transformed).to.equal(true);
       expect(transformed.merge()).to.equal(increment(value));
     });
 
-    it('should catch exceptions thrown in the chain callback and return an Aborted', () => {
+    it('should catch exceptions thrown in the transform callback and return an Aborted', () => {
       const expected = 4;
 
-      const result = Ok().chain(() => {
+      const result = Ok().transform(() => {
         throw expected;
       });
 
@@ -126,7 +126,7 @@ describe('Result.Ok subtype', () => {
     it('should return a Pending wrapping an Ok if λ is asynchronous', done => {
       const expected = 4;
 
-      const result = Ok(expected).chain(asyncIncrement);
+      const result = Ok(expected).transform(asyncIncrement);
 
       expect(result.isAsynchronous).to.equal(true);
 
@@ -140,7 +140,7 @@ describe('Result.Ok subtype', () => {
     });
 
     it('should return a Pending wrapping an Aborted if λ throws asynchronously', done => {
-      const result = Ok().chain(constant(Promise.reject()));
+      const result = Ok().transform(constant(Promise.reject()));
 
       expect(result.isAsynchronous).to.equal(true);
 
@@ -170,7 +170,7 @@ describe('Result.Ok subtype', () => {
       Promise
       .all(instances.map(instance => {
         return Ok()
-        .chain(constant(instance))
+        .transform(constant(instance))
         .asynchronous()
         .promise
         .then(outputInstance => {
@@ -196,7 +196,7 @@ describe('Result.Ok subtype', () => {
       Promise
       .all(cases.map(λ => {
         return Ok()
-        .chain(λ)
+        .transform(λ)
         .asynchronous()
         .promise
         .then(outputInstance => {
@@ -260,7 +260,7 @@ describe('Result.Ok subtype', () => {
     });
 
     it('should return a Pending wrapping an Aborted if λ throws asynchronously', done => {
-      const result = Ok().chain(constant(Promise.reject()));
+      const result = Ok().transform(constant(Promise.reject()));
 
       expect(result.isAsynchronous).to.equal(true);
 
@@ -387,7 +387,7 @@ describe('Result.Ok subtype', () => {
       expect(result.isAsynchronous).to.equal(true);
 
       result
-      .chain(increment)
+      .transform(increment)
       .match({
         Ok:    constant(expected),
         Error: constant(increment(expected))
@@ -444,7 +444,7 @@ describe('Result.Ok subtype', () => {
       expect(result.isAsynchronous).to.equal(true);
 
       result
-      .chain(increment)
+      .transform(increment)
       .match({
         Ok:    constant(expected),
         Error: constant(increment(expected))

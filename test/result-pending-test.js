@@ -78,19 +78,19 @@ describe('The Pending subtype', () => {
     });
   });
 
-  describe('chain(λ)', () => {
+  describe('transform(λ)', () => {
     it('should return a correct Pending if λ is asynchronous and it succeeds', done => {
       const base = 3;
 
       const expected = increment(base);
 
-      const pending = Pending(Promise.resolve(Ok())).chain(async () => Ok(base));
+      const pending = Pending(Promise.resolve(Ok())).transform(async () => Ok(base));
 
       expect(pending.isResultInstance).to.equal(true);
       expect(pending.isAsynchronous).to.equal(true);
 
       pending
-      .chain(increment)
+      .transform(increment)
       .toPromise()
       .then(value => {
         expect(value).to.equal(expected);
@@ -101,13 +101,13 @@ describe('The Pending subtype', () => {
     it('should return a Pending wrapping an Aborted if λ is asynchronous and is rejected', done => {
       const expected = 3;
 
-      const pending = Pending(Promise.resolve(Ok())).chain(constant(Promise.reject(expected)));
+      const pending = Pending(Promise.resolve(Ok())).transform(constant(Promise.reject(expected)));
 
       expect(pending.isResultInstance).to.equal(true);
       expect(pending.isAsynchronous).to.equal(true);
 
       pending
-      .chain(increment)
+      .transform(increment)
       .merge()
       .then(value => {
         expect(value).to.equal(expected);
@@ -127,7 +127,7 @@ describe('The Pending subtype', () => {
       ['valueEquals',                                                                 [31]],
       ['satisfies',                                                           [() => true]],
       ['abortOnErrorWith',                                                     [increment]],
-      ['chain',                                                                [increment]],
+      ['transform',                                                                [increment]],
       ['tap',                                                                  [increment]],
       ['mapError',                                                             [increment]],
       ['recover',                                                            [constant(1)]],

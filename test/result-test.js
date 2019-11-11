@@ -307,6 +307,21 @@ describe('The Result type', () => {
 
         expect(transformed.merge()).to.equal(value);
       });
+
+      it('should not call the lambda if the predicate evaluates to false', () => {
+        let lambdaCalled = false;
+
+        const value = 10;
+
+        const error = Error(value);
+
+        const transformed = error.recoverWhen(constant(false), () => {
+          lambdaCalled = true;
+        });
+
+        expect(lambdaCalled).to.equal(false);
+        expect(transformed.merge()).to.equal(value);
+      });
     });
 
     describe('flatMap(λ)', () => {

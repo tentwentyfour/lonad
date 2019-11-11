@@ -183,8 +183,9 @@ Object.assign(Error.prototype, {
 
   recoverWhen(predicate, λ) {
     return Ok(this.error)
-    .map(λ)
-    .filter(predicate);
+    .filter(predicate)
+    .mapError(constant(this.error))
+    .map(λ);
   },
 
   merge() {

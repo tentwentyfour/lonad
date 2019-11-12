@@ -384,9 +384,9 @@ const when = (truthy, value, error) => {
 };
 
 [
-  ['map', 'transform'],
+  ['bind', 'transform'],
+  ['chain', 'transform'],
   ['flatMap', 'transform'],
-  ['expectMap', 'transform'],
 ].forEach(([alias, method]) => {
   Ok.prototype[alias]      = Ok.prototype[method];
   Error.prototype[alias]   = Error.prototype[method];

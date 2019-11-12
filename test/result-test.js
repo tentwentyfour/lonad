@@ -12,7 +12,7 @@ const increment      = n => n + 1;
 const asyncIncrement = async n => n + 1;
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.log(reason);
+  console.log(`Uncaught error: ${reason}`);
 });
 
 describe('The Result type', () => {

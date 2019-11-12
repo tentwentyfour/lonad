@@ -49,7 +49,7 @@ type OptionalMapper<T, U> = OptionalTransformer<T, OptionalType<U>>;
 
 export namespace Optional {
   export function Some<T>(value: T): OptionalType<T>;
-  export function None<T>():         OptionalType<T>;
+  export function None():            OptionalType<any>;
 
   export function fromParsedJson<T>(parsedJson: ParsedOptional<T>): OptionalType<T>;
   export function first(optionals: OptionalType<any>[]):            OptionalType<any>;

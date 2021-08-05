@@ -56,6 +56,7 @@ Ok.prototype = Object.create(Result.prototype);
 
 Object.assign(Ok.prototype, {
   abortOnErrorWith: returnThis.unary,
+  tapError:         returnThis.unary,
   mapError:         returnThis.unary,
   recover:          returnThis.unary,
   recoverWhen:      returnThis.binary,
@@ -192,6 +193,10 @@ Object.assign(Error.prototype, {
     return this.error;
   },
 
+  tapError(λ) {
+    return transformResult(() => λ(this.error), constant(this));
+  },
+
   mapError(λ) {
     return transformResult(() => λ(this.error), Error);
   },
@@ -253,6 +258,7 @@ Object.assign(Aborted.prototype, {
   reject:           returnThis.unary,
   recover:          returnThis.unary,
   flatMap:          returnThis.unary,
+  tapError:         returnThis.unary,
   mapError:         returnThis.unary,
   property:         returnThis.unary,
   expectMap:        returnThis.unary,
@@ -335,6 +341,7 @@ Object.assign(Pending.prototype, {
   replace:          callWrappedResultMethod('replace'),
   flatMap:          callWrappedResultMethod('flatMap'),
   mapError:         callWrappedResultMethod('mapError'),
+  tapError:         callWrappedResultMethod('tapError'),
   property:         callWrappedResultMethod('property'),
   expectMap:        callWrappedResultMethod('expectMap'),
   recoverWhen:      callWrappedResultMethod('recoverWhen'),

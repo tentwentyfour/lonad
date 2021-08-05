@@ -167,6 +167,12 @@ describe('The Result type', () => {
       });
     });
 
+    describe('tapError(λ)', () => {
+      it('should return an Ok()', () => {
+        expect(Ok().tapError(increment).isOk).to.equal(true);
+      });
+    });
+
     describe('map(λ)', () => {
       it('should return a new Ok instance holding the value of λ for the value of the Ok instance', () => {
         const value = 3;
@@ -673,6 +679,71 @@ describe('The Result type', () => {
       });
     });
 
+    describe('tapError(λ)', () => {
+      it('should return an equivalent Error instance and pass λ its value', () => {
+        const value = 3;
+
+        let called = false;
+
+        const error = Error(value);
+
+        const transformed = error.tapError(() => {
+          called = true;
+
+          return value + 1;
+        });
+
+        expect(called).to.equal(true);
+        expect(error === transformed).to.equal(true);
+
+        expect(error.merge()).to.equal(value);
+        expect(transformed.merge()).to.equal(value);
+      });
+
+      it('should catch exceptions thrown in the tapError callback and return an Aborted', () => {
+        const expected = 4;
+
+        const result = Error().tapError(() => {
+          throw expected;
+        });
+
+        expect(result.isError).to.equal(true);
+        expect(result.isAborted).to.equal(true);
+        expect(result.merge()).to.equal(expected);
+      });
+
+      it('should return a Pending wrapping an Error if λ is asynchronous', done => {
+        const expected = 4;
+
+        const result = Error(expected).tapError(asyncIncrement);
+
+        expect(result.isAsynchronous).to.equal(true);
+
+        result
+        .toPromise()
+        .then(
+          () => Promise.reject(new Exception('The promise is not rejected')),
+          value => { expect(value).to.equal(expected); }
+        )
+        .then(done, done);
+      });
+
+      it('should return a Pending wrapping an Aborted if λ throws asynchronously', done => {
+        const result = Error().tapError(constant(Promise.reject()));
+
+        expect(result.isAsynchronous).to.equal(true);
+
+        result
+        .promise
+        .then(wrappedResult => {
+          expect(wrappedResult.isError).to.equal(true);
+          expect(wrappedResult.isAborted).to.equal(true);
+          expect(wrappedResult.isResultInstance).to.equal(true);
+        })
+        .then(done, done);
+      });
+    });
+
     describe('mapError(λ)', () => {
       it('should return a new Error instance holding the value of λ for the value of the Error instance', () => {
         const value = 3;
@@ -1066,6 +1137,7 @@ describe('The Result type', () => {
         ['map',                                                                  [increment]],
         ['tap',                                                                  [increment]],
         ['mapError',                                                             [increment]],
+        ['tapError',                                                             [increment]],
         ['recover',                                                            [constant(1)]],
         ['filter',                                                          [constant(true)]],
         ['reject',                                                         [constant(false)]],

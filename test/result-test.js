@@ -123,7 +123,7 @@ describe('The Result type', () => {
         expect(transformed.merge()).to.equal(value);
       });
 
-      it('should catch exceptions thrown in the map callback and return an Aborted', () => {
+      it('should catch exceptions thrown in the callback and return an Aborted', () => {
         const expected = 4;
 
         const result = Ok().tap(() => {
@@ -144,7 +144,7 @@ describe('The Result type', () => {
 
         result
         .toPromise()
-        .catch(() => Promise.reject(new Exception('The promise is not rejected')), increment)
+        .catch(() => Promise.reject(new Exception('The promise is rejected')), increment)
         .then(value => {
           expect(value).to.equal(expected);
         })
@@ -152,7 +152,7 @@ describe('The Result type', () => {
       });
 
       it('should return a Pending wrapping an Aborted if λ throws asynchronously', done => {
-        const result = Ok().map(constant(Promise.reject()));
+        const result = Ok().tap(constant(Promise.reject()));
 
         expect(result.isAsynchronous).to.equal(true);
 
@@ -200,7 +200,7 @@ describe('The Result type', () => {
 
         result
         .toPromise()
-        .catch(() => Promise.reject(new Exception('The promise is not rejected')), increment)
+        .catch(() => Promise.reject(new Exception('The promise is rejected')), increment)
         .then(value => {
           expect(value).to.equal(increment(expected));
         })
@@ -716,7 +716,7 @@ describe('The Result type', () => {
       });
 
       it('should return a Pending wrapping an Aborted if λ throws asynchronously', done => {
-        const result = Ok().map(constant(Promise.reject()));
+        const result = Error().mapError(constant(Promise.reject()));
 
         expect(result.isAsynchronous).to.equal(true);
 

@@ -120,9 +120,9 @@ export abstract class AsyncResult<T = any> extends Result<T> {
 * const result = Result.Error(1);
 * const tapped = result.tap(x => console.log(x)); // No logs!
 */
-    abstract tap(λ: (x: T) => PromiseLike<void>): AsyncResult<T>;
-    abstract tap(λ: (x: T) => void): AsyncResult<T>;
-    abstract tap(λ: (x: T) => void | PromiseLike<void>): Result<T>;
+    abstract tap(λ: (x: T) => PromiseLike<any>): AsyncResult<T>;
+    abstract tap(λ: (x: T) => any): AsyncResult<T>;
+    abstract tap(λ: (x: T) => any): Result<T>;
     /**
 * Test if the result satisfies a predicate.
 * Will only test the predicate if the result is Ok.
@@ -207,11 +207,11 @@ export abstract class AsyncResult<T = any> extends Result<T> {
 * const mapped = result.expectMap((x) => ({age: x})); // Result.Error(1)
 */
     abstract expectMap<Y = T>(λ: (x: T) => PromiseLike<Optional<T>>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+    abstract expectMap<Y = T>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     abstract expectMap<Y = T>(λ: (x: T) => Optional<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     abstract expectMap<Y = T>(λ: (x: T) => AsyncResult<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     abstract expectMap<Y = T>(λ: (x: T) => SyncResult<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     abstract expectMap<Y = T>(λ: (x: T) => Result<Y>): Result<IfAnyOrUnknown<Y, any, Y & {}>>;
-    abstract expectMap<Y = T>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     abstract expectMap<Y = T>(λ: (x: T) => Y): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     abstract expectMap<Y = T>(λ: (x: T) => Y | PromiseLike<Y>): Result<IfAnyOrUnknown<Y, any, Y & {}>>;
     /**
@@ -311,7 +311,7 @@ export abstract class AsyncResult<T = any> extends Result<T> {
 * const aborted = result.abortOnError('Error'); // Result.Aborted('Error')
 */
     abstract abortOnErrorWith(): AsyncResult<T>;
-    abstract abortOnErrorWith<Y = any>(λOrValue: ((error: any) => PromiseLike<any>) | PromiseLike<any>): AsyncResult<T>;
+    abstract abortOnErrorWith<Y = any>(λOrValue: PromiseLike<any> | ((error: any) => PromiseLike<any>)): AsyncResult<T>;
     abstract abortOnErrorWith<Y = any>(λOrValue: Y | ((error: any) => any)): AsyncResult<T>;
     abstract abortOnErrorWith<Y = any>(λOrValue: Y | ((error: any) => any)): Result<T>;
     /**

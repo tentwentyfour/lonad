@@ -115,9 +115,9 @@ export interface IResult<T> extends IResultBase {
      * const result = Result.Error(1);
      * const tapped = result.tap(x => console.log(x)); // No logs!
      */
-    tap(λ: (x: T) => PromiseLike<void>): AsyncResult<T>;
-    tap(λ: (x: T) => void): SyncResult<T> | AsyncResult<T>;
-    tap(λ: (x: T) => void | PromiseLike<void>): Result<T>;
+    tap(λ: (x: T) => PromiseLike<any>): AsyncResult<T>;
+    tap(λ: (x: T) => any): SyncResult<T> | AsyncResult<T>;
+    tap(λ: (x: T) => any | PromiseLike<any>): Result<T>;
     /**
      * Test if the result satisfies a predicate.
      * Will only test the predicate if the result is Ok.
@@ -202,11 +202,11 @@ export interface IResult<T> extends IResultBase {
      * const mapped = result.expectMap((x) => ({age: x})); // Result.Error(1)
      */
     expectMap<Y = T>(λ: (x: T) => PromiseLike<Optional<T>>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+    expectMap<Y = T>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     expectMap<Y = T>(λ: (x: T) => Optional<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     expectMap<Y = T>(λ: (x: T) => AsyncResult<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     expectMap<Y = T>(λ: (x: T) => SyncResult<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     expectMap<Y = T>(λ: (x: T) => Result<Y>): Result<IfAnyOrUnknown<Y, any, Y & {}>>;
-    expectMap<Y = T>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     expectMap<Y = T>(λ: (x: T) => Y): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>> | AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     expectMap<Y = T>(λ: (x: T) => Y | PromiseLike<Y>): Result<IfAnyOrUnknown<Y, any, Y & {}>>;
     /**

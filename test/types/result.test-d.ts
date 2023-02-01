@@ -21,6 +21,7 @@ expectAssignable<Result>(Result.Error('Some error'))
 expectAssignable<Result>(Result.Aborted('some abort reason'))
 expectAssignable<Result>(Result.Pending(Promise.resolve(54)))
 
+// expect
 expectType<SyncResult<number>>(Result.expect(54))
 expectType<SyncResult<number | string>>(Result.expect(54 as number | string))
 expectType<SyncResult<string>>(Result.expect('test'))
@@ -33,22 +34,32 @@ expectType<AsyncResult<number>>(Result.expect(Promise.resolve(54)))
 expectType<AsyncResult<number | string>>(Result.expect(Promise.resolve(54) as PromiseLike<number | string | undefined | null>))
 expectType<AsyncResult<number>>(Result.expect(Result.Pending(Promise.resolve(54))))
 
+// get
 expectType<number>(Result.Ok(54).get())
 expectType<any>(Result.Error().get())
 expectType<any>(Result.Aborted().get())
 expectType<Promise<number>>(Result.Pending(Promise.resolve(44)).get())
 
+// getOrElse
 expectType<number | undefined>(Result.Ok(54).getOrElse(undefined))
 expectType<number | 'test'>(Result.Ok(54).getOrElse('test'))
 expectType<any>(Result.Error().getOrElse(44))
 expectType<any>(Result.Aborted().getOrElse(44))
 expectType<Promise<number> | Promise<string>>(Result.Pending(Promise.resolve(44)).getOrElse('test'))
 
+// tap
+expectType<SyncResult<number>>(Result.Ok(54).tap((x) => {}))
+expectType<SyncResult<number>>(Result.Ok(54).tap((x) => x))
+expectType<AsyncResult<number>>(Result.Ok(54).tap(async (x) => {}))
+expectType<AsyncResult<number>>(Result.Ok(54).tap(async (x) => x))
+
+// filter
 expectAssignable<Result<number>>(Result.Ok(54).filter((x) => x > 0));
 expectAssignable<Result<string>>(Result.Ok('test').filter((x) => x.length > 0));
 expectAssignable<Result<string | number>>(Result.Ok('test' as string | number).filter((x) => typeof x === 'string'));
 expectAssignable<Result<string>>(Result.Ok('test' as string | number).filter((x): x is string => typeof x === 'string'));
 
+// expectMap
 expectType<SyncResult<never>>(Result.Ok(54).expectMap((x) => undefined));
 expectType<SyncResult<never>>(Result.Ok(54).expectMap((x) => null));
 expectType<SyncResult<number>>(Result.Ok(54).expectMap((x) => x));
@@ -65,6 +76,7 @@ expectType<AsyncResult<number>>(Result.Ok(54).expectMap((x) => Promise.resolve(5
 expectType<AsyncResult<number | string>>(Result.Ok(54).expectMap(() => Promise.resolve(54) as PromiseLike<number | string | undefined | null>))
 expectType<AsyncResult<number>>(Result.Ok(54).expectMap(() => Result.Pending(Promise.resolve(54))))
 
+// map
 expectType<SyncResult<undefined>>(Result.Ok(54).map((x) => undefined));
 expectType<SyncResult<null>>(Result.Ok(54).map((x) => null));
 expectType<SyncResult<number>>(Result.Ok(54).map(() => 54));
@@ -76,6 +88,7 @@ expectType<SyncResult<any>>(Result.Ok(54).map(() => 'test' as unknown));
 expectType<SyncResult<SyncResult<string>>>(Result.Ok(54).map(() => Result.Ok('test')));
 expectType<AsyncResult<number>>(Result.Ok(54).map(() => Promise.resolve(54)))
 
+// flatMap
 expectType<SyncResult<never>>(Result.Ok(54).flatMap((x) => undefined));
 expectType<SyncResult<never>>(Result.Ok(54).flatMap((x) => null));
 expectType<SyncResult<number>>(Result.Ok(54).flatMap(() => 54));

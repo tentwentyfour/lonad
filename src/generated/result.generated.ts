@@ -535,7 +535,7 @@ export abstract class Result<T = any> implements IResult<T> {
         /**
          * @param λ The action to perform
          */
-        <T>(λ: (x: T) => PromiseLike<void>): {
+        <T>(λ: (x: T) => PromiseLike<any>): {
             /**
              * @param optional The instance parameter to use as a base to call the functions with.
              */
@@ -553,8 +553,8 @@ export abstract class Result<T = any> implements IResult<T> {
          * @param λ The action to perform
      * @param optional The instance parameter to use as a base to call the functions with.
          */
-        <T>(λ: (x: T) => PromiseLike<void>, optional: AsyncResult<T>): AsyncResult<T>;
-        <T>(λ: (x: T) => void): {
+        <T>(λ: (x: T) => PromiseLike<any>, optional: AsyncResult<T>): AsyncResult<T>;
+        <T>(λ: (x: T) => any): {
             /**
              * @param optional The instance parameter to use as a base to call the functions with.
              */
@@ -562,25 +562,19 @@ export abstract class Result<T = any> implements IResult<T> {
             /**
              * @param optional The instance parameter to use as a base to call the functions with.
              */
-            (optional: SyncResult<T>): SyncResult<T>;
-            /**
-             * @param optional The instance parameter to use as a base to call the functions with.
-             */
-            (optional: Result<T>): any;
-        };
-        /**
-         * @param optional The instance parameter to use as a base to call the functions with.
-         */
-        <T>(λ: (x: T) => void, optional: AsyncResult<T>): AsyncResult<T>;
-        <T>(λ: (x: T) => void | PromiseLike<void>): {
-            /**
-             * @param optional The instance parameter to use as a base to call the functions with.
-             */
             (optional: AsyncResult<T>): Result<T>;
             /**
              * @param optional The instance parameter to use as a base to call the functions with.
              */
+            (optional: SyncResult<T>): SyncResult<T>;
+            /**
+             * @param optional The instance parameter to use as a base to call the functions with.
+             */
             (optional: SyncResult<T>): Result<T>;
+            /**
+             * @param optional The instance parameter to use as a base to call the functions with.
+             */
+            (optional: Result<T>): any;
             /**
              * @param optional The instance parameter to use as a base to call the functions with.
              */
@@ -589,33 +583,37 @@ export abstract class Result<T = any> implements IResult<T> {
         /**
          * @param optional The instance parameter to use as a base to call the functions with.
          */
-        <T>(λ: (x: T) => void | PromiseLike<void>, optional: AsyncResult<T>): Result<T>;
+        <T>(λ: (x: T) => any, optional: AsyncResult<T>): AsyncResult<T>;
+        /**
+         * @param optional The instance parameter to use as a base to call the functions with.
+         */
+        <T>(λ: (x: T) => any, optional: AsyncResult<T>): Result<T>;
         /**
          * @param λ The action to perform
      * @param optional The instance parameter to use as a base to call the functions with.
          */
-        <T>(λ: (x: T) => PromiseLike<void>, optional: SyncResult<T>): AsyncResult<T>;
+        <T>(λ: (x: T) => PromiseLike<any>, optional: SyncResult<T>): AsyncResult<T>;
         /**
          * @param optional The instance parameter to use as a base to call the functions with.
          */
-        <T>(λ: (x: T) => void, optional: SyncResult<T>): SyncResult<T>;
+        <T>(λ: (x: T) => any, optional: SyncResult<T>): SyncResult<T>;
         /**
          * @param optional The instance parameter to use as a base to call the functions with.
          */
-        <T>(λ: (x: T) => void | PromiseLike<void>, optional: SyncResult<T>): Result<T>;
+        <T>(λ: (x: T) => any, optional: SyncResult<T>): Result<T>;
         /**
          * @param λ The action to perform
      * @param optional The instance parameter to use as a base to call the functions with.
          */
-        <T>(λ: (x: T) => PromiseLike<void>, optional: Result<T>): AsyncResult<T>;
+        <T>(λ: (x: T) => PromiseLike<any>, optional: Result<T>): AsyncResult<T>;
         /**
          * @param optional The instance parameter to use as a base to call the functions with.
          */
-        <T>(λ: (x: T) => void, optional: Result<T>): any;
+        <T>(λ: (x: T) => any, optional: Result<T>): any;
         /**
          * @param optional The instance parameter to use as a base to call the functions with.
          */
-        <T>(λ: (x: T) => void | PromiseLike<void>, optional: Result<T>): Result<T>;
+        <T>(λ: (x: T) => any, optional: Result<T>): Result<T>;
     } = <T>(...params: any[]): any => {
       if (params.length < 2) {
         return (...subParams: any[]) => (Result.tap as any)(...[...params, ...subParams]);
@@ -959,6 +957,24 @@ export abstract class Result<T = any> implements IResult<T> {
      * @param optional The instance parameter to use as a base to call the functions with.
          */
         <T, Y = T>(λ: (x: T) => PromiseLike<Optional<T>>, optional: AsyncResult<T>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+        <T, Y = T>(λ: (x: T) => PromiseLike<Y>): {
+            /**
+             * @param optional The instance parameter to use as a base to call the functions with.
+             */
+            (optional: AsyncResult<T>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+            /**
+             * @param optional The instance parameter to use as a base to call the functions with.
+             */
+            (optional: SyncResult<T>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+            /**
+             * @param optional The instance parameter to use as a base to call the functions with.
+             */
+            (optional: Result<T>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+        };
+        /**
+         * @param optional The instance parameter to use as a base to call the functions with.
+         */
+        <T, Y = T>(λ: (x: T) => PromiseLike<Y>, optional: AsyncResult<T>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
         <T, Y = T>(λ: (x: T) => Optional<Y>): {
             /**
              * @param optional The instance parameter to use as a base to call the functions with.
@@ -1031,24 +1047,6 @@ export abstract class Result<T = any> implements IResult<T> {
          * @param optional The instance parameter to use as a base to call the functions with.
          */
         <T, Y = T>(λ: (x: T) => Result<Y>, optional: AsyncResult<T>): Result<IfAnyOrUnknown<Y, any, Y & {}>>;
-        <T, Y = T>(λ: (x: T) => PromiseLike<Y>): {
-            /**
-             * @param optional The instance parameter to use as a base to call the functions with.
-             */
-            (optional: AsyncResult<T>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
-            /**
-             * @param optional The instance parameter to use as a base to call the functions with.
-             */
-            (optional: SyncResult<T>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
-            /**
-             * @param optional The instance parameter to use as a base to call the functions with.
-             */
-            (optional: Result<T>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
-        };
-        /**
-         * @param optional The instance parameter to use as a base to call the functions with.
-         */
-        <T, Y = T>(λ: (x: T) => PromiseLike<Y>, optional: AsyncResult<T>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
         <T, Y = T>(λ: (x: T) => Y): {
             /**
              * @param optional The instance parameter to use as a base to call the functions with.
@@ -1093,6 +1091,10 @@ export abstract class Result<T = any> implements IResult<T> {
         /**
          * @param optional The instance parameter to use as a base to call the functions with.
          */
+        <T, Y = T>(λ: (x: T) => PromiseLike<Y>, optional: SyncResult<T>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+        /**
+         * @param optional The instance parameter to use as a base to call the functions with.
+         */
         <T, Y = T>(λ: (x: T) => Optional<Y>, optional: SyncResult<T>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
         /**
          * @param optional The instance parameter to use as a base to call the functions with.
@@ -1109,10 +1111,6 @@ export abstract class Result<T = any> implements IResult<T> {
         /**
          * @param optional The instance parameter to use as a base to call the functions with.
          */
-        <T, Y = T>(λ: (x: T) => PromiseLike<Y>, optional: SyncResult<T>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
-        /**
-         * @param optional The instance parameter to use as a base to call the functions with.
-         */
         <T, Y = T>(λ: (x: T) => Y, optional: SyncResult<T>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
         /**
          * @param optional The instance parameter to use as a base to call the functions with.
@@ -1123,6 +1121,10 @@ export abstract class Result<T = any> implements IResult<T> {
      * @param optional The instance parameter to use as a base to call the functions with.
          */
         <T, Y = T>(λ: (x: T) => PromiseLike<Optional<T>>, optional: Result<T>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+        /**
+         * @param optional The instance parameter to use as a base to call the functions with.
+         */
+        <T, Y = T>(λ: (x: T) => PromiseLike<Y>, optional: Result<T>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
         /**
          * @param optional The instance parameter to use as a base to call the functions with.
          */
@@ -1139,10 +1141,6 @@ export abstract class Result<T = any> implements IResult<T> {
          * @param optional The instance parameter to use as a base to call the functions with.
          */
         <T, Y = T>(λ: (x: T) => Result<Y>, optional: Result<T>): Result<IfAnyOrUnknown<Y, any, Y & {}>>;
-        /**
-         * @param optional The instance parameter to use as a base to call the functions with.
-         */
-        <T, Y = T>(λ: (x: T) => PromiseLike<Y>, optional: Result<T>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
         /**
          * @param optional The instance parameter to use as a base to call the functions with.
          */
@@ -1728,16 +1726,24 @@ export abstract class Result<T = any> implements IResult<T> {
          * @param optional The instance parameter to use as a base to call the functions with.
          */
         <T>(optional: AsyncResult<T>): AsyncResult<T>;
-        <T, Y = any>(λOrValue: ((error: any) => PromiseLike<any>) | PromiseLike<any>): {
+        <T, Y = any>(λOrValue: PromiseLike<any> | ((error: any) => PromiseLike<any>)): {
             /**
              * @param optional The instance parameter to use as a base to call the functions with.
              */
             <T, Y = any>(optional: AsyncResult<T>): AsyncResult<T>;
+            /**
+             * @param optional The instance parameter to use as a base to call the functions with.
+             */
+            <T, Y = any>(optional: SyncResult<T>): AsyncResult<T>;
+            /**
+             * @param optional The instance parameter to use as a base to call the functions with.
+             */
+            <T, Y = any>(optional: Result<T>): AsyncResult<T>;
         };
         /**
          * @param optional The instance parameter to use as a base to call the functions with.
          */
-        <T, Y = any>(λOrValue: ((error: any) => PromiseLike<any>) | PromiseLike<any>, optional: AsyncResult<T>): AsyncResult<T>;
+        <T, Y = any>(λOrValue: PromiseLike<any> | ((error: any) => PromiseLike<any>), optional: AsyncResult<T>): AsyncResult<T>;
         <T, Y = any>(λOrValue: Y | ((error: any) => any)): {
             /**
              * @param optional The instance parameter to use as a base to call the functions with.
@@ -1776,16 +1782,6 @@ export abstract class Result<T = any> implements IResult<T> {
          * @param optional The instance parameter to use as a base to call the functions with.
          */
         <T>(optional: SyncResult<T>): SyncResult<T>;
-        <T, Y = any>(λOrValue: PromiseLike<any> | ((error: any) => PromiseLike<any>)): {
-            /**
-             * @param optional The instance parameter to use as a base to call the functions with.
-             */
-            <T, Y = any>(optional: SyncResult<T>): AsyncResult<T>;
-            /**
-             * @param optional The instance parameter to use as a base to call the functions with.
-             */
-            <T, Y = any>(optional: Result<T>): AsyncResult<T>;
-        };
         /**
          * @param optional The instance parameter to use as a base to call the functions with.
          */
@@ -2490,9 +2486,9 @@ export abstract class Result<T = any> implements IResult<T> {
        * const result = Result.Error(1);
        * const tapped = result.tap(x => console.log(x)); // No logs!
        */
-    abstract tap(λ: (x: T) => PromiseLike<void>): AsyncResult<T>;
-    abstract tap(λ: (x: T) => void): SyncResult<T> | AsyncResult<T>;
-    abstract tap(λ: (x: T) => void | PromiseLike<void>): Result<T>;
+    abstract tap(λ: (x: T) => PromiseLike<any>): AsyncResult<T>;
+    abstract tap(λ: (x: T) => any): SyncResult<T> | AsyncResult<T>;
+    abstract tap(λ: (x: T) => any | PromiseLike<any>): Result<T>;
     /**
        * Test if the result satisfies a predicate.
        * Will only test the predicate if the result is Ok.
@@ -2577,11 +2573,11 @@ export abstract class Result<T = any> implements IResult<T> {
      * const mapped = result.expectMap((x) => ({age: x})); // Result.Error(1)
      */
     abstract expectMap<Y = T>(λ: (x: T) => PromiseLike<Optional<T>>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+    abstract expectMap<Y = T>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     abstract expectMap<Y = T>(λ: (x: T) => Optional<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     abstract expectMap<Y = T>(λ: (x: T) => AsyncResult<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     abstract expectMap<Y = T>(λ: (x: T) => SyncResult<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     abstract expectMap<Y = T>(λ: (x: T) => Result<Y>): Result<IfAnyOrUnknown<Y, any, Y & {}>>;
-    abstract expectMap<Y = T>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     abstract expectMap<Y = T>(λ: (x: T) => Y): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>> | AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     abstract expectMap<Y = T>(λ: (x: T) => Y | PromiseLike<Y>): Result<IfAnyOrUnknown<Y, any, Y & {}>>;
     /**

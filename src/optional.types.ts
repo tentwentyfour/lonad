@@ -60,11 +60,11 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * const optional = Optional.Some(5);
    * const newOptional = optional.nullableMap(x => x + 1);
    * // newOptional === Optional.Some(6)
-   * 
+   *
    * const optional = Optional.Some(5);
    * const newOptional = optional.nullableMap(x => undefined);
    * // newOptional === Optional.None()
-   * 
+   *
    * const optional = Optional.None();
    * const newOptional = optional.nullableMap(x => x + 1);
    * // newOptional === Optional.None()
@@ -79,12 +79,12 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * const some = Optional.Some(5);
    * const result = some.or(() => Optional.Some(6));
    * // result === Optional.Some(5)
-   * 
+   *
    * const none = Optional.None();
    * const result = none.or(() => Optional.Some(6));
    * // result === Optional.Some(6)
    */
-  or<U = T>(replacement: (() => Optional<U>) | Optional<U>):            Optional<T> | Optional<U>; 
+  or<U = T>(replacement: (() => Optional<U>) | Optional<U>):            Optional<T> | Optional<U>;
 
   /**
    * Pattern matches on the optional value and returns the result of executing the corresponding function for the matching case.
@@ -92,17 +92,17 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * @returns The result of executing the matching function.
    */
   match<
-    U = undefined, 
+    U = undefined,
     V = undefined
   >(clauses: IOptionalMatchClauses<T, U, V>):                           U | V;
-  
+
   /**
    * Maps the value of the Optional to a new value.
    * @param λ A function that takes the value of the Optional and returns a new value.
-   * @see Alias for {@link map} 
+   * @see Alias for {@link map}
    */
   transform<U>(λ: TransformationFunction<T, U>):                        Optional<IfAnyOrUnknown<U, any, U>>;
-  
+
   /**
    * Maps the value of the Optional to a new value.
    * @param λ A function that takes the value of the Optional and returns a new value.
@@ -111,7 +111,7 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * const some = Optional.Some(5);
    * const result = some.map(x => `Result - ${x}`);
    * // result === Optional.Some("Result - 5")
-   * 
+   *
    * const none = Optional.None();
    * const result = none.map(x => `Result - ${x}`);
    * // result === Optional.None()
@@ -126,7 +126,7 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * const some = Optional.Some({ name: "John", age: 30 });
    * const result = some.property("name");
    * // result === "John"
-   * 
+   *
    * const none = Optional.None();
    * const result = none.property("name");
    * // result === Optional.None()
@@ -143,11 +143,11 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * const some = Optional.Some({ name: "John", age: 30 });
    * const result = some.nullableProperty("name");
    * // result === Optional.Some("John")
-   * 
+   *
    * const some = Optional.Some({ name: "John", age: 30 });
    * const result = some.nullableProperty("nonExistentProperty");
    * // result === Optional.None()
-   * 
+   *
    * const none = Optional.None();
    * const result = none.nullableProperty("name");
    * // result === Optional.None()
@@ -164,11 +164,11 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * const some = Optional.Some({ name: "John", age: 30 });
    * const result = some.property("name");
    * // result === Optional.Some("John")
-   * 
+   *
    * const some = Optional.Some({ name: "John", age: 30 });
    * const result = some.property("nonExistentProperty");
    * // result === Optional.Some(undefinied)
-   * 
+   *
    * const none = Optional.None();
    * const result = none.property("name");
    * // result === Optional.None()
@@ -184,7 +184,7 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * const some = Optional.Some(5);
    * const result = some.flatMap(x => `Result - ${x}`);
    * // result === "Result - 5"
-   * 
+   *
    * const none = Optional.None();
    * const result = none.flatMap(x => `Result - ${x}`);
    * // result === Optional.None()
@@ -199,7 +199,7 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * const some = Optional.Some(5);
    * const result = some.tap(x => console.log(x)); // logs: 5
    * // result === Optional.Some(5)
-   * 
+   *
    * const none = Optional.None();
    * const result = none.tap(x => console.log(x)); // does not log
    * // result === Optional.None()
@@ -210,15 +210,15 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * Checks whether the Optional satisfies a predicate.
    * @param λ A function that takes the value of the Optional and returns a boolean.
    * @returns True if the predicate returns true, false otherwise.
-   * @example 
+   * @example
    * const some = Optional.Some(5);
    * const result = some.satisfies(x => x > 4);
    * // result === true
-   * 
+   *
    * const some = Optional.Some(5);
    * const result = some.satisfies(x => x > 6);
    * // result === false
-   * 
+   *
    * const none = Optional.None();
    * const result = none.satisfies(x => x > 4);
    * // result === false
@@ -233,11 +233,11 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * const some = Optional.Some(5);
    * const result = some.valueEquals(5);
    * // result === true
-   * 
+   *
    * const some = Optional.Some(5);
    * const result = some.valueEquals("some string");
    * // result === false
-   * 
+   *
    * const none = Optional.None();
    * const result = none.valueEquals(5);
    * // result === false
@@ -253,11 +253,11 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * const some = Optional.Some(5);
    * const result = some.filter(x => x > 4);
    * // result === Optional.Some(5)
-   * 
+   *
    * const some = Optional.Some(5);
    * const result = some.filter(x => x > 6);
    * // result === Optional.None()
-   * 
+   *
    * const none = Optional.None();
    * const result = none.filter(x => x > 4);
    * // result === Optional.None()
@@ -273,11 +273,11 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * const some = Optional.Some(5);
    * const result = some.reject(x => x > 4);
    * // result === Optional.None()
-   * 
+   *
    * const some = Optional.Some(5);
    * const result = some.reject(x => x > 6);
    * // result === Optional.Some(5)
-   * 
+   *
    * const none = Optional.None();
    * const result = none.reject(x => x > 4);
    * // result === Optional.None()
@@ -293,7 +293,7 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * const some = Optional.Some(5);
    * const result = some.get();
    * // result === 5
-   * 
+   *
    * const none = Optional.None();
    * const result = none.get("No value present");
    * // throws: "No value present"
@@ -308,7 +308,7 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * const some = Optional.Some(10);
    * const result = some.getOrElse(5);
    * // result === 10
-   * 
+   *
    * const none = Optional.None();
    * const result = none.getOrElse(5);
    * // result === 5
@@ -323,7 +323,7 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * const some = Optional.Some(10);
    * const result = some.recover(() => 5);
    * // result === Optional.Some(10)
-   * 
+   *
    * const none = Optional.None();
    * const result = none.recover(() => 5);
    * // result === Optional.Some(5)
@@ -339,7 +339,7 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * const some = Optional.Some(10);
    * const result = some.replace(5);
    * // result === Optional.Some(5)
-   * 
+   *
    * const none = Optional.None();
    * const result = none.replace(5);
    * // result === Optional.None()

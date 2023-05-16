@@ -2,34 +2,34 @@
 # Lonad
 by [Florian Simon](https://github.com/floriansimon1)
 
-
+TypeScript Support by [Marx Jason](https://github.com/xxjasonxx1996)
 
 *Like lodash, but for monads…*
 
-
-
+[![npm](https://img.shields.io/npm/v/lonad.svg)](https://www.npmjs.com/package/lonad)
+[![TypeScript](https://img.shields.io/badge/TypeScript-4.9.5-blue.svg)](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html)
+![Licence](https://img.shields.io/github/license/tentwentyfour/lonad)
 ## Focus
-
-
 
 This currently provides `Optional` and `Result` types in Javascript & Typescript.
 
-
-
 What's different in this `Maybe`/`Optional`/`Either`/`Result` implementation? Here, pragmatism is valued above fantasy-land compliance. lonad draws inspiration on Haskell's `Maybe`, and, like lodash, tortures nice concepts to put emphasis on user-friendliness and convenience.
-
-
 
 Another notable difference from folktale's `Result`: lonad's `Result` handles asynchronous computation chains.
 
-## TypeScript support
 
+## TypeScript support
 
 This library is written in Typescript and provides type definitions for Typescript users.
 
 It is also written in a way that allows Typescript to infer types in most cases, so you don't have to specify them manually.
 
 Although, it is recommended to use TypeScript, it is not mandatory. The library is written in a way that allows it to be used in Javascript projects without any hassle.
+
+> Be aware that version `0.3.0` adds types in a limited way. This is due to the fact that Typescript curried functions are not supported yet.
+
+### IMPORTANT:
+The usage of `Typescript 4.9.5` or higher is recommended. Versions below `4.9.5` may not be able to infer types in certain cases.
 
 ### Example
 
@@ -91,6 +91,22 @@ Usage:
 <script type="module" src="https://unpkg.com/lonad/lonad-bundle.es.js"></script>
 ```
 
+## ROADMAP
+
+* [x] `Optional` type
+* [x] `Result` type
+* [x] Typescript support
+* [x] Bundled version
+* [ ] Further improve Typescript support
+* [ ] Write documentation for the `generator` systems
+* [ ] Immutable `Optional` and `Result` types.
+
+
+## TESTS
+
+To run the tests, simply execute:
+
+`$ npm run test`
 
 ## What is an `Optional`
 

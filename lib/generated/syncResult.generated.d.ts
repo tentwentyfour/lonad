@@ -2,7 +2,7 @@ import { IResultCallbacks } from '../result.types';
 import { AsyncResult } from './asyncResult.generated';
 import { Result } from './result.generated';
 import { Optional } from './optional.generated';
-import { IfAnyOrUnknown, IfAny } from '../utils/types';
+import { IfAnyOrUnknown } from '../utils/types';
 /**
  * A result that is not awaitable.
  * Contrary to the AsyncResult, this result object does not contain
@@ -40,6 +40,7 @@ export declare abstract class SyncResult<T = any> extends Result<T> {
   * const value = result.getOrElse(2); // 2
   */
     getOrElse<Y = T>(value?: Y): T | Y;
+    getOrElse<Y>(value?: Y): T | Y;
     /**
   * Recovers from an error if an error occurs.
   * @param λ The function to recover with
@@ -81,10 +82,10 @@ export declare abstract class SyncResult<T = any> extends Result<T> {
   * const result = Result.Ok({ name: "John" });
   * const name = result.expectProperty("age"); // Result.Error()
   */
-    expectProperty(propertyName: IfAny<T, any, never>): SyncResult<any>;
-    expectProperty(propertyName: IfAny<T, any, never>): Result<any>;
-    expectProperty<Y extends keyof T, U = Y extends keyof T ? T[Y] : any, V = U extends Optional<infer X> ? X : U>(propertyName: Y): SyncResult<IfAnyOrUnknown<V, any, V & {}>>;
-    expectProperty<Y extends keyof T, U = Y extends keyof T ? T[Y] : any, V = U extends Optional<infer X> ? X : U>(propertyName: Y): Result<IfAnyOrUnknown<V, any, V & {}>>;
+    expectProperty<Y extends keyof T = keyof T, U = Y extends keyof T ? T[Y] : any, V = U extends Optional<infer X> ? X : U>(propertyName: Y): SyncResult<V>;
+    expectProperty<Y extends keyof T = keyof T, U = Y extends keyof T ? T[Y] : any, V = U extends Optional<infer X> ? X : U>(propertyName: Y): Result<V>;
+    expectProperty(propertyName: IfAnyOrUnknown<T, any, never>): SyncResult<any>;
+    expectProperty(propertyName: IfAnyOrUnknown<T, any, never>): Result<any>;
     /**
   * Returns the wrapped property value if the result contains an object.
   * Will always return an Ok result even if the property was not found.
@@ -97,10 +98,10 @@ export declare abstract class SyncResult<T = any> extends Result<T> {
   * const result = Result.Ok({ name: "John" });
   * const name = result.property("age"); // Result.Ok(undefined)
   */
-    property(propertyName: IfAny<T, any, never>): SyncResult<any>;
-    property(propertyName: IfAny<T, any, never>): Result<any>;
-    property<Y extends keyof T>(propertyName: Y): SyncResult<Y extends keyof T ? T[Y] : any>;
-    property<Y extends keyof T>(propertyName: Y): Result<Y extends keyof T ? T[Y] : any>;
+    property<Y extends keyof T = keyof T, U = Y extends keyof T ? T[Y] : any>(propertyName: Y): SyncResult<U>;
+    property<Y extends keyof T = keyof T, U = Y extends keyof T ? T[Y] : any>(propertyName: Y): Result<U>;
+    property(propertyName: IfAnyOrUnknown<T, any, never>): SyncResult<any>;
+    property(propertyName: IfAnyOrUnknown<T, any, never>): Result<any>;
     /**
   * Tap into the result and perform an action.
   * Will only perform the action if the result is Ok.
@@ -142,7 +143,8 @@ export declare abstract class SyncResult<T = any> extends Result<T> {
   * const result = Result.Error(1);
   * const satisfied = result.valueEquals(1); // false
   */
-    valueEquals(value: T): boolean;
+    valueEquals<Y = T>(value: Y): boolean;
+    valueEquals<Y = any>(value: Y): boolean;
     /**
   * Map the result value.
   * Will only map the value if the result is Ok.
@@ -163,6 +165,9 @@ export declare abstract class SyncResult<T = any> extends Result<T> {
     map<Y = T>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y>>;
     map<Y = T>(λ: (x: T) => Y): SyncResult<IfAnyOrUnknown<Y, any, Y>>;
     map<Y = T>(λ: (x: T) => Y | PromiseLike<Y>): Result<IfAnyOrUnknown<Y, any, Y>>;
+    map<Y>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y>>;
+    map<Y>(λ: (x: T) => Y): SyncResult<IfAnyOrUnknown<Y, any, Y>>;
+    map<Y>(λ: (x: T) => Y | PromiseLike<Y>): Result<IfAnyOrUnknown<Y, any, Y>>;
     /**
   * Map the result value.
   * Will only map the value if the result is Ok.
@@ -199,14 +204,13 @@ export declare abstract class SyncResult<T = any> extends Result<T> {
   * const result = Result.Error(1);
   * const mapped = result.expectMap((x) => ({age: x})); // Result.Error(1)
   */
-    expectMap<Y = T>(λ: (x: T) => PromiseLike<Optional<T>>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+    expectMap<Y = T>(λ: (x: T) => PromiseLike<Optional<Y>>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     expectMap<Y = T>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     expectMap<Y = T>(λ: (x: T) => Optional<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     expectMap<Y = T>(λ: (x: T) => AsyncResult<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     expectMap<Y = T>(λ: (x: T) => SyncResult<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     expectMap<Y = T>(λ: (x: T) => Result<Y>): Result<IfAnyOrUnknown<Y, any, Y & {}>>;
     expectMap<Y = T>(λ: (x: T) => Y): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
-    expectMap<Y = T>(λ: (x: T) => Y | PromiseLike<Y>): Result<IfAnyOrUnknown<Y, any, Y & {}>>;
     /**
   * Map the result value and flatten the result.
   * Will only map the value if the result is Ok.
@@ -230,7 +234,14 @@ export declare abstract class SyncResult<T = any> extends Result<T> {
     flatMap<Y = T>(λ: (x: T) => SyncResult<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     flatMap<Y = T>(λ: (x: T) => Result<Y>): Result<IfAnyOrUnknown<Y, any, Y & {}>>;
     flatMap<Y = T>(λ: (x: T) => Y): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
-    flatMap<Y = T>(λ: (x: T) => any): Result<Y & {}>;
+    flatMap<Y>(λ: (x: T) => PromiseLike<Optional<Y>>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+    flatMap<Y>(λ: (x: T) => PromiseLike<Result<Y>>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+    flatMap<Y>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+    flatMap<Y>(λ: (x: T) => Optional<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+    flatMap<Y>(λ: (x: T) => AsyncResult<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+    flatMap<Y>(λ: (x: T) => SyncResult<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+    flatMap<Y>(λ: (x: T) => Result<Y>): Result<IfAnyOrUnknown<Y, any, Y & {}>>;
+    flatMap<Y>(λ: (x: T) => Y): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
     /**
   * Returns the result value if it is Ok, otherwise returns the error value.
   * @returns The result value or the error value
@@ -318,9 +329,9 @@ export declare abstract class SyncResult<T = any> extends Result<T> {
   * const result = Result.Error(1);
   * const tapped = result.tapError(x => console.log(x)); // Logs: "1"
   */
-    tapError(λ: (x: any) => PromiseLike<void>): AsyncResult<T>;
-    tapError(λ: (x: any) => void): SyncResult<T>;
-    tapError(λ: (x: any) => void | PromiseLike<void>): Result<T>;
+    tapError(λ: (x: any) => PromiseLike<any>): AsyncResult<T>;
+    tapError(λ: (x: any) => any): SyncResult<T>;
+    tapError(λ: (x: any) => any): Result<T>;
     /**
   * Map the error value if result is an error.
   * @param λ The function to map the error value to
@@ -350,11 +361,11 @@ export declare abstract class SyncResult<T = any> extends Result<T> {
   * const result = Result.Error(1);
   * const recovered = result.recoverWhen(x => false, x => 10); // Result.Error(1)
   */
-    recoverWhen<Y = T>(predicate: (x: T) => PromiseLike<boolean | T>, λ: (x: T) => Y): AsyncResult<Y>;
-    recoverWhen<Y = T>(predicate: (x: T) => boolean | T, λ: (x: T) => PromiseLike<Y>): AsyncResult<Y>;
-    recoverWhen<Y = T>(predicate: (x: T) => PromiseLike<boolean | T>, λ: (x: T) => PromiseLike<Y>): AsyncResult<Y>;
-    recoverWhen<Y = T>(predicate: (x: T) => boolean | T, λ: (x: T) => Y): SyncResult<Y>;
-    recoverWhen<Y = T>(predicate: (x: T) => boolean | T | PromiseLike<boolean | T>, λ: (x: T) => Y): Result<Y>;
+    recoverWhen<Y = T>(predicate: (x: T) => PromiseLike<boolean | T>, λ: (x: T) => PromiseLike<Y>): AsyncResult<T | Y>;
+    recoverWhen<Y = T>(predicate: (x: T) => PromiseLike<boolean | T>, λ: (x: T) => Y): AsyncResult<T | Y>;
+    recoverWhen<Y = T>(predicate: (x: T) => boolean | T, λ: (x: T) => PromiseLike<Y>): AsyncResult<T | Y>;
+    recoverWhen<Y = T>(predicate: (x: T) => boolean | T, λ: (x: T) => Y): SyncResult<T | Y>;
+    recoverWhen<Y = T>(predicate: (x: T) => boolean | T | PromiseLike<boolean | T>, λ: (x: T) => Y): Result<T | Y>;
     /**
   * Aborts the excution if the result is an error.
   * @returns A new result

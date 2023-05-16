@@ -54,6 +54,7 @@ export interface IResult<T> extends IResultBase {
    * const value = result.getOrElse(2); // 2
    */
   getOrElse<Y = T>(value?: Y): T | Y | Promise<T> | Promise<Y>;
+  getOrElse<Y>(value?: Y): T | Y | Promise<T> | Promise<Y>;
 
   /**
    * Recovers from an error if an error occurs.
@@ -69,6 +70,7 @@ export interface IResult<T> extends IResultBase {
   recover<R = T>(λ: (x: any) => PromiseLike<R>): AsyncResult<T | R>;
   recover<R = T>(λ: (x: any) => R): SyncResult<T | R> | AsyncResult<T | R>;
   recover<R = T>(λ: (x: any) => R): Result<T | R>;
+
 
   /**
    * Replace the value of the result.
@@ -86,6 +88,7 @@ export interface IResult<T> extends IResultBase {
   replace<Y = T>(value: Y): SyncResult<Y> | AsyncResult<Y>;
   replace<Y = T>(value: Y | PromiseLike<Y>): Result<Y>;
 
+
   /**
    * Returns the wrapped property value if the result contains an object.
    * Will return an Error result if the property was not found.
@@ -98,20 +101,20 @@ export interface IResult<T> extends IResultBase {
    * const result = Result.Ok({ name: "John" });
    * const name = result.expectProperty("age"); // Result.Error()
    */
-  expectProperty(propertyName: IfAny<T, any, never>): SyncResult<any> | AsyncResult<any>;
-  expectProperty(propertyName: IfAny<T, any, never>): Result<any>;
   expectProperty<
-    Y extends keyof T,
+    Y extends keyof T = keyof T,
     U = Y extends keyof T ? T[Y] : any,
     V = U extends Optional<infer X> ? X : U
   >(propertyName: Y):
-    SyncResult<IfAnyOrUnknown<V, any, V & {}>> |
-    AsyncResult<IfAnyOrUnknown<V, any, V & {}>>;
+    SyncResult<V> |
+    AsyncResult<V>;
   expectProperty<
-    Y extends keyof T,
+    Y extends keyof T = keyof T,
     U = Y extends keyof T ? T[Y] : any,
     V = U extends Optional<infer X> ? X : U
-  >(propertyName: Y): Result<IfAnyOrUnknown<V, any, V & {}>>;
+  >(propertyName: Y): Result<V>;
+  expectProperty(propertyName: IfAnyOrUnknown<T, any, never>): SyncResult<any> | AsyncResult<any>;
+  expectProperty(propertyName: IfAnyOrUnknown<T, any, never>): Result<any>;
 
   /**
    * Returns the wrapped property value if the result contains an object.
@@ -125,10 +128,18 @@ export interface IResult<T> extends IResultBase {
    * const result = Result.Ok({ name: "John" });
    * const name = result.property("age"); // Result.Ok(undefined)
    */
-  property(propertyName: IfAny<T, any, never>): SyncResult<any> | AsyncResult<any>;
-  property(propertyName: IfAny<T, any, never>): Result<any>;
-  property<Y extends keyof T>(propertyName: Y): SyncResult<Y extends keyof T ? T[Y]: any> | AsyncResult<Y extends keyof T ? T[Y]: any>;
-  property<Y extends keyof T>(propertyName: Y): Result<Y extends keyof T ? T[Y]: any>;
+  property<
+    Y extends keyof T = keyof T,
+    U = Y extends keyof T ? T[Y] : any,
+  >(propertyName: Y):
+    SyncResult<U> |
+    AsyncResult<U>;
+  property<
+    Y extends keyof T = keyof T,
+    U = Y extends keyof T ? T[Y] : any,
+  >(propertyName: Y): Result<U>;
+  property(propertyName: IfAnyOrUnknown<T, any, never>): SyncResult<any> | AsyncResult<any>;
+  property(propertyName: IfAnyOrUnknown<T, any, never>): Result<any>;
 
 
   /**
@@ -174,7 +185,8 @@ export interface IResult<T> extends IResultBase {
    * const result = Result.Error(1);
    * const satisfied = result.valueEquals(1); // false
    */
-  valueEquals(value: T): boolean | Promise<boolean>;
+  valueEquals<Y = T>(value: Y): boolean | Promise<boolean>;
+  valueEquals<Y = any>(value: Y): boolean | Promise<boolean>;
 
   /**
    * Map the result value.
@@ -196,6 +208,9 @@ export interface IResult<T> extends IResultBase {
   map<Y = T>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y>>;
   map<Y = T>(λ: (x: T) => Y): SyncResult<IfAnyOrUnknown<Y, any, Y>> | AsyncResult<IfAnyOrUnknown<Y, any, Y>>;
   map<Y = T>(λ: (x: T) => Y | PromiseLike<Y>): Result<IfAnyOrUnknown<Y, any, Y>>;
+  map<Y>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y>>;
+  map<Y>(λ: (x: T) => Y): SyncResult<IfAnyOrUnknown<Y, any, Y>> | AsyncResult<IfAnyOrUnknown<Y, any, Y>>;
+  map<Y>(λ: (x: T) => Y | PromiseLike<Y>): Result<IfAnyOrUnknown<Y, any, Y>>;
 
   /**
    * Map the result value.
@@ -234,15 +249,21 @@ export interface IResult<T> extends IResultBase {
  * const result = Result.Error(1);
  * const mapped = result.expectMap((x) => ({age: x})); // Result.Error(1)
  */
-
-  expectMap<Y = T>(λ: (x: T) => PromiseLike<Optional<T>>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+  expectMap<Y = T>(λ: (x: T) => PromiseLike<Optional<Y>>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
   expectMap<Y = T>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
   expectMap<Y = T>(λ: (x: T) => Optional<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
   expectMap<Y = T>(λ: (x: T) => AsyncResult<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
   expectMap<Y = T>(λ: (x: T) => SyncResult<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
   expectMap<Y = T>(λ: (x: T) => Result<Y>): Result<IfAnyOrUnknown<Y, any, Y & {}>>;
   expectMap<Y = T>(λ: (x: T) => Y): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>> | AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
-  expectMap<Y = T>(λ: (x: T) => Y | PromiseLike<Y>): Result<IfAnyOrUnknown<Y, any, Y & {}>>;
+
+  // expectMap<Y>(λ: (x: T) => PromiseLike<Optional<Y>>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+  // expectMap<Y>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+  // expectMap<Y>(λ: (x: T) => Optional<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+  // expectMap<Y>(λ: (x: T) => AsyncResult<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+  // expectMap<Y>(λ: (x: T) => SyncResult<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+  // expectMap<Y>(λ: (x: T) => Result<Y>): Result<IfAnyOrUnknown<Y, any, Y & {}>>;
+  // expectMap<Y>(λ: (x: T) => Y): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>> | AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
 
   /**
    * Map the result value and flatten the result.
@@ -267,7 +288,15 @@ export interface IResult<T> extends IResultBase {
   flatMap<Y = T>(λ: (x: T) => SyncResult<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>> | AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
   flatMap<Y = T>(λ: (x: T) => Result<Y>): Result<IfAnyOrUnknown<Y, any, Y & {}>>;
   flatMap<Y = T>(λ: (x: T) => Y): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>> | AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
-  flatMap<Y = T>(λ: (x: T) => PromiseLike<Optional<IfAnyOrUnknown<Y, any, Y>>> | PromiseLike<Result<IfAnyOrUnknown<Y, any, Y>>> | PromiseLike<IfAnyOrUnknown<Y, any, Y>> | Optional<IfAnyOrUnknown<Y, any, Y>> | Result<IfAnyOrUnknown<Y, any, Y>> | IfAnyOrUnknown<Y, any, Y>): Result<Y & {}>;
+
+  flatMap<Y>(λ: (x: T) => PromiseLike<Optional<Y>>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+  flatMap<Y>(λ: (x: T) => PromiseLike<Result<Y>>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+  flatMap<Y>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+  flatMap<Y>(λ: (x: T) => Optional<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+  flatMap<Y>(λ: (x: T) => AsyncResult<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+  flatMap<Y>(λ: (x: T) => SyncResult<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>> | AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+  flatMap<Y>(λ: (x: T) => Result<Y>): Result<IfAnyOrUnknown<Y, any, Y & {}>>;
+  flatMap<Y>(λ: (x: T) => Y): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>> | AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
 
   /**
    * Returns the result value if it is Ok, otherwise returns the error value.
@@ -367,9 +396,9 @@ export interface IResult<T> extends IResultBase {
    * const result = Result.Error(1);
    * const tapped = result.tapError(x => console.log(x)); // Logs: "1"
    */
-  tapError(λ: (x: any) => PromiseLike<void>): AsyncResult<T>;
-  tapError(λ: (x: any) => void): SyncResult<T> | AsyncResult<T>;
-  tapError(λ: (x: any) => PromiseLike<void> | void): Result<T>;
+  tapError(λ: (x: any) => PromiseLike<any>): AsyncResult<T>;
+  tapError(λ: (x: any) => any): SyncResult<T> | AsyncResult<T>;
+  tapError(λ: (x: any) => PromiseLike<any> | any): Result<T>;
 
   /**
    * Map the error value if result is an error.
@@ -402,11 +431,11 @@ export interface IResult<T> extends IResultBase {
    * const result = Result.Error(1);
    * const recovered = result.recoverWhen(x => false, x => 10); // Result.Error(1)
    */
-  recoverWhen<Y = T>(predicate: (x: T) => PromiseLike<T | boolean>, λ: (x: T) => Y): AsyncResult<Y>;
-  recoverWhen<Y = T>(predicate: (x: T) => T | boolean, λ: (x: T) => PromiseLike<Y>): AsyncResult<Y>;
-  recoverWhen<Y = T>(predicate: (x: T) => PromiseLike<T | boolean>, λ: (x: T) => PromiseLike<Y>): AsyncResult<Y>;
-  recoverWhen<Y = T>(predicate: (x: T) => T | boolean, λ: (x: T) => Y): SyncResult<Y> | AsyncResult<Y>;
-  recoverWhen<Y = T>(predicate: (x: T) => T | boolean | PromiseLike<T | boolean>, λ: (x: T) => Y): Result<Y>;
+  recoverWhen<Y = T>(predicate: (x: T) => PromiseLike<T | boolean>, λ: (x: T) => PromiseLike<Y>): AsyncResult<Y | T>;
+  recoverWhen<Y = T>(predicate: (x: T) => PromiseLike<T | boolean>, λ: (x: T) => Y): AsyncResult<Y | T>;
+  recoverWhen<Y = T>(predicate: (x: T) => T | boolean, λ: (x: T) => PromiseLike<Y>): AsyncResult<Y | T>;
+  recoverWhen<Y = T>(predicate: (x: T) => T | boolean, λ: (x: T) => Y): SyncResult<Y | T> | AsyncResult<Y | T>;
+  recoverWhen<Y = T>(predicate: (x: T) => T | boolean | PromiseLike<T | boolean>, λ: (x: T) => Y): Result<Y | T>;
 
   /**
    * Aborts the excution if the result is an error.

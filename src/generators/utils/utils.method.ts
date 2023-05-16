@@ -6,6 +6,7 @@ import { MethodPropertyUsedTypesVisitor } from './methodPropertyUsedGenericVisit
 import { SignatureVisitorByClassOrInterface } from './signatureVisitorByInterface.js';
 import { TypeVisitorByType } from './typeVisitorByType.js';
 import { CommentVisitorByNode } from './commentVisitorByNode.js';
+import { TypeConditionAndDefaultVisitor } from './typeConditionAndDefaultVisitor.js';
 
 const COMMENT_REGEX = /@(?:(\w+)[ |\n]+((?:[\s\S](?!\*\/|@))*))/gm;
 // eslint-disable-next-line no-useless-escape
@@ -37,6 +38,7 @@ export type MethodProperty = {
 export type GenericDefinition = {
   name: string;
   fullValue: string;
+  dependsOn?: string[];
 };
 
 export type ReturnType = {
@@ -71,7 +73,7 @@ export function getAllMethodsByFileAndName(
   const nodes = isInterface
     ? InterfaceVisitorByType.getAll(file, name)
     : ClassVisitorByType.getAll(file, name);
-  
+
   return SignatureVisitorByClassOrInterface
     .getAll(nodes[0] as any)
     .map((node) => retriveInfoOnMethod(checker, file, node));
@@ -115,11 +117,12 @@ export function retriveInfoOnMethod(
   method: ts.MethodSignature | ts.MethodDeclaration
 ): MethodDefinition {
   const documentation = getMethodDocumentation(method, checker, sourceFile);
+  const generics = getMethodGenerics(method);
 
   return {
     name: method.name.getText(sourceFile!),
-    generics: getMethodGenerics(method),
-    parameters: getMethodParameters(method, sourceFile, checker, documentation),
+    generics,
+    parameters: getMethodParameters(method, generics, sourceFile, checker, documentation),
     returnType: getMethodReturnType(method, checker),
     content: method.getText(sourceFile!),
     documentation,
@@ -206,7 +209,7 @@ function getMethodDocumentationForFields(
  * @returns The parameters of the method
  * @example
  * // The method
- * function test<T, U, Y>(a: T, b: U | Y): T {
+ * function test<T, U, Y = T>(a: T, b: U | Y): T {
  *  return a;
  * }
  *
@@ -216,11 +219,12 @@ function getMethodDocumentationForFields(
  * // The result
  * parameters = [
  *  { name: "a", type: "T", consumedTypes: ["T"] },
- *  { name: "b", type: "U | Y", consumedTypes: ["U", "Y"] }
+ *  { name: "b", type: "U | Y", consumedTypes: ["U", "Y", "T"] }
  * ]
  */
 function getMethodParameters(
   method: ts.MethodSignature | ts.MethodDeclaration,
+  generics: GenericDefinition[],
   sourceFile: ts.SourceFile,
   checker: ts.TypeChecker,
   documentation: DocumentationSignature
@@ -229,8 +233,10 @@ function getMethodParameters(
     name: param.name.getText(sourceFile!),
     type: checker.typeToString(checker.getTypeAtLocation(param)),
     isOptional: param.getText().includes('?'),
-    consumedTypes: _.uniq(MethodPropertyUsedTypesVisitor.getAll(param).map((type) =>
-      type.getText(sourceFile))),
+    consumedTypes: _.uniq(MethodPropertyUsedTypesVisitor.getAll(param, generics)
+      .map((type) => type.getText(sourceFile))
+      .concat(generics
+        .reduce((acc, next) => acc!.concat(next.dependsOn ?? ([] as any)), []) ?? [])),
     documentation: documentation.fields[param.name.getText(sourceFile!)],
   }));
 }
@@ -250,16 +256,22 @@ function getMethodParameters(
  *
  * // The result
  * generics = [
- *  { name: "T", fullValue: "T" },
- *  { name: "U", fullValue: "U = T" }
+ *  { name: "T", fullValue: "T", dependsOn: [] },
+ *  { name: "U", fullValue: "U = T", dependsOn: ["T"] }
  * ]
  */
 function getMethodGenerics(method: ts.MethodSignature | ts.MethodDeclaration): GenericDefinition[] {
   return (
-    method.typeParameters?.map((node) => ({
-      name: node.name.text,
-      fullValue: node.getText(),
-    })) ?? []
+    method.typeParameters?.map((node) => {
+      const nodes = TypeConditionAndDefaultVisitor.getAll(node)
+        .map((node) => node.getText());
+
+      return {
+        name: node.name.text,
+        fullValue: node.getText(),
+        dependsOn: nodes
+      }
+    }) ?? []
   );
 }
 

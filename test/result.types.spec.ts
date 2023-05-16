@@ -23,7 +23,7 @@ describe('The Result type (typings)', () => {
       typingsFile: './lib/index.d.ts',
       testFiles: ['./test/types/result.test-d.ts']
     })
-    
+
     // eslint-disable-next-line no-unused-expressions
     expect(result, result
       .map((err: any) => `[${err.line}:${err.column}] ${err.message}`)

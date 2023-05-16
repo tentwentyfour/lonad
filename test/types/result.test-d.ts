@@ -59,21 +59,24 @@ expectAssignable<Result<string>>(Result.Ok('test').filter((x) => x.length > 0));
 expectAssignable<Result<string | number>>(Result.Ok('test' as string | number).filter((x) => typeof x === 'string'));
 expectAssignable<Result<string>>(Result.Ok('test' as string | number).filter((x): x is string => typeof x === 'string'));
 
+expectType<SyncResult<number>>(Result.Ok(54).filter((x) => x > 0));
+expectType<AsyncResult<number>>(Result.Ok(54).filter(async (x) => x > 0));
+
 // expectMap
 expectType<SyncResult<never>>(Result.Ok(54).expectMap((x) => undefined));
 expectType<SyncResult<never>>(Result.Ok(54).expectMap((x) => null));
 expectType<SyncResult<number>>(Result.Ok(54).expectMap((x) => x));
 expectType<SyncResult<string>>(Result.Ok(54).expectMap((x) => x.toString()));
 expectType<SyncResult<number>>(Result.Ok(54).expectMap((x) => 54));
-expectType<SyncResult<number | string>>(Result.Ok(54).expectMap((x) => 54 as number | string));
-expectType<SyncResult<number | string>>(Result.Ok(54).expectMap((x) => 54 as number | string | null | undefined));
-expectType<SyncResult<any>>(Result.Ok(54).expectMap((x) => 54 as any));
-expectType<SyncResult<any>>(Result.Ok(54).expectMap((x) => 54 as unknown));
-expectType<SyncResult<number>>(Result.Ok(54).expectMap((x) => Optional.Some(54)));
+expectType<SyncResult<number | string>>(Result.Ok(54).expectMap((x) => 'hello' as number | string));
+expectType<SyncResult<number | string>>(Result.Ok(54).expectMap((x) => 'hello' as number | string | null | undefined));
+expectType<SyncResult<any>>(Result.Ok(54).expectMap((x) => 'hello' as any));
+expectType<SyncResult<any>>(Result.Ok(54).expectMap((x) => 'hello' as unknown));
+expectType<SyncResult<string>>(Result.Ok(54).expectMap((x) => Optional.Some('hello')));
 expectType<SyncResult<number>>(Result.Ok(54).expectMap((x) => Result.Ok(54)));
 expectType<SyncResult<string>>(Result.Ok(54).expectMap(() => Result.Ok('test')));
-expectType<AsyncResult<number>>(Result.Ok(54).expectMap((x) => Promise.resolve(54)))
-expectType<AsyncResult<number | string>>(Result.Ok(54).expectMap(() => Promise.resolve(54) as PromiseLike<number | string | undefined | null>))
+expectType<AsyncResult<string>>(Result.Ok(54).expectMap((x) => Promise.resolve('hello')))
+expectType<AsyncResult<number | string>>(Result.Ok(54).expectMap(() => Promise.resolve('hello') as PromiseLike<number | string | undefined | null>))
 expectType<AsyncResult<number>>(Result.Ok(54).expectMap(() => Result.Pending(Promise.resolve(54))))
 
 // map
@@ -100,6 +103,59 @@ expectType<SyncResult<any>>(Result.Ok(54).flatMap(() => 'test' as unknown));
 expectType<SyncResult<string>>(Result.Ok(54).flatMap(() => Result.Ok('test')));
 expectType<AsyncResult<number>>(Result.Ok(54).flatMap(() => Promise.resolve(54)))
 
+// abortOnError
+expectType<SyncResult<number>>(Result.Ok(54).abortOnError());
+expectType<AsyncResult<number>>(Result.expect(Promise.resolve(54)).abortOnError());
+
+// abortOnErrorWith
+expectType<SyncResult<number>>(Result.Ok(54).abortOnErrorWith('some error'));
+expectType<AsyncResult<number>>(Result.expect(Promise.resolve(54)).abortOnErrorWith('some error'));
+
+// asynchronous
+expectType<AsyncResult<number>>(Result.Ok(54).asynchronous());
+expectType<AsyncResult<number>>(Result.expect(Promise.resolve(54)).asynchronous());
+
+// mapError
+expectType<SyncResult<number>>(Result.Ok(54).mapError((x) => 'test'));
+expectType<AsyncResult<number>>(Result.Ok(54).mapError(async (x) => 'test'));
+
+// tapError
+expectType<SyncResult<number>>(Result.Ok(54).tapError((x) => 'test'));
+expectType<AsyncResult<number>>(Result.Ok(54).tapError(async (x) =>'hello'));
+
+// recover
+expectType<SyncResult<string | number>>(Result.Ok(54).recover((x) => 'test'));
+expectType<AsyncResult<string | number>>(Result.Ok(54).recover(async (x) => 'test'));
+
+// recoverWhen
+expectType<SyncResult<string | number>>(Result.Ok(54).recoverWhen((x) => true, (x) => 'test'));
+expectType<AsyncResult<string | number>>(Result.Ok(54).recoverWhen(async (x) => true, async (x) => 'test'));
+
+// replace
+expectType<SyncResult<string>>(Result.Ok(54).replace('test'));
+expectType<AsyncResult<string>>(Result.Ok(54).replace(Promise.resolve('test')));
+
+// satisfies
+expectType<boolean>(Result.Ok(54).satisfies((x): x is number => typeof x === 'number'));
+expectType<Promise<boolean>>(Result.Ok(54).satisfies(async (x) => true));
+
+// valueEquals
+expectType<boolean>(Result.Ok(54).valueEquals(54));
+
+// reject
+expectType<SyncResult<number>>(Result.Ok(54).reject((x) => false));
+expectType<AsyncResult<number>>(Result.Ok(54).reject(async (x) => false));
+
+// toOptional
+expectType<Optional<number>>(Result.Ok(54).toOptional());
+expectType<Optional<string>>(Result.Ok('test').toOptional());
+expectType<Promise<Optional<number>>>(Result.expect(Promise.resolve(45)).toOptional());
+
+// toPromise
+expectType<Promise<number>>(Result.Ok(54).toPromise());
+expectType<Promise<string>>(Result.Ok('test').toPromise());
+expectType<Promise<number>>(Result.expect(Promise.resolve(45)).toPromise());
+
 const object = {
   a: 1,
   b: 'test',
@@ -114,6 +170,7 @@ const object = {
 
 expectType<SyncResult<typeof object>>(Result.expect(object));
 
+// property
 expectType<SyncResult<number>>(Result.expect(object).property('a'));
 expectType<SyncResult<undefined>>(Result.expect(object).property('c'));
 expectType<SyncResult<null>>(Result.expect(object).property('d'));
@@ -123,6 +180,7 @@ expectType<SyncResult<Promise<number>>>(Result.expect(object).property('g'));
 expectType<SyncResult<{ name: string }>>(Result.expect(object).property('h'));
 expectType<SyncResult<string | undefined | null>>(Result.expect(object).property('i'));
 
+// expectProperty
 expectType<SyncResult<number>>(Result.expect(object).expectProperty('a'));
 expectType<SyncResult<never>>(Result.expect(object).expectProperty('c'));
 expectType<SyncResult<never>>(Result.expect(object).expectProperty('d'));
@@ -137,3 +195,163 @@ expectError<SyncResult>(Result.expect(object).property('i' as unknown));
 
 expectError<SyncResult>(Result.expect(object).expectProperty('iyy'));
 expectError<SyncResult>(Result.expect(object).expectProperty('i' as unknown));
+
+// ---------------------------------------------
+// Result generated functions
+// ---------------------------------------------
+expectType<SyncResult<number>>(Result.expect(54));
+
+// get
+expectType<number>(Result.get(Result.Ok(54)));
+expectType<Promise<number>>(Result.get(Result.expect(Promise.resolve(54))));
+
+const r = Result.getOrElse('test', Result.Ok(54));
+// getOrElse
+expectAssignable<number | string>(Result.getOrElse('test', Result.Ok(54)));
+expectAssignable<number | string>(Result.getOrElse('test')(Result.Ok(54)));
+
+expectAssignable<Promise<number | string>>(Result.getOrElse('test', Result.expect(Promise.resolve(54))));
+expectAssignable<Promise<number | string>>(Result.getOrElse('test')(Result.expect(Promise.resolve(54))));
+
+// tap
+expectType<SyncResult<number>>(Result.tap((x) => x, Result.Ok(54)));
+
+// !Fixme: Type inference is not working
+// expectType<SyncResult<number>>(Result.tap((x) => x)(Result.Ok(54)));
+
+// filter
+expectType<SyncResult<number>>(Result.filter((x) => x > 0, Result.Ok(54)));
+
+// !Fixme: Type inference is not working
+// expectType<SyncResult<number>>(Result.filter((x) => x > 0)(Result.Ok(54)));
+
+// expectMap
+expectType<SyncResult<string>>(Result.expectMap((x) => 'test', Result.Ok(54)));
+expectType<SyncResult<string>>(Result.expectMap((x: number) => 'test')(Result.Ok(55)));
+expectType<AsyncResult<string>>(Result.expectMap((x) => Promise.resolve('test'), Result.Ok(54)));
+expectType<AsyncResult<string>>(Result.expectMap((x) => Promise.resolve('test'))(Result.Ok(54)));
+
+expectType<SyncResult<string>>(Result.expectMap((x: number) => 'test')(Result.Ok(54)));
+expectType<AsyncResult<string>>(Result.expectMap((x: number) => Promise.resolve('test'))(Result.Ok(54)));
+
+// map
+expectType<SyncResult<string>>(Result.map((x) => 'test', Result.Ok(54)));
+expectType<SyncResult<string>>(Result.map((x) => 'test')(Result.Ok(54)));
+expectType<AsyncResult<string>>(Result.map((x) => Promise.resolve('test'), Result.Ok(54)));
+expectType<AsyncResult<string>>(Result.map((x) => Promise.resolve('test'))(Result.Ok(54)));
+
+expectType<SyncResult<string>>(Result.map((x: number) => 'test')(Result.Ok(54)));
+expectType<AsyncResult<string>>(Result.map((x: number) => Promise.resolve('test'))(Result.Ok(54)));
+
+// flatMap
+expectType<SyncResult<string>>(Result.flatMap((x) => Result.Ok('test'), Result.Ok(54)));
+expectType<SyncResult<string>>(Result.flatMap((x) => Result.Ok('test'))(Result.Ok(54)));
+expectType<AsyncResult<string>>(Result.flatMap((x) => Promise.resolve(Result.Ok('test')), Result.Ok(54)));
+expectType<AsyncResult<string>>(Result.flatMap((x) => Promise.resolve(Result.Ok('test')))(Result.Ok(54)));
+
+expectType<SyncResult<string>>(Result.flatMap((x: number) => Result.Ok('test'))(Result.Ok(54)));
+expectType<AsyncResult<string>>(Result.flatMap((x: number) => Promise.resolve(Result.Ok('test')))(Result.Ok(54)));
+
+// property
+expectType<SyncResult<number>>(Result.property('a', Result.expect(object)));
+expectType<SyncResult<any>>(Result.property('a')(Result.expect(object)));
+expectType<AsyncResult<number>>(Result.property('a', Result.expect(Promise.resolve(object))));
+expectType<AsyncResult<any>>(Result.property('a')(Result.expect(Promise.resolve(object))));
+
+expectType<SyncResult<number>>(Result.property<typeof object>('a')(Result.expect(object)));
+
+expectError<SyncResult<number>>(Result.property<typeof object>('ii', Result.expect(object)));
+expectError<SyncResult<number>>(Result.property<typeof object>('ii')(Result.expect(object)));
+expectError<SyncResult<number>>(Result.property<typeof object>('i')(Result.expect({ a: 5 })));
+
+// expectProperty
+expectType<SyncResult<number>>(Result.expectProperty('a', Result.expect(object)));
+expectType<SyncResult<any>>(Result.expectProperty('a')(Result.expect(object)));
+expectType<AsyncResult<number>>(Result.expectProperty('a', Result.expect(Promise.resolve(object))));
+expectType<AsyncResult<any>>(Result.expectProperty('a')(Result.expect(Promise.resolve(object))));
+
+const t = Result.expectProperty<typeof object>('a')(Result.expect(object));
+expectType<SyncResult<number>>(Result.expectProperty<typeof object>('a')(Result.expect(object)));
+
+expectError<SyncResult<number>>(Result.expectProperty<typeof object>('ii', Result.expect(object)));
+expectError<SyncResult<number>>(Result.expectProperty<typeof object>('ii')(Result.expect(object)));
+expectError<SyncResult<number>>(Result.expectProperty<typeof object>('i')(Result.expect({ a: 5 })));
+
+// abortOnError
+expectType<SyncResult<number>>(Result.abortOnError(Result.Ok(54)));
+expectType<AsyncResult<number>>(Result.abortOnError(Result.expect(Promise.resolve(54))));
+
+// abortOnErrorWith
+expectType<SyncResult<number>>(Result.abortOnErrorWith((err) => 'my Error', Result.Ok(54)));
+expectType<SyncResult<number>>(Result.abortOnErrorWith((err) => 'my Error')(Result.Ok(54)));
+
+expectType<AsyncResult<number>>(Result.abortOnErrorWith((err) => 'my Error', Result.expect(Promise.resolve(54))));
+expectType<AsyncResult<number>>(Result.abortOnErrorWith((err) => 'my Error')(Result.expect(Promise.resolve(54))));
+
+// asynchronous
+expectType<AsyncResult<number>>(Result.asynchronous(Result.Ok(54)));
+expectType<AsyncResult<number>>(Result.asynchronous(Result.expect(Promise.resolve(54))));
+
+// mapError
+expectType<SyncResult<number>>(Result.mapError((err) => 'my Error', Result.Ok(54)));
+expectType<SyncResult<number>>(Result.mapError((err) => 'my Error')(Result.Ok(54)));
+
+expectType<AsyncResult<number>>(Result.mapError((err) => 'my Error', Result.expect(Promise.resolve(54))));
+expectType<AsyncResult<number>>(Result.mapError((err) => 'my Error')(Result.expect(Promise.resolve(54))));
+
+// tapError
+expectType<SyncResult<number>>(Result.tapError((err) => 'my Error', Result.Ok(54)));
+expectType<SyncResult<number>>(Result.tapError((err) => 'my Error')(Result.Ok(54)));
+
+expectType<AsyncResult<number>>(Result.tapError((err) => 'my Error', Result.expect(Promise.resolve(54))));
+expectType<AsyncResult<number>>(Result.tapError((err) => 'my Error')(Result.expect(Promise.resolve(54))));
+
+// recover
+expectType<SyncResult<number | string>>(Result.recover((err) => 'test', Result.Ok(54)));
+expectType<SyncResult<number | string>>(Result.recover((err) => 'test')(Result.Ok(54)));
+
+expectType<AsyncResult<number | string>>(Result.recover((err) => 'test', Result.expect(Promise.resolve(54))));
+expectType<AsyncResult<number | string>>(Result.recover((err) => 'test')(Result.expect(Promise.resolve(54))));
+
+// recoverWhen
+expectType<SyncResult<number | string>>(Result.recoverWhen((err) => true, (err) => 'test', Result.Ok(54)));
+expectType<SyncResult<number | string>>(Result.recoverWhen<number, string>((err) => true, (err) => 'test')(Result.Ok(54)));
+expectType<SyncResult<number | string>>(Result.recoverWhen((err: number) => true, (err) => 'test')(Result.Ok(54)));
+expectType<SyncResult<any>>(Result.recoverWhen((err) => true, (err) => 'test')(Result.Ok(54)));
+
+expectType<AsyncResult<number | string>>(Result.recoverWhen((err) => true, (err) => 'test', Result.expect(Promise.resolve(54))));
+expectType<AsyncResult<number | string>>(Result.recoverWhen((err: number) => true, (err) => 'test')(Result.expect(Promise.resolve(54))));
+expectType<AsyncResult<any>>(Result.recoverWhen((err) => true, (err) => 'test')(Result.expect(Promise.resolve(54))));
+
+// replace
+expectType<SyncResult<string>>(Result.replace('test', Result.Ok(54)));
+expectType<SyncResult<string>>(Result.replace('test')(Result.Ok(54)));
+
+expectType<AsyncResult<string>>(Result.replace('test', Result.expect(Promise.resolve(54))));
+expectType<AsyncResult<string>>(Result.replace('test')(Result.expect(Promise.resolve(54))));
+
+// satisfies
+expectType<boolean>(Result.satisfies((x) => x > 5, Result.Ok(54)));
+expectType<boolean>(Result.satisfies((x) => x > 5)(Result.Ok(54)));
+expectError<boolean>(Result.satisfies<number>((x) => x > 5)(Result.Ok('test')));
+
+// valueEquals
+expectType<boolean>(Result.valueEquals(54, Result.Ok(120)));
+expectType<Promise<boolean>>(Result.valueEquals(54, Result.expect(Promise.resolve(120))));
+
+// reject
+expectType<SyncResult<number>>(Result.reject((x) => false, Result.Ok(54)));
+expectType<SyncResult<number>>(Result.reject<number>((x) => false)(Result.Ok(54)));
+
+expectType<AsyncResult<number>>(Result.reject((x) => false, Result.expect(Promise.resolve(54))));
+expectType<AsyncResult<number>>(Result.reject<number>((x) => false)(Result.expect(Promise.resolve(54))));
+
+expectType<SyncResult<any>>(Result.reject((x) => false)(Result.Ok(54)));
+expectType<SyncResult<number>>(Result.reject((x: number) => false)(Result.Ok(54)));
+expectError<SyncResult<number>>(Result.reject<number>((x) => false)(Result.Ok('test')));
+
+// toOptional
+expectType<Optional<number>>(Result.toOptional(Result.Ok(54)));
+
+// toPromise
+expectType<Promise<number>>(Result.toPromise(Result.Ok(54)));

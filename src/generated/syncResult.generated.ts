@@ -49,6 +49,7 @@ export abstract class SyncResult<T = any> extends Result<T> {
 * const value = result.getOrElse(2); // 2
 */
   getOrElse<Y = T>(value?: Y): T | Y;
+  getOrElse<Y>(value?: Y): T | Y;
   getOrElse(...args: any[]): any {
     return returnThis.any.call(this, ...args);
   }
@@ -99,10 +100,10 @@ export abstract class SyncResult<T = any> extends Result<T> {
 * const result = Result.Ok({ name: "John" });
 * const name = result.expectProperty("age"); // Result.Error()
 */
-  expectProperty(propertyName: IfAny<T, any, never>): SyncResult<any>;
-  expectProperty(propertyName: IfAny<T, any, never>): Result<any>;
-  expectProperty<Y extends keyof T, U = Y extends keyof T ? T[Y] : any, V = U extends Optional<infer X> ? X : U>(propertyName: Y): SyncResult<IfAnyOrUnknown<V, any, V & {}>>;
-  expectProperty<Y extends keyof T, U = Y extends keyof T ? T[Y] : any, V = U extends Optional<infer X> ? X : U>(propertyName: Y): Result<IfAnyOrUnknown<V, any, V & {}>>;
+  expectProperty<Y extends keyof T = keyof T, U = Y extends keyof T ? T[Y] : any, V = U extends Optional<infer X> ? X : U>(propertyName: Y): SyncResult<V>;
+  expectProperty<Y extends keyof T = keyof T, U = Y extends keyof T ? T[Y] : any, V = U extends Optional<infer X> ? X : U>(propertyName: Y): Result<V>;
+  expectProperty(propertyName: IfAnyOrUnknown<T, any, never>): SyncResult<any>;
+  expectProperty(propertyName: IfAnyOrUnknown<T, any, never>): Result<any>;
   expectProperty(...args: any[]): any {
     return returnThis.any.call(this, ...args);
   }
@@ -118,10 +119,10 @@ export abstract class SyncResult<T = any> extends Result<T> {
 * const result = Result.Ok({ name: "John" });
 * const name = result.property("age"); // Result.Ok(undefined)
 */
-  property(propertyName: IfAny<T, any, never>): SyncResult<any>;
-  property(propertyName: IfAny<T, any, never>): Result<any>;
-  property<Y extends keyof T>(propertyName: Y): SyncResult<Y extends keyof T ? T[Y] : any>;
-  property<Y extends keyof T>(propertyName: Y): Result<Y extends keyof T ? T[Y] : any>;
+  property<Y extends keyof T = keyof T, U = Y extends keyof T ? T[Y] : any>(propertyName: Y): SyncResult<U>;
+  property<Y extends keyof T = keyof T, U = Y extends keyof T ? T[Y] : any>(propertyName: Y): Result<U>;
+  property(propertyName: IfAnyOrUnknown<T, any, never>): SyncResult<any>;
+  property(propertyName: IfAnyOrUnknown<T, any, never>): Result<any>;
   property(...args: any[]): any {
     return returnThis.any.call(this, ...args);
   }
@@ -172,7 +173,8 @@ export abstract class SyncResult<T = any> extends Result<T> {
 * const result = Result.Error(1);
 * const satisfied = result.valueEquals(1); // false
 */
-  valueEquals(value: T): boolean;
+  valueEquals<Y = T>(value: Y): boolean;
+  valueEquals<Y = any>(value: Y): boolean;
   valueEquals(...args: any[]): any {
     return returnThis.any.call(this, ...args);
   }
@@ -196,6 +198,9 @@ export abstract class SyncResult<T = any> extends Result<T> {
   map<Y = T>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y>>;
   map<Y = T>(λ: (x: T) => Y): SyncResult<IfAnyOrUnknown<Y, any, Y>>;
   map<Y = T>(λ: (x: T) => Y | PromiseLike<Y>): Result<IfAnyOrUnknown<Y, any, Y>>;
+  map<Y>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y>>;
+  map<Y>(λ: (x: T) => Y): SyncResult<IfAnyOrUnknown<Y, any, Y>>;
+  map<Y>(λ: (x: T) => Y | PromiseLike<Y>): Result<IfAnyOrUnknown<Y, any, Y>>;
   map(...args: any[]): any {
     return returnThis.any.call(this, ...args);
   }
@@ -238,14 +243,13 @@ export abstract class SyncResult<T = any> extends Result<T> {
 * const result = Result.Error(1);
 * const mapped = result.expectMap((x) => ({age: x})); // Result.Error(1)
 */
-  expectMap<Y = T>(λ: (x: T) => PromiseLike<Optional<T>>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+  expectMap<Y = T>(λ: (x: T) => PromiseLike<Optional<Y>>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
   expectMap<Y = T>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
   expectMap<Y = T>(λ: (x: T) => Optional<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
   expectMap<Y = T>(λ: (x: T) => AsyncResult<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
   expectMap<Y = T>(λ: (x: T) => SyncResult<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
   expectMap<Y = T>(λ: (x: T) => Result<Y>): Result<IfAnyOrUnknown<Y, any, Y & {}>>;
   expectMap<Y = T>(λ: (x: T) => Y): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
-  expectMap<Y = T>(λ: (x: T) => Y | PromiseLike<Y>): Result<IfAnyOrUnknown<Y, any, Y & {}>>;
   expectMap(...args: any[]): any {
     return returnThis.any.call(this, ...args);
   }
@@ -272,7 +276,14 @@ export abstract class SyncResult<T = any> extends Result<T> {
   flatMap<Y = T>(λ: (x: T) => SyncResult<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
   flatMap<Y = T>(λ: (x: T) => Result<Y>): Result<IfAnyOrUnknown<Y, any, Y & {}>>;
   flatMap<Y = T>(λ: (x: T) => Y): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
-  flatMap<Y = T>(λ: (x: T) => any): Result<Y & {}>;
+  flatMap<Y>(λ: (x: T) => PromiseLike<Optional<Y>>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+  flatMap<Y>(λ: (x: T) => PromiseLike<Result<Y>>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+  flatMap<Y>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+  flatMap<Y>(λ: (x: T) => Optional<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+  flatMap<Y>(λ: (x: T) => AsyncResult<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+  flatMap<Y>(λ: (x: T) => SyncResult<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
+  flatMap<Y>(λ: (x: T) => Result<Y>): Result<IfAnyOrUnknown<Y, any, Y & {}>>;
+  flatMap<Y>(λ: (x: T) => Y): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
   flatMap(...args: any[]): any {
     return returnThis.any.call(this, ...args);
   }
@@ -378,9 +389,9 @@ export abstract class SyncResult<T = any> extends Result<T> {
 * const result = Result.Error(1);
 * const tapped = result.tapError(x => console.log(x)); // Logs: "1"
 */
-  tapError(λ: (x: any) => PromiseLike<void>): AsyncResult<T>;
-  tapError(λ: (x: any) => void): SyncResult<T>;
-  tapError(λ: (x: any) => void | PromiseLike<void>): Result<T>;
+  tapError(λ: (x: any) => PromiseLike<any>): AsyncResult<T>;
+  tapError(λ: (x: any) => any): SyncResult<T>;
+  tapError(λ: (x: any) => any): Result<T>;
   tapError(...args: any[]): any {
     return returnThis.any.call(this, ...args);
   }
@@ -416,11 +427,11 @@ export abstract class SyncResult<T = any> extends Result<T> {
 * const result = Result.Error(1);
 * const recovered = result.recoverWhen(x => false, x => 10); // Result.Error(1)
 */
-  recoverWhen<Y = T>(predicate: (x: T) => PromiseLike<boolean | T>, λ: (x: T) => Y): AsyncResult<Y>;
-  recoverWhen<Y = T>(predicate: (x: T) => boolean | T, λ: (x: T) => PromiseLike<Y>): AsyncResult<Y>;
-  recoverWhen<Y = T>(predicate: (x: T) => PromiseLike<boolean | T>, λ: (x: T) => PromiseLike<Y>): AsyncResult<Y>;
-  recoverWhen<Y = T>(predicate: (x: T) => boolean | T, λ: (x: T) => Y): SyncResult<Y>;
-  recoverWhen<Y = T>(predicate: (x: T) => boolean | T | PromiseLike<boolean | T>, λ: (x: T) => Y): Result<Y>;
+  recoverWhen<Y = T>(predicate: (x: T) => PromiseLike<boolean | T>, λ: (x: T) => PromiseLike<Y>): AsyncResult<T | Y>;
+  recoverWhen<Y = T>(predicate: (x: T) => PromiseLike<boolean | T>, λ: (x: T) => Y): AsyncResult<T | Y>;
+  recoverWhen<Y = T>(predicate: (x: T) => boolean | T, λ: (x: T) => PromiseLike<Y>): AsyncResult<T | Y>;
+  recoverWhen<Y = T>(predicate: (x: T) => boolean | T, λ: (x: T) => Y): SyncResult<T | Y>;
+  recoverWhen<Y = T>(predicate: (x: T) => boolean | T | PromiseLike<boolean | T>, λ: (x: T) => Y): Result<T | Y>;
   recoverWhen(...args: any[]): any {
     return returnThis.any.call(this, ...args);
   }

@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import Topo from '@hapi/topo';
 
 import { MethodProperty, GenericDefinition, DocumentationSignature } from './utils.method.js';
 
@@ -16,12 +17,12 @@ export function TypeOverloadByParametersObjToStr(obj: Record<string, any>): stri
   const keys = Object.keys(obj);
   const result: string[] = [];
 
-  
+
   keys.forEach((key) => {
     const content = obj[key];
     const keyValue = content.keyValue
-    const value = (content.children) 
-      ? `: ${TypeOverloadByParametersObjToStr(content.children)}` 
+    const value = (content.children)
+      ? `: ${TypeOverloadByParametersObjToStr(content.children)}`
       : '';
 
     result.push(`${keyValue}${value}`)
@@ -70,7 +71,7 @@ export function createTypeOverload(
     const allConsumedGenerics = _.uniq(subParameters.flatMap((param) => param.consumedTypes));
 
     const node = createTypeOverloadNode(
-      generics, subParameters, returnType, 
+      generics, subParameters, returnType,
       createTypeOverload(
         params.filter((e) => !previousParameters.find((r) => r.name === e.name)),
         generics.filter((generic) => !allConsumedGenerics.includes(generic.name)),
@@ -102,9 +103,23 @@ export function createTypeOverload(
  * // Output: "<T>"
  */
 function getGenericString(generics: GenericDefinition[]): string {
-  return generics && generics.length > 0 
-    ? `<${generics.map(e => e.fullValue).join(', ')}>` 
-    : '';
+  if (!generics || generics.length === 0) {
+    return '';
+  }
+
+  const sortedGenerics = new Topo.Sorter<string>();
+  const genericsByName = {} as Record<string, GenericDefinition>;
+
+  generics.forEach((generic) => {
+    genericsByName[generic.name] = generic;
+    const isOptional = generic.fullValue.includes('=');
+    sortedGenerics.add(generic.name, {
+      after: isOptional ? ['required'] : [],
+      group: isOptional ? 'optional' : 'required'
+    });
+  });
+
+  return `<${sortedGenerics.nodes.map(e => genericsByName[e].fullValue).join(', ')}>`;
 }
 
 /**
@@ -113,12 +128,12 @@ function getGenericString(generics: GenericDefinition[]): string {
  * @returns The string
  * @example
  * getParametersString([{name: "param1", type: "string"}])
- * 
+ *
  * // Output: "param1: string"
  */
 function getParametersString(params: MethodProperty[]): string {
-  return params && params.length > 0 
-    ? params.map((param) => `${param.name}: ${param.type}`).join(', ') 
+  return params && params.length > 0
+    ? params.map((param) => `${param.name}: ${param.type}`).join(', ')
     : '';
 }
 
@@ -136,7 +151,7 @@ export function createComment(text?: string) {
     .split('\n')
     .map((e) => e.trim())
     .join('\n * ')}
-     */ 
+     */
     `
     : '';
 }

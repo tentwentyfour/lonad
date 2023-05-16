@@ -131,7 +131,7 @@ export declare abstract class Optional<T = any> implements IOptional<T> {
             /**
              * @param optional The instance parameter to use as a base to call the functions with.
              */
-            <T>(optional: IOptional<T>): IfAnyOrUnknown<T, Optional, U extends keyof T ? T[U] : never>;
+            (optional: IOptional<T>): IfAnyOrUnknown<T, Optional, U extends keyof T ? T[U] : never>;
         };
         /**
          * @param optional The instance parameter to use as a base to call the functions with.
@@ -157,7 +157,7 @@ export declare abstract class Optional<T = any> implements IOptional<T> {
             /**
              * @param optional The instance parameter to use as a base to call the functions with.
              */
-            <T>(optional: IOptional<T>): IfAnyOrUnknown<T, Optional, U extends keyof T ? Optional<IfNullOrUndefined<T[U], any, T[U]>> : never>;
+            (optional: IOptional<T>): IfAnyOrUnknown<T, Optional, U extends keyof T ? Optional<IfNullOrUndefined<T[U], any, T[U]>> : never>;
         };
         /**
          * @param optional The instance parameter to use as a base to call the functions with.
@@ -183,7 +183,7 @@ export declare abstract class Optional<T = any> implements IOptional<T> {
             /**
              * @param optional The instance parameter to use as a base to call the functions with.
              */
-            <T>(optional: IOptional<T>): IfAnyOrUnknown<T, Optional, U extends keyof T ? Optional<T[U]> : never>;
+            (optional: IOptional<T>): IfAnyOrUnknown<T, Optional, U extends keyof T ? Optional<T[U]> : never>;
         };
         /**
          * @param optional The instance parameter to use as a base to call the functions with.

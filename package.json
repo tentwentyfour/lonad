@@ -3,19 +3,25 @@
   "version": "0.3.0",
   "description": "Optional and Result monads implementations",
   "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
   "type": "module",
+  "typesVersions": {
+    ">=5.0.4": {
+      "*": [
+        "./lib/index.d.ts"
+      ]
+    }
+  },
+  "browser": {
+    "./lib/index.js": "./bundle/lonad-bundle.es.js"
+  },
   "scripts": {
-    "test": "./node_modules/.bin/mocha",
+    "test": "./node_modules/.bin/mocha --resolveJsonModule",
     "generate": "ts-node-esm ./src/generators/optional.gen.ts && ts-node-esm ./src/generators/asyncResult.gen.ts && ts-node-esm ./src/generators/syncResult.gen.ts && ts-node-esm ./src/generators/result.gen.ts && ./node_modules/.bin/eslint ./src/generated --fix",
     "build": "npm run generate && rimraf lib && rimraf bundle && npm run build:web && npm run build:node",
     "build:web": "rollup -c rollup.config.js",
     "build:node": "tsc && tsc-alias",
     "lint": "./node_modules/.bin/eslint ./src",
     "lint:fix": "./node_modules/.bin/eslint ./src --fix"
-  },
-  "browser": {
-    "./lib/index.js": "./bundle/lonad-bundle.es.js"
   },
   "keywords": [
     "option",
@@ -28,9 +34,17 @@
     "async",
     "pending"
   ],
-  "author": "Florian Simon",
+  "authors": [
+    {
+      "name": "Florian Simon"
+    },
+    {
+      "name": "Marx Jason"
+    }
+  ],
   "license": "MIT",
   "devDependencies": {
+    "@hapi/topo": "^6.0.2",
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-terser": "^0.2.1",
@@ -53,12 +67,13 @@
     "rimraf": "^3.0.2",
     "rollup": "^3.8.1",
     "ts-mocha": "^10.0.0",
+    "ts-morph": "^18.0.0",
     "ts-node": "^10.9.1",
     "ts-paths-esm-loader": "^1.3.2",
     "tsc-alias": "^1.8.2",
     "tsd": "^0.25.0",
     "tslib": "^2.4.1",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.5"
   },
   "dependencies": {
     "lodash.flow": "^3.5.0"

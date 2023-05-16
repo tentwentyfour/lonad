@@ -145,8 +145,8 @@ const signatures = [
   ...resultMethods
 ]
 
-const signaturesGrouped = mergeFunctionOverloadDocumentation(_.groupBy(signatures, 'name'))
-;
+const signaturesGrouped = mergeFunctionOverloadDocumentation(_.groupBy(signatures, 'name'));
+
 const funcs = _.map(signaturesGrouped, (value, name) => {
   let paramsCount = 0;
   let types: Record<string, any> = {}
@@ -172,7 +172,12 @@ const funcs = _.map(signaturesGrouped, (value, name) => {
           isOptional: false,
         },
       ],
-      [{ name: 'T', fullValue: 'T' }, ...generics],
+      [
+        //X extends AsyncResult<any> = AsyncResult<any>, T = X extends Result<infer U> ? U : any
+        { name: 'T', fullValue: 'T = any' },
+        ...generics,
+        // { name: 'X', fullValue: `X extends ${origin}<any> = ${origin}<any>` },
+      ],
       returnType.type,
       signature.documentation
     );

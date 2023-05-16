@@ -6,9 +6,10 @@ TypeScript Support by [Marx Jason](https://github.com/xxjasonxx1996)
 
 *Like lodash, but for monads…*
 
-[![npm](https://img.shields.io/npm/v/lonad.svg)](https://www.npmjs.com/package/lonad)
-[![TypeScript](https://img.shields.io/badge/TypeScript-4.9.5-blue.svg)](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html)
-![Licence](https://img.shields.io/github/license/tentwentyfour/lonad)
+![node](https://img.shields.io/node/v/lonad)
+[![npm](https://img.shields.io/npm/v/lonad)](https://www.npmjs.com/package/lonad)
+[![TypeScript](https://img.shields.io/badge/TypeScript-4.9.5-blue)](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html)
+
 ## Focus
 
 This currently provides `Optional` and `Result` types in Javascript & Typescript.

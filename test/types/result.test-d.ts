@@ -10,7 +10,6 @@ expectType<SyncResult>(Result.Error('Some error'))
 expectType<SyncResult>(Result.Aborted('Some error'))
 expectType<AsyncResult<number>>(Result.Pending(Promise.resolve(54)))
 
-
 expectError<AsyncResult>(Result.Ok(54))
 expectError<AsyncResult>(Result.Error('Some error'))
 expectError<AsyncResult>(Result.Aborted('some abort reason'))
@@ -205,7 +204,6 @@ expectType<SyncResult<number>>(Result.expect(54));
 expectType<number>(Result.get(Result.Ok(54)));
 expectType<Promise<number>>(Result.get(Result.expect(Promise.resolve(54))));
 
-const r = Result.getOrElse('test', Result.Ok(54));
 // getOrElse
 expectAssignable<number | string>(Result.getOrElse('test', Result.Ok(54)));
 expectAssignable<number | string>(Result.getOrElse('test')(Result.Ok(54)));
@@ -270,7 +268,6 @@ expectType<SyncResult<any>>(Result.expectProperty('a')(Result.expect(object)));
 expectType<AsyncResult<number>>(Result.expectProperty('a', Result.expect(Promise.resolve(object))));
 expectType<AsyncResult<any>>(Result.expectProperty('a')(Result.expect(Promise.resolve(object))));
 
-const t = Result.expectProperty<typeof object>('a')(Result.expect(object));
 expectType<SyncResult<number>>(Result.expectProperty<typeof object>('a')(Result.expect(object)));
 
 expectError<SyncResult<number>>(Result.expectProperty<typeof object>('ii', Result.expect(object)));

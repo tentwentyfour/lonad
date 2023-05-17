@@ -7,7 +7,6 @@ import { ErrorClass } from './error';
 import { OkClass } from './ok';
 import { PendingClass } from './pending';
 
-
 /**
  * Patch the function prototypes to inherit from their respective
  * Class prototypes

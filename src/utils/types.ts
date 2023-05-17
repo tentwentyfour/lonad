@@ -10,7 +10,7 @@
  * type C = IfAny<never, true, false>; // false
  * type D = IfAny<{}, true, false>; // false
  */
-export type IfAny<T, Y, N> = 0 extends (1 & T) ? Y : N; 
+export type IfAny<T, Y, N> = 0 extends (1 & T) ? Y : N;
 export type IsAny<T> = IfAny<T, true, false>;
 
 /**
@@ -68,5 +68,5 @@ export type IsNullOrUndefined<T> = IfNullOrUndefined<T, true, false>;
  * type D = IfPromise<{}, true, false>; // false
  * type E = IfPromise<Promise<any>, true, false>; // true
  */
-export type IfPromise<T, Y, N> = T extends PromiseLike<infer U> ? Y : N;
+export type IfPromise<T, Y, N> = T extends PromiseLike<any> ? Y : N;
 export type IsPromise<T> = IfPromise<T, true, false>;

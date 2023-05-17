@@ -6,7 +6,6 @@ async function absorbRejectedPromises(value: Promise<any>) {
   }
 }
 
-
 export default {
   nullary: function nullaryReturnThis() {
     return this;

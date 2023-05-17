@@ -1,8 +1,6 @@
 import { Optional } from '../src/index';
 import { constant } from '../src/utils/utils';
 
-/* global describe, it */
-
 import { expect } from 'chai';
 
 const { Some, None } = Optional;

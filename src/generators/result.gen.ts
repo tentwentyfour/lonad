@@ -183,9 +183,7 @@ const funcs = _.map(signaturesGrouped, (value, name) => {
     );
 
     types = merge(types, newOverload);
-
   });
-
 
   return templatefuncImplementation(
     name,
@@ -216,9 +214,7 @@ ts.sys.writeFile(
   printer.printFile(resultFile)
 );
 
-
 function mergeFunctionOverloadDocumentation(groupedFunctions: _.Dictionary<(MethodDefinition & { origin: string })[]>){
-
   _.forEach(groupedFunctions, (value, name) => {
     const docToUse =
       value.find(overload => overload.documentation.raw?.fullRaw)

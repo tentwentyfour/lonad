@@ -74,7 +74,7 @@ expectType<string | number>(someOptional_number.match({
   None: () => 'hello world'
 }))
 
-expectType<any>(someOptional_number.match({
+expectType<number | undefined>(someOptional_number.match({
   Some: x => x,
 }))
 

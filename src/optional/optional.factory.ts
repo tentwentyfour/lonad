@@ -11,7 +11,6 @@ function patchFactoryFunctions() {
   patchPrototype(None, NoneClass);
 }
 
-
 export const Some = function makeSome<T>(value?: T): SomeClass<T> {
   return instantiateWithFactory(SomeClass<T>, Some, value);
 };

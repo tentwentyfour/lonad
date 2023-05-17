@@ -17,6 +17,7 @@ export function assertIsDefined<T = any>(value: T, message?: string): asserts va
     throw new Exception(message ?? 'Value is not defined');
   }
 }
+
 /**
  * Asserts that the given value is a function.
  * @param value The value to check

@@ -1,6 +1,11 @@
-node_modules/
+.editorconfig
 .vscode/
+node_modules/
 
 # Output of 'npm run build'
 lib/
 bundle/
+
+# Output of 'npm run generate'
+#   This is where the generated code is stored
+src/generated/

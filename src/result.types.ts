@@ -66,6 +66,7 @@ export interface IResult<T> extends IResultBase {
    * const result = Result.Ok(1);
    * const recovered = result.recover(() => 5); // Result.Ok(1)
    */
+  recover<R = T>(λ: (x: any) => IfAnyOrUnknown<R, any, never>): Result<R>;
   recover<R = T>(λ: (x: any) => PromiseLike<R>): AsyncResult<T | R>;
   recover<R = T>(λ: (x: any) => R): SyncResult<T | R> | AsyncResult<T | R>;
   recover<R = T>(λ: (x: any) => R): Result<T | R>;
@@ -82,6 +83,7 @@ export interface IResult<T> extends IResultBase {
    * const result = Result.Error(1);
    * const replaced = result.replace(5); // Result.Error(1)
    */
+  replace<Y = T>(value: IfAnyOrUnknown<Y, any, never>): Result<Y>;
   replace<Y = T>(value: PromiseLike<Y>): AsyncResult<Y>;
   replace<Y = T>(value: Y): SyncResult<Y> | AsyncResult<Y>;
   replace<Y = T>(value: Y | PromiseLike<Y>): Result<Y>;
@@ -150,6 +152,7 @@ export interface IResult<T> extends IResultBase {
    * const result = Result.Error(1);
    * const tapped = result.tap(x => console.log(x)); // No logs!
    */
+  tap(λ: (x: T) => IfAnyOrUnknown<T, any, never>): Result<T>;
   tap(λ: (x: T) => PromiseLike<any>): AsyncResult<T>;
   tap(λ: (x: T) => any): SyncResult<T> | AsyncResult<T>;
   tap(λ: (x: T) => any | PromiseLike<any>): Result<T>;
@@ -200,6 +203,7 @@ export interface IResult<T> extends IResultBase {
    * const result = Result.Error(1);
    * const mapped = result.map((x) => ({age: x})); // Result.Error(1)
    */
+  map<Y = T>(λ: (x: T) => IfAnyOrUnknown<Y, any, never>): Result<Y>;
   map<Y = T>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y>>;
   map<Y = T>(λ: (x: T) => Y): SyncResult<IfAnyOrUnknown<Y, any, Y>> | AsyncResult<IfAnyOrUnknown<Y, any, Y>>;
   map<Y = T>(λ: (x: T) => Y | PromiseLike<Y>): Result<IfAnyOrUnknown<Y, any, Y>>;
@@ -221,6 +225,7 @@ export interface IResult<T> extends IResultBase {
    * const result = Result.Error(1);
    * const mapped = result.map((x) => ({age: x})); // Result.Error(1)
    */
+  transform<Y = T>(λ: (x: T) => IfAnyOrUnknown<Y, any, never>): Result<Y>;
   transform<Y = T>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y>>;
   transform<Y = T>(λ: (x: T) => Y): SyncResult<IfAnyOrUnknown<Y, any, Y>> | AsyncResult<IfAnyOrUnknown<Y, any, Y>>;
   transform<Y = T>(λ: (x: T) => Y | PromiseLike<Y>): Result<IfAnyOrUnknown<Y, any, Y>>;
@@ -241,6 +246,7 @@ export interface IResult<T> extends IResultBase {
  * const result = Result.Error(1);
  * const mapped = result.expectMap((x) => ({age: x})); // Result.Error(1)
  */
+  expectMap<Y = T>(λ: (x: T) => IfAnyOrUnknown<Y, any, never>): Result<Y>;
   expectMap<Y = T>(λ: (x: T) => PromiseLike<Optional<Y>>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
   expectMap<Y = T>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
   expectMap<Y = T>(λ: (x: T) => Optional<Y>): SyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
@@ -264,6 +270,7 @@ export interface IResult<T> extends IResultBase {
    * const result = Result.Ok(1);
    * const mapped = result.flatMap((x) => Result.Ok(5)); // Result.Ok(5)
    */
+  flatMap<Y = T>(λ: (x: T) => IfAnyOrUnknown<Y, any, never>): Result<Y>;
   flatMap<Y = T>(λ: (x: T) => PromiseLike<Optional<Y>>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
   flatMap<Y = T>(λ: (x: T) => PromiseLike<Result<Y>>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
   flatMap<Y = T>(λ: (x: T) => PromiseLike<Y>): AsyncResult<IfAnyOrUnknown<Y, any, Y & {}>>;
@@ -294,6 +301,7 @@ export interface IResult<T> extends IResultBase {
    * const result = Result.Ok(1);
    * const rejected = result.reject(x => x === 1); // Result.Error()
    */
+  reject(predicate: (x: T) => IfAnyOrUnknown<T, any, never>): Result<T>;
   reject(predicate: (x: T) => PromiseLike<boolean>): AsyncResult<T>;
   reject(predicate: (x: T) => boolean): SyncResult<T> | AsyncResult<T>;
   reject(predicate: (x: T) => PromiseLike<boolean> | boolean): Result<T>;
@@ -310,6 +318,7 @@ export interface IResult<T> extends IResultBase {
    * const result = Result.Ok(1);
    * const filtered = result.filter(x => x === 2); // Result.Error(2)
    */
+  filter(predicate: (x: T) => IfAnyOrUnknown<T, any, never>): Result<T>;
   filter<O extends T>(predicate: (x: T) => x is O): SyncResult<O> | AsyncResult<O>;
   filter(predicate: (x: T) => PromiseLike<boolean>): AsyncResult<T>;
   filter(predicate: (x: T) => boolean): SyncResult<T> | AsyncResult<T>;
@@ -371,6 +380,7 @@ export interface IResult<T> extends IResultBase {
    * const result = Result.Error(1);
    * const tapped = result.tapError(x => console.log(x)); // Logs: "1"
    */
+  tapError(λ: (x: any) => IfAnyOrUnknown<T, any, never>): Result<T>;
   tapError(λ: (x: any) => PromiseLike<any>): AsyncResult<T>;
   tapError(λ: (x: any) => any): SyncResult<T> | AsyncResult<T>;
   tapError(λ: (x: any) => PromiseLike<any> | any): Result<T>;
@@ -386,6 +396,7 @@ export interface IResult<T> extends IResultBase {
    * const result = Result.Error(1);
    * const mapped = result.mapError(x => 10); // Result.Error(10)
    */
+  mapError(λ: (x: any) => IfAnyOrUnknown<T, any, never>): Result<T>;
   mapError(λ: (x: any) => PromiseLike<any>): AsyncResult<T>;
   mapError(λ: (x: any) => any): SyncResult<T> | AsyncResult<T>;
   mapError(λ: (x: any) => PromiseLike<any> | any): Result<T>;
@@ -405,6 +416,7 @@ export interface IResult<T> extends IResultBase {
    * const result = Result.Error(1);
    * const recovered = result.recoverWhen(x => false, x => 10); // Result.Error(1)
    */
+  recoverWhen<Y = T>(predicate: (x: T) => PromiseLike<T | boolean>, λ: (x: T) => IfAnyOrUnknown<Y, any, never>): Result<Y | T>;
   recoverWhen<Y = T>(predicate: (x: T) => PromiseLike<T | boolean>, λ: (x: T) => PromiseLike<Y>): AsyncResult<Y | T>;
   recoverWhen<Y = T>(predicate: (x: T) => PromiseLike<T | boolean>, λ: (x: T) => Y): AsyncResult<Y | T>;
   recoverWhen<Y = T>(predicate: (x: T) => T | boolean, λ: (x: T) => PromiseLike<Y>): AsyncResult<Y | T>;

@@ -1,6 +1,6 @@
 import { expectType, expectAssignable, expectError } from 'tsd';
 
-import { Optional, SomeClass, NoneClass } from '../../lib/optional/index';
+import { Optional, SomeClass, NoneClass } from '../../lib/types/optional/index';
 
 expectAssignable<Optional>(new SomeClass(54))
 expectAssignable<Optional>(new NoneClass())

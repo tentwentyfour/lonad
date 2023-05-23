@@ -15,7 +15,7 @@ describe('The Optional type (typings)', () => {
   it('should be able to pass all type checks', async () => {
     const result = await weirdTSD({
       cwd: '.',
-      typingsFile: './lib/index.d.ts',
+      typingsFile: './lib/types/index.d.ts',
       testFiles: ['./test/types/optional.test-d.ts']
     })
 

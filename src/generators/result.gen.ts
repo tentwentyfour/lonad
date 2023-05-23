@@ -173,10 +173,8 @@ const funcs = _.map(signaturesGrouped, (value, name) => {
         },
       ],
       [
-        //X extends AsyncResult<any> = AsyncResult<any>, T = X extends Result<infer U> ? U : any
         { name: 'T', fullValue: 'T = any' },
         ...generics,
-        // { name: 'X', fullValue: `X extends ${origin}<any> = ${origin}<any>` },
       ],
       returnType.type,
       signature.documentation

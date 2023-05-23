@@ -2,24 +2,33 @@
   "name": "lonad",
   "version": "0.3.0",
   "description": "Optional and Result monads implementations",
-  "main": "./lib/index.js",
-  "type": "module",
   "typesVersions": {
     ">=4.9.5": {
       "*": [
-        "./lib/index.d.ts"
+        "./lib/types/index.d.ts"
       ]
     }
   },
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "types": "./lib/types/index.d.ts",
   "browser": {
     "./lib/index.js": "./bundle/lonad-bundle.es.js"
+  },
+  "exports": {
+    "types": "./lib/types/index.d.ts",
+    "node": "./lib/cjs/index.js",
+    "require": "./lib/cjs/index.js",
+    "import": "./lib/esm/index.js",
+    "default": "./lib/esm/index.js"
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha --resolveJsonModule",
     "generate": "ts-node-esm ./src/generators/optional.gen.ts && ts-node-esm ./src/generators/asyncResult.gen.ts && ts-node-esm ./src/generators/syncResult.gen.ts && ts-node-esm ./src/generators/result.gen.ts && ./node_modules/.bin/eslint ./src/generated --fix",
-    "build": "npm run generate && rimraf lib && rimraf bundle && npm run build:web && npm run build:node",
-    "build:web": "rollup -c rollup.config.js",
-    "build:node": "tsc && tsc-alias",
+    "build": "npm run generate && rimraf lib && rimraf bundle && npm run build:web && npm run build:node && npm run build:packageJson",
+    "build:web": "rollup -c rollup.config.mjs",
+    "build:node": "tsc -b ./tsconfig.cjs.json ./tsconfig.esm.json ./tsconfig.types.json && tsc-alias -p ./tsconfig.cjs.json && tsc-alias -p ./tsconfig.esm.json && tsc-alias -p ./tsconfig.types.json",
+    "build:packageJson": "echo '{\"type\": \"commonjs\"}' > lib/cjs/package.json && echo '{\"type\": \"module\"}' > lib/esm/package.json",
     "lint": "./node_modules/.bin/eslint ./src",
     "lint:fix": "./node_modules/.bin/eslint ./src --fix"
   },

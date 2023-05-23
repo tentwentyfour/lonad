@@ -69,6 +69,7 @@ export function createTypeOverload(
     previousParameters.push(params[i]);
 
     const allConsumedGenerics = _.uniq(subParameters.flatMap((param) => param.consumedTypes));
+    // const forcedGenerics = _.uniq(subParameters.flatMap((param) => param.forcedTypes));
 
     const node = createTypeOverloadNode(
       generics, subParameters, returnType,

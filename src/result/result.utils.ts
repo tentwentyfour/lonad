@@ -42,6 +42,7 @@ export function TransformResult<I, O = any, T extends Result<any> = Result>(
   }
 }
 
+export function doTry<T = any>(λ: () => IfAnyOrUnknown<T, any, never>): Result<T>
 export function doTry<T = any>(λ: () => PromiseLike<Optional<T>> | PromiseLike<T>): AsyncResult<T>
 export function doTry<T = any>(λ: () => Optional<T> | T) : SyncResult<T>;
 export function doTry<T = any>(λ: () => any) : Result<T> {
@@ -62,9 +63,10 @@ export function doTry<T = any>(λ: () => any) : Result<T> {
   }) as Result<T>;
 }
 
-export function tryAsync<T = any>(λ: (x: Result<T>) => PromiseLike<T> | PromiseLike<Optional<T>>): AsyncResult<T>
-export function tryAsync<T = any>(λ: (x: Result<T>) => Optional<T> | T): AsyncResult<T>;
-export function tryAsync<T = any>(λ: (x: Result<T>) => PromiseLike<T> | PromiseLike<Optional<T>> | Optional<T> | T): AsyncResult<T> {
+export function tryAsync<T = any>(λ: (x?: Result<T>) => IfAnyOrUnknown<T, any, never>): AsyncResult<T>
+export function tryAsync<T = any>(λ: (x?: Result<T>) => PromiseLike<T> | PromiseLike<Optional<T>>): AsyncResult<T>
+export function tryAsync<T = any>(λ: (x?: Result<T>) => Optional<T> | T): AsyncResult<T>;
+export function tryAsync<T = any>(λ: (x?: Result<T>) => PromiseLike<T> | PromiseLike<Optional<T>> | Optional<T> | T): AsyncResult<T> {
   return <any>pipe(doTry, Result.asynchronous)(<any>λ);
 }
 

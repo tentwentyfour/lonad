@@ -1,6 +1,6 @@
-import pipe from 'lodash.flow';
 import Exception from './exception';
 import { isDefined, isFunction } from './conditional';
+import pipe from './pipe';
 
 export const identity = <T>(x: T) => x;
 export const constant = <T>(x: T) => () => x;

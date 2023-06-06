@@ -70,3 +70,18 @@ export type IsNullOrUndefined<T> = IfNullOrUndefined<T, true, false>;
  */
 export type IfPromise<T, Y, N> = T extends PromiseLike<any> ? Y : N;
 export type IsPromise<T> = IfPromise<T, true, false>;
+
+
+export type FirstElementOfArray<T extends any[]> =
+    T extends [infer U, ...any[]]
+      ? U
+      : T extends (infer Y)[]
+        ? Y
+        : never;
+
+export type LastElementOfArray<T extends any[]> =
+    T extends [...any[], infer U]
+    ? U
+    : T extends (infer Y)[]
+      ? Y
+      : never;

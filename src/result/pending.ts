@@ -28,7 +28,7 @@ export class PendingClass<T> extends AsyncResult<T> {
   }
 
   getOrElse(value?: any): Promise<any> {
-    return pipe(this.callWrappedResultMethod('getOrElse'), property(<any>'promise'))(value) as any;
+    return pipe(this.callWrappedResultMethod('getOrElse'), property<any>('promise'))(value) as any;
   }
 
   recover(λ: (x: any) => any): AsyncResult<any> {
@@ -52,11 +52,11 @@ export class PendingClass<T> extends AsyncResult<T> {
   }
 
   satisfies(predicate: (x: T) => any): Promise<boolean> {
-    return pipe(this.callWrappedResultMethod('satisfies'), property(<any>'promise'))(predicate) as any;
+    return pipe(this.callWrappedResultMethod('satisfies'), property<any>('promise'))(predicate) as any;
   }
 
   valueEquals(value: T): Promise<boolean> {
-    return pipe(this.callWrappedResultMethod('valueEquals'), property(<any>'promise'))(value) as any;
+    return pipe(this.callWrappedResultMethod('valueEquals'), property<any>('promise'))(value) as any;
   }
 
   map(λ: (x: T) => any): AsyncResult<any> {
@@ -76,7 +76,7 @@ export class PendingClass<T> extends AsyncResult<T> {
   }
 
   merge(): Promise<T> {
-    return pipe(this.callWrappedResultMethod('merge'), property(<any>'promise'))() as any;
+    return pipe(this.callWrappedResultMethod('merge'), property<any>('promise'))() as any;
   }
 
   reject(predicate: (x: T) => any): any {
@@ -88,7 +88,7 @@ export class PendingClass<T> extends AsyncResult<T> {
   }
 
   match(callbacks: IResultCallbacks<T, any, any, any>): any {
-    return pipe(this.callWrappedResultMethod('match'), property(<any>'promise'))(callbacks) as any;
+    return pipe(this.callWrappedResultMethod('match'), property<any>('promise'))(callbacks) as any;
   }
 
   abortOnErrorWith(λOrValue?: any): AsyncResult<T> {
@@ -120,7 +120,7 @@ export class PendingClass<T> extends AsyncResult<T> {
   }
 
   toOptional(): Promise<Optional<T>> {
-    return pipe(this.callWrappedResultMethod('toOptional'), property(<any>'promise'))() as any;
+    return pipe(this.callWrappedResultMethod('toOptional'), property<any>('promise'))() as any;
   }
 
   /**

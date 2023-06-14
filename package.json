@@ -13,7 +13,7 @@
   "module": "./lib/esm/index.js",
   "types": "./lib/types/index.d.ts",
   "browser": {
-    "./lib/index.js": "./bundle/lonad-bundle.es.js"
+    "./lib/esm/index.js": "./bundle/lonad-bundle.es.js"
   },
   "exports": {
     "types": "./lib/types/index.d.ts",

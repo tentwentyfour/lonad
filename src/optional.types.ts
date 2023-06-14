@@ -84,7 +84,7 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * const result = none.or(() => Optional.Some(6));
    * // result === Optional.Some(6)
    */
-  or<U = T>(replacement: (() => Optional<U>) | Optional<U>):            Optional<T> | Optional<U>;
+  or<U = T>(replacement: (() => Optional<U>) | Optional<U>):            Optional<T | U>;
 
   /**
    * Pattern matches on the optional value and returns the result of executing the corresponding function for the matching case.
@@ -189,7 +189,7 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * const result = none.flatMap(x => `Result - ${x}`);
    * // result === Optional.None()
    */
-  flatMap<U = T>(λ: TransformationFunction<T, U>):                      U | Optional<any>;
+  flatMap<U = T>(λ: TransformationFunction<T, U>):                      U;
 
   /**
    * Executes a function if the Optional is present.
@@ -262,7 +262,9 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * const result = none.filter(x => x > 4);
    * // result === Optional.None()
    */
-  filter(λ: Predicate<T>):                                              Optional<T>;
+  filter(λ: (x: T) => IfAnyOrUnknown<T, any, never>):                   Optional<T>;
+  filter<O extends T>(predicate: (x: T) => x is O):                     Optional<O>;
+  filter(λ: (x: T) => T | boolean):                                     Optional<T>;
 
   /**
    * Checks whether the Optional's value fails a predicate.
@@ -282,7 +284,7 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * const result = none.reject(x => x > 4);
    * // result === Optional.None()
    */
-  reject(λ: Predicate<T>):                                              Optional<T>;
+  reject(λ: (x: T) => T | boolean):                                     Optional<T>;
 
   /**
    * Get the value or throw.
@@ -328,7 +330,7 @@ export interface IOptional<T = any> extends IOptionalMembers {
    * const result = none.recover(() => 5);
    * // result === Optional.Some(5)
    */
-  recover<U = T>(λ: NullaryValueFactory<U>):                            Optional<U>;
+  recover<U = T>(λ: NullaryValueFactory<U>):                            Optional<T | U>;
 
   /**
    * Replace the value of the Optional.

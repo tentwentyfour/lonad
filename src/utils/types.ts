@@ -72,6 +72,33 @@ export type IfPromise<T, Y, N> = T extends PromiseLike<any> ? Y : N;
 export type IsPromise<T> = IfPromise<T, true, false>;
 
 
+/**
+ * IfArray is a type that checks if a type is an array.
+ * @example
+ * type A = IfArray<any, true, false>; // false
+ * type B = IfArray<unknown, true, false>; // false
+ * type C = IfArray<never, true, false>; // false
+ * type D = IfArray<{}, true, false>; // false
+ * type E = IfArray<Promise<any>, true, false>; // false
+ * type F = IfArray<any[], true, false>; // true
+ * type G = IfArray<number[], true, false>; // true
+ */
+export type IfArray<T, Y, N> = IfAnyOrUnknown<T, N, IfNever<T, N, T extends Array<any> ? Y : N>>;
+export type IsArray<T> = IfArray<T, true, false>;
+
+/**
+ * ExtrapolateIfArray is a type that extrapolates the type of an array.
+ * @example
+ * type A = ExtrapolateIfArray<any>; // never
+ * type B = ExtrapolateIfArray<unknown>; // never
+ * type C = ExtrapolateIfArray<never>; // never
+ * type D = ExtrapolateIfArray<{}>; // never
+ * type E = ExtrapolateIfArray<Promise<any>>; // never
+ * type F = ExtrapolateIfArray<any[]>; // any
+ * type G = ExtrapolateIfArray<number[]>; // number
+ */
+export type ExtrapolateIfArray<T> = IfArray<T, T extends Array<infer Y> ? Y : never, never>;
+
 export type FirstElementOfArray<T extends any[]> =
     T extends [infer U, ...any[]]
       ? U

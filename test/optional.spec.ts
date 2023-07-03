@@ -1,12 +1,11 @@
-/* global describe, it */
+import { Optional } from '../src/index';
+import { constant } from '../src/utils/utils';
 
-const { expect }   = require('chai');
-const { constant } = require('../source/utils');
-const Optional     = require('../source/optional');
+import { expect } from 'chai';
 
 const { Some, None } = Optional;
 
-const increment = n => n + 1;
+const increment = (n:number) => n + 1;
 
 describe('The Optional type', () => {
   it('should be able to convert an array of Some into a Some with an array of their values', () => {
@@ -43,7 +42,7 @@ describe('The Optional type', () => {
 
     it('should convert falsies to Some instances', () => {
       ['', NaN, 0, null, undefined].forEach(falsy => {
-        expect(Optional.when(falsy).valuePresent).to.equal(false);
+        expect(Optional.when(falsy, 0).valuePresent).to.equal(false);
       });
     });
   });
@@ -56,7 +55,7 @@ describe('The Optional type', () => {
     });
 
     it('should return a None when all passed optionals are None instances', () => {
-      expect(Optional.first([Optional.None(), Optional.None]).valueAbsent).to.equal(true);
+      expect(Optional.first([Optional.None(), Optional.None()]).valueAbsent).to.equal(true);
     });
   });
 
@@ -65,7 +64,7 @@ describe('The Optional type', () => {
       let thrown = false;
 
       try {
-        expect(Optional.fromParsedJson(3).valuePresent).to.equal(true);
+        expect(Optional.fromParsedJson(<any>3).valuePresent).to.equal(true);
       } catch (error) {
         thrown = true;
       }
@@ -84,7 +83,7 @@ describe('The Optional type', () => {
       Object
       .entries(some)
       .forEach(([key, property]) => {
-        expect(deserializedSome[key]).to.equal(property);
+        expect((deserializedSome as any)[key]).to.equal(property);
       });
     });
 
@@ -99,7 +98,7 @@ describe('The Optional type', () => {
       Object
       .entries(none)
       .forEach(([key, property]) => {
-        expect(deserializedNone[key]).to.equal(property);
+        expect((deserializedNone as any)[key]).to.equal(property);
       });
     });
   });
@@ -119,7 +118,7 @@ describe('The Optional type', () => {
 
   describe('The Some subtype', () => {
     it('should have the proper flags', () => {
-      const some = Some();
+      const some = Some(0);
 
       expect(some.isOptionalInstance).to.equal(true);
       expect(some.valuePresent).to.equal(true);
@@ -139,7 +138,7 @@ describe('The Optional type', () => {
     describe('tap(λ)', () => {
       it('should pass λ its value and return an equivalent Some', () => {
         const initialA = 2;
-        const value    = 3;
+        const value = 3;
 
         let a = initialA;
 
@@ -160,9 +159,9 @@ describe('The Optional type', () => {
 
     describe('recover(λ)', () => {
       it('should return an equivalent Some', () => {
-        const some = Some();
+        const some = Some(0);
 
-        expect(some.or(increment)).to.equal(some);
+        expect(some.or(Some(15))).to.equal(some);
       });
     });
 
@@ -170,7 +169,7 @@ describe('The Optional type', () => {
       it('should return the requested property of the wrapped value', () => {
         const some = Some({ a: 2 });
 
-        expect(some.property('a').get()).to.equal(some.value.a);
+        expect(some.property('a').get()).to.equal((some as any).value.a);
       });
     });
 
@@ -178,13 +177,13 @@ describe('The Optional type', () => {
       it('should return a Some with the right value if the wrapped value has the non-null `propertyName` property', () => {
         const some = Some({ a: 2 });
 
-        expect(some.nullableProperty('a').get()).to.equal(some.value.a);
+        expect(some.nullableProperty('a').get()).to.equal((some as any).value.a);
       });
 
       it('should return a None if the wrapped value does not have the non-null `propertyName` property', () => {
         const some = Some({});
 
-        expect(some.nullableProperty('a').valueAbsent).to.equal(true);
+        expect((some as any).nullableProperty('a').valueAbsent).to.equal(true);
       });
     });
 
@@ -192,7 +191,7 @@ describe('The Optional type', () => {
       it('should return a Some with the right value if the wrapped value has a Some named `propertyName`', () => {
         const some = Some({ a: Some(2) });
 
-        expect(some.optionalProperty('a').get()).to.equal(some.value.a.value);
+        expect(some.optionalProperty('a').get()).to.equal((some as any).value.a.value);
       });
 
       it('should return a None if the wrapped value does not have a Some named `propertyName`', () => {
@@ -220,9 +219,9 @@ describe('The Optional type', () => {
 
     describe('or(λOrOptional)', () => {
       it('should return an equivalent Some', () => {
-        const some = Some();
+        const some = Some(0);
 
-        expect(some.or(increment)).to.equal(some);
+        expect(some.or(Some(15))).to.equal(some);
       });
     });
 
@@ -270,7 +269,6 @@ describe('The Optional type', () => {
 
         const transformed = some.flatMap(increment);
 
-        expect(some !== transformed).to.equal(true);
         expect(transformed).to.equal(increment(value));
       });
     });
@@ -315,7 +313,7 @@ describe('The Optional type', () => {
 
     describe('getOrElse(λ)', () => {
       it('should return the value of Some instances', () => {
-        const value        = 3;
+        const value = 3;
         const defaultValue = 4;
 
         expect(value).to.not.equal(defaultValue);
@@ -342,7 +340,7 @@ describe('The Optional type', () => {
     describe('match(callbacks)', () => {
       it('should execute callback.Some if it exists', () => {
         const expected = 3;
-        const other    = 4;
+        const other = 4;
 
         const returnValue = Some(other).match({ Some: () => expected });
 
@@ -351,7 +349,7 @@ describe('The Optional type', () => {
 
       it('should just return the Some value when callback.Some does not exist', () => {
         const expected = 3;
-        const other    = 4;
+        const other = 4;
 
         const returnValue = Some(expected).match({ None: () => other });
 
@@ -427,7 +425,7 @@ describe('The Optional type', () => {
 
     describe('nullableMap(λ)', () => {
       it('should return a None()', () => {
-        expect(None().nullableMap(increment).valueAbsent).to.equal(true);
+        expect(None().nullableMap(e => e).valueAbsent).to.equal(true);
       });
     });
 
@@ -441,19 +439,19 @@ describe('The Optional type', () => {
 
     describe('map(λ)', () => {
       it('should return a None()', () => {
-        expect(None().map(increment).valueAbsent).to.equal(true);
+        expect(None().map(e => e).valueAbsent).to.equal(true);
       });
     });
 
     describe('tap(λ)', () => {
       it('should return a None()', () => {
-        expect(None().tap(increment).valueAbsent).to.equal(true);
+        expect(None().tap(e => e).valueAbsent).to.equal(true);
       });
     });
 
     describe('flatMap(λ)', () => {
       it('should return a None()', () => {
-        expect(None().flatMap(increment).valueAbsent).to.equal(true);
+        expect(((None().flatMap(e => increment(e))) as any).valueAbsent).to.equal(true);
       });
     });
 
@@ -487,7 +485,7 @@ describe('The Optional type', () => {
           None().get(message);
 
           expect('This should not happen').to.equal('but it did!');
-        } catch (error) {
+        } catch (error: any) {
           expect(error.message).to.equal(message);
           // Do nothing!
         }

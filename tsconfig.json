@@ -1,0 +1,37 @@
+{
+  "ts-node-esm": {
+    "require": ["tsconfig-paths/register"]
+  },
+
+  "compilerOptions": {
+    "strict": true,
+    "outDir": "./lib",
+    "target": "ES6",
+    "module": "ES6",
+
+    // enabling esModuleInterop will cause all project using lonad to have to use esModuleInterop
+    // as such it is disabled by default,
+    "esModuleInterop": false,
+
+    "allowSyntheticDefaultImports":true,
+    "moduleResolution": "Node",
+    "declaration": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@src/*": ["src/*"],
+      "@generated/*": ["src/generated/*"],
+      "@utils/*": ["src/utils/*"],
+      "@result/*": ["src/result/*"],
+      "@optional/*": ["src/optional/*"],
+    },
+  },
+  "include": ["./src/**/*"],
+  "exclude": [
+    "**/*.spec.ts",
+    "**/generators/**/*",
+    "./lib/**/*",
+    "./bundle/**/*",
+    "./node_modules/**/*"
+  ]
+}

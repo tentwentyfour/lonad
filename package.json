@@ -1,10 +1,36 @@
 {
   "name": "lonad",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Optional and Result monads implementations",
-  "main": "index.js",
+  "typesVersions": {
+    ">=4.9.5": {
+      "*": [
+        "./lib/types/index.d.ts"
+      ]
+    }
+  },
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "types": "./lib/types/index.d.ts",
+  "browser": {
+    "./lib/esm/index.js": "./bundle/lonad-bundle.es.js"
+  },
+  "exports": {
+    "types": "./lib/types/index.d.ts",
+    "node": "./lib/cjs/index.js",
+    "require": "./lib/cjs/index.js",
+    "import": "./lib/esm/index.js",
+    "default": "./lib/esm/index.js"
+  },
   "scripts": {
-    "test": "node ./node_modules/.bin/mocha"
+    "test": "./node_modules/.bin/mocha --resolveJsonModule",
+    "generate": "ts-node-esm ./src/generators/optional.gen.ts && ts-node-esm ./src/generators/asyncResult.gen.ts && ts-node-esm ./src/generators/syncResult.gen.ts && ts-node-esm ./src/generators/result.gen.ts && ./node_modules/.bin/eslint ./src/generated --fix",
+    "build": "npm run generate && rimraf lib && rimraf bundle && npm run build:web && npm run build:node && npm run build:packageJson",
+    "build:web": "rollup -c rollup.config.mjs",
+    "build:node": "tsc -b ./tsconfig.cjs.json ./tsconfig.esm.json ./tsconfig.types.json && tsc-alias -p ./tsconfig.cjs.json && tsc-alias -p ./tsconfig.esm.json && tsc-alias -p ./tsconfig.types.json",
+    "build:packageJson": "echo '{\"type\": \"commonjs\"}' > lib/cjs/package.json && echo '{\"type\": \"module\"}' > lib/esm/package.json",
+    "lint": "./node_modules/.bin/eslint ./src",
+    "lint:fix": "./node_modules/.bin/eslint ./src --fix"
   },
   "keywords": [
     "option",
@@ -17,17 +43,52 @@
     "async",
     "pending"
   ],
-  "author": "Florian Simon",
+  "files": [
+    "lib",
+    "bundle"
+  ],
+  "authors": [
+    {
+      "name": "Florian Simon"
+    },
+    {
+      "name": "Marx Jason"
+    }
+  ],
+  "engines": {
+    "node": ">=12.0.0"
+  },
   "license": "MIT",
   "devDependencies": {
-    "chai": "^4.2.0",
-    "eslint": "^5.10.0",
-    "eslint-config-airbnb": "^15.0.2",
-    "eslint-plugin-import": "^2.14.0",
-    "mocha": "^7.2.0"
-  },
-  "dependencies": {
-    "helpbox": "^7.2.0",
-    "lodash.flow": "^3.5.0"
+    "@hapi/topo": "^6.0.2",
+    "@rollup/plugin-commonjs": "^24.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@rollup/plugin-terser": "^0.2.1",
+    "@rollup/plugin-typescript": "^10.0.1",
+    "@types/chai": "^4.3.4",
+    "@types/lodash.flow": "^3.5.7",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^18.11.17",
+    "@typescript-eslint/eslint-plugin": "^5.48.0",
+    "@typescript-eslint/parser": "^5.48.0",
+    "chai": "^4.3.7",
+    "deepmerge": "^4.2.2",
+    "eslint": "^8.31.0",
+    "eslint-config-standard-with-typescript": "^26.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.6.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "lodash": "^4.17.21",
+    "mocha": "^10.2.0",
+    "rimraf": "^3.0.2",
+    "rollup": "^3.8.1",
+    "ts-mocha": "^10.0.0",
+    "ts-morph": "^18.0.0",
+    "ts-node": "^10.9.1",
+    "ts-paths-esm-loader": "^1.3.2",
+    "tsc-alias": "^1.8.2",
+    "tsd": "^0.25.0",
+    "tslib": "^2.4.1",
+    "typescript": "^4.9.5"
   }
 }
